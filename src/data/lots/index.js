@@ -7,5 +7,6 @@
 // Les modules de COURS sont dans src/data/courses/ (et src/data/courses/ajouts/ pour les modules existants).
 import lot01 from './lot01.js'
 import lot02 from './lot02.js'
+import lot03 from './lot03.js'
 
-export const LOTS = [lot01, lot02]
+export const LOTS = [lot01, lot02, lot03]

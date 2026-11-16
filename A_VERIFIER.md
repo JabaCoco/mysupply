@@ -19,3 +19,10 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** Armateurs cités en exemple : MSC, Maersk, CMA CGM (les trois premiers mondiaux ces dernières années ; le classement peut changer).
 - **[notion]** Incoterms 2020 : CIF = assurance minimale (clauses C), CIP = couverture étendue (clauses A) ; CPT/CIP et FCA recommandés pour les conteneurs plutôt que CFR/CIF/FOB (règles « maritimes » pensées pour le vrac). Je suis assez sûr de moi, mais c'est le point le plus technique du lot (étude de cas « L'Incoterm de la première exportation »).
 - **[notion]** Numéro de conteneur : 4 lettres + 7 chiffres (dernier = chiffre de contrôle) = 11 caractères.
+
+## Lot 3 — Stocks
+- **[chiffre]** « Coût de possession : environ 15 à 30 % de la valeur du stock par an » (fourchette courante en cours de logistique ; selon le secteur et le coût du capital).
+- **[notion]** « Stock dormant = aucun mouvement depuis 12 mois » : le seuil varie (6, 12 ou 24 mois) selon les entreprises et les produits.
+- **[chiffre]** « Exactitude du stock : bon niveau supérieur à 98 % » (objectif courant en entrepôt ; certaines écoles citent 95 % ou 99 %).
+- **[notion]** Recomplètement périodique : formule S = D × (R + L) + z × σ × √(R + L) (méthode « order-up-to », notée (R, S) en France). Certains cours utilisent des notations différentes (T, S) ou ajoutent une marge de revue ; à aligner sur ton cours.
+- **[notion]** FIFO (PEPS) et CUMP : seules ces deux méthodes sont enseignées (la méthode LIFO n'est pas admise en France ni en normes IFRS, je ne l'ai pas citée).
