@@ -67,3 +67,10 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** Vélo-cargo « jusqu'à environ 150 à 250 kg » : ordre de grandeur selon les modèles.
 - **[notion]** Distinction multicanal / omnicanal : définitions pédagogiques classiques ; certains auteurs utilisent « cross-canal ».
 - **[chiffre]** Exemples fictifs (coûts de tournée, taux de retour, prix, marges) : ils servent à calculer.
+
+## Lot 9 — KPI
+- **[chiffre]** « Les coûts logistiques représentent souvent 5 à 15 % du chiffre d'affaires » : ordre de grandeur très variable selon les secteurs.
+- **[chiffre]** Taux d'occupation visé « 80 à 90 % » en entrepôt : repère courant, pas une norme.
+- **[notion]** QCDRSE (qualité, coût, délai, réactivité, service, RSE) : le sigle exact varie selon les entreprises (QCD, QCDM, QCDRSE…). ppm = pièces défectueuses par million, usage industriel courant.
+- **[notion]** OTIF multiplié « si les deux événements sont indépendants » : approximation pédagogique ; en réel, OTIF se mesure directement par commande.
+- **[notion]** Tableau de bord « 5 à 10 KPI » : règle de bonne pratique, pas une norme.
