@@ -5,4 +5,6 @@
 //   cases    : [études de cas — avec generate() pour des chiffres aléatoires]
 //   english  : { units: [nouvelles unités], extend: { idUnité: [leçons ajoutées] } }
 // Les modules de COURS sont dans src/data/courses/ (et src/data/courses/ajouts/ pour les modules existants).
-export const LOTS = []
+import lot01 from './lot01.js'
+
+export const LOTS = [lot01]

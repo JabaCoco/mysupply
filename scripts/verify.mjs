@@ -20,7 +20,7 @@ import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
 
 // Modules dont chaque leçon doit avoir une banque d'au moins 8 questions (on l'élargit lot après lot)
-const ENFORCE_BANK = new Set(process.env.ENFORCE_BANK ? process.env.ENFORCE_BANK.split(',') : [])
+const ENFORCE_BANK = new Set(['bases'])
 const MIN_BANK = 8
 // Calculateurs libres écrits à la main (les autres formules doivent avoir un `calculator` décrit en données)
 const HAND_CALCULATORS = new Set(['stock-securite', 'wilson', 'abc', 'rotation', 'otif', 'tco', 'incoterms'])
@@ -52,6 +52,8 @@ let totalStaticQ = 0
 let totalFnQ = 0
 let longestIsRight = 0
 let staticChecked = 0
+const longestByLesson = {}
+const longestList = []
 
 for (const m of MODULES) {
   const mw = `Module ${m.id}`
@@ -111,14 +113,25 @@ for (const m of MODULES) {
         const lens = entry.choices?.map((c) => String(c).length) ?? []
         if (lens.length) {
           staticChecked++
-          if (lens[entry.answer] === Math.max(...lens) && lens.filter((l) => l === Math.max(...lens)).length === 1) longestIsRight++
+          const stat = (longestByLesson[lw] ??= [0, 0])
+          stat[1]++
+          if (lens[entry.answer] === Math.max(...lens) && lens.filter((l) => l === Math.max(...lens)).length === 1) {
+            longestIsRight++
+            stat[0]++
+            longestList.push(`${lw} q${i + 1}`)
+          }
         }
       }
     }
   }
 }
 const longestPct = staticChecked ? Math.round((longestIsRight / staticChecked) * 100) : 0
-if (longestPct > 45) warn('Quiz', `la bonne réponse est la plus longue dans ${longestPct} % des questions (biais à corriger)`)
+if (longestPct > 40) {
+  warn('Quiz', `la bonne réponse est la plus longue dans ${longestPct} % des questions (biais à corriger, objectif < 35 %)`)
+  const worst = Object.entries(longestByLesson).filter(([, [n, t]]) => n / t > 0.5).map(([k, [n, t]]) => `${k} (${n}/${t})`)
+  if (worst.length) warn('Quiz', `leçons les plus biaisées : ${worst.join(', ')}`)
+  if (process.env.SHOW_LONGEST) warn('Quiz', `questions concernées : ${longestList.join(', ')}`)
+}
 
 // ---------- Formules ----------
 for (const f of FORMULA_LIST) {
@@ -206,6 +219,7 @@ for (const ch of EXCEL_CHALLENGES) {
     }
   }
   if (ch.generate && results.size < 5) warn(w, `les données aléatoires donnent peu de résultats différents (${results.size} sur 150)`)
+  if (ch.generate && results.size === 1) fail(w, 'les données aléatoires donnent toujours le même résultat')
 }
 
 // ---------- Études de cas ----------
