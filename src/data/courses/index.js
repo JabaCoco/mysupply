@@ -22,6 +22,7 @@ import entrepot from './entrepot.js'
 import achats from './achats.js'
 import prevision from './prevision.js'
 import production from './production.js'
+import distribution from './distribution.js'
 import kpi from './kpi.js'
 import outils from './outils.js'
 import basesPlus from './ajouts/bases.js'
@@ -51,6 +52,7 @@ export const MODULES = [
   withExtras(achats, achatsPlus),
   withExtras(prevision, previsionPlus),
   withExtras(production),
+  withExtras(distribution),
   withExtras(kpi),
   withExtras(outils),
 ]

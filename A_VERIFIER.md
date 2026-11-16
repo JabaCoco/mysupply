@@ -58,3 +58,12 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** Ratio critique : défini comme (échéance − aujourd'hui) / temps de production restant ; certaines écoles l'appellent « ratio d'urgence » ou utilisent l'inverse.
 - **[notion]** Loi de Little (L = λ × W) : valable pour un flux stable ; le cours la présente avec des pièces par jour.
 - **[chiffre]** Exemples fictifs (stocks, cadences, capacités) : ils servent à calculer, pas à représenter une usine réelle.
+
+## Lot 8 — Distribution et e-commerce
+- **[notion]** Règle de la racine carrée : le stock de sécurité total après regroupement de n sites ≈ stock d'un site × √n. C'est une approximation (sites de demande similaire et indépendante) : le cours la présente comme un ordre de grandeur.
+- **[chiffre]** « Le dernier kilomètre représente souvent environ la moitié du coût d'un colis » : ordre de grandeur courant (les études citent 40 à 53 %), pas une norme.
+- **[chiffre]** « 20 à 40 % de retours dans la mode en ligne » : fourchette courante selon les études et les marchés ; très variable.
+- **[notion]** Droit de rétractation de 14 jours pour un achat à distance dans l'UE : exact en règle générale (certains produits en sont exclus : sur-mesure, denrées périssables…) ; non détaillé.
+- **[notion]** Vélo-cargo « jusqu'à environ 150 à 250 kg » : ordre de grandeur selon les modèles.
+- **[notion]** Distinction multicanal / omnicanal : définitions pédagogiques classiques ; certains auteurs utilisent « cross-canal ».
+- **[chiffre]** Exemples fictifs (coûts de tournée, taux de retour, prix, marges) : ils servent à calculer.
