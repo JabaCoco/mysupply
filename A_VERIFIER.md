@@ -42,3 +42,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** « Les conditions particulières signées l'emportent sur les conditions générales » (principe de droit des contrats français) : simplifié pour le cours.
 - **[chiffre]** Exemples fictifs : pénalité 0,5 % par jour plafonnée à 10 % ; coût de l'argent 3 à 6 % par an ; remise de 3 % sur 1,2 M€. Ils servent à calculer, pas à fixer des usages de marché.
 - **[notion]** EcoVadis est cité comme exemple de plateforme de notation RSE (nom de marque réel).
+
+## Lot 6 — Prévision
+- **[notion]** **Signe du biais** : j'ai défini Biais = moyenne de (prévu − réel), donc positif = sur-prévision (cours Mesurer l'erreur, formule MAPE et biais, défi Excel « Le biais de prévision »). Beaucoup de cours définissent l'erreur comme (réel − prévu), ce qui inverse le signe : à aligner sur ton cours, sinon tu risques une confusion à l'examen. L'exercice « Erreur D − F » du lissage utilise, lui, la convention (réel − prévu).
+- **[notion]** MAPE : calculé par rapport au réel. Certains cours utilisent la prévision au dénominateur (variante appelée parfois « WMAPE » ou « erreur relative à la prévision »).
+- **[notion]** « Tracking signal = cumul des erreurs / MAD » : seule une définition courte est donnée dans le cours.
+- **[notion]** Cycle S&OP en 5 étapes (prévision statistique, revue demande, revue offre, pré-S&OP, décision) : c'est le modèle le plus courant en cours, les entreprises l'adaptent. « PIC » = nom français du S&OP, parfois présenté comme un niveau distinct (plan agrégé) du PDP.
+- **[chiffre]** « Le S&OP travaille sur 12 à 24 mois » : fourchette courante, pas une norme.
+- **[notion]** CPFR décrit comme une démarche « surtout utilisée entre grands industriels et distributeurs » : jugement général.
