@@ -26,3 +26,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[chiffre]** « Exactitude du stock : bon niveau supérieur à 98 % » (objectif courant en entrepôt ; certaines écoles citent 95 % ou 99 %).
 - **[notion]** Recomplètement périodique : formule S = D × (R + L) + z × σ × √(R + L) (méthode « order-up-to », notée (R, S) en France). Certains cours utilisent des notations différentes (T, S) ou ajoutent une marge de revue ; à aligner sur ton cours.
 - **[notion]** FIFO (PEPS) et CUMP : seules ces deux méthodes sont enseignées (la méthode LIFO n'est pas admise en France ni en normes IFRS, je ne l'ai pas citée).
+
+## Lot 4 — Entrepôt
+- **[chiffre]** Productivité de préparation : « 60 à 100 lignes par heure » en préparation classique, « 300 lignes par heure ou davantage » en goods-to-person. Ordres de grandeur très variables selon le produit et l'organisation.
+- **[chiffre]** « Au-delà de 85 à 90 % de taux d'occupation, l'entrepôt devient difficile à gérer » (seuil usuel, pas une norme).
+- **[chiffre]** Palette Europe 1 200 × 800 mm (EPAL), palette industrielle 1 200 × 1 000 mm ; charge « de 1 000 à 1 500 kg environ » (dépend du modèle et du rack).
+- **[date]** CACES : catégories R489 (chariots élévateurs à conducteur porté) et R485 (gerbeurs à conducteur accompagnant), « valable souvent 5 ans ». Les catégories et durées ont évolué avec les recommandations de l'Assurance maladie (R485 et R489 depuis 2020) : à confirmer.
+- **[notion]** Flux en U et flux traversant : définitions classiques de cours d'implantation, les noms peuvent varier (flux « en I », « en L »).
+- **[notion]** Études de cas Entrepôt : les chiffres de maintenance (8 % de l'investissement par an) et d'économies (80 % du coût des postes) sont des hypothèses pédagogiques, pas des données de marché.
