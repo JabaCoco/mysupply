@@ -9,7 +9,7 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Avance un onglet à la fois et attends sa validation avant de passer au suivant.
 - Aucune API payante, aucune dépendance à Claude dans l'appli.
 - Avant de livrer : `npm run build` + `npm run lint`, et si possible un test de bout en bout dans Edge (playwright-core installé dans le dossier temporaire de session, pas dans le projet).
-- **Étape en cours : enrichissement du contenu par lots** (voir « Plan d'enrichissement du contenu »). L'onglet Révisions viendra ensuite.
+- **Étape en cours : les 16 lots de contenu sont terminés** (voir « Plan d'enrichissement du contenu »). Reste, dans l'ordre : récapitulatif + points à vérifier (`A_VERIFIER.md`), puis le jeu de la bière et 2-3 ateliers interactifs, puis l'onglet Révisions.
 - **Git** : dépôt local initialisé (branche `main`), un point de sauvegarde après chaque lot validé (`git add -A` puis `git commit`). Une archive ZIP d'avant les lots est dans `C:\Users\guito\Projets\sauvegardes\`.
 
 ## Choix techniques
@@ -51,31 +51,39 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - +5 XP par vidéo vue la première fois. Cache hors ligne, 2e tentative automatique si YouTube répond 404/500.
 
 ### Cours (`src/pages/cours/`, contenu dans `src/data/courses/`)
-- 8 modules, 19 leçons : Bases, Transport (modes, Incoterms, 3PL), Stocks (ABC, stock de sécurité, Wilson), Entrepôt, Achats, Prévision, KPI, Outils (ERP/WMS/TMS, Lean, IA).
+- **16 modules, 94 leçons** (Bases, Transport, Stocks, Entrepôt, Achats, Prévision, Production, Distribution et e-commerce, KPI, Douane et international, Outils et SI, Lean, Supply chain durable, Risques et résilience, Finance, Stratégie et innovation). Chaque leçon a une banque de 8 à 10 questions dont 5 sont tirées au hasard à chaque passage (une partie à chiffres aléatoires via `numQuestion` de `src/data/gen.js`).
 - Format Duolingo : 5 à 7 cartes (balayage ou bouton) puis quiz de 4 questions (réponses mélangées, explication à chaque fois), écran de fin.
 - XP : 10 + 5 par bonne réponse la 1re fois, 5 en refaisant. Mode d'emploi pour ajouter une leçon en haut de `src/data/courses/index.js`.
 
 ### Atelier (`src/pages/atelier/`, données dans `src/data/atelier/`)
 - **Défi du jour tournant** (`src/lib/dailyChallenge.js`) : Excel → exercices de calcul (3 à réussir) → étude de cas → simulateur. Il reste le même tant qu'il n'est pas terminé, et change le lendemain d'une réussite.
-- **Défis Excel** (13) : mini-tableur avec un vrai moteur de formules françaises (`src/lib/excel/`), cellules cliquables, touches rapides, indices puis solution, fonction imposée.
-- **Formules et calculs** (7 : stock de sécurité/PC, Wilson, ABC, rotation/couverture, OTIF, TCO, Incoterms), chacune avec 3 onglets :
+- **Défis Excel** (65, dont 52 à données aléatoires, classés en 6 niveaux par `tier`) : mini-tableur avec un vrai moteur de formules françaises (`src/lib/excel/`), cellules cliquables, touches rapides, indices puis solution, fonction imposée.
+- **Formules et calculs** (35, une par notion de calcul), chacune avec 3 onglets :
   - Cours : à quoi ça sert, formule, termes, exemple corrigé.
   - Exercices : chiffres aléatoires, correction immédiate pas à pas, bouton « Indice / Rappel de la formule » sans la réponse, +5 XP.
   - Calculateur : outil libre.
-- **Études de cas** (4) : 3 décisions chacune, choix mélangés. Si la décision n'est pas la meilleure → « La réponse attendue » + « Pourquoi c'est mieux » chiffré.
+- **Études de cas** (35, dont 21 à chiffres aléatoires) : 3 décisions chacune, choix mélangés. Si la décision n'est pas la meilleure → « La réponse attendue » + « Pourquoi c'est mieux » chiffré.
 - **Simulateur de stock** : nouveau scénario aléatoire à chaque partie (produit, demande, écart-type, délai 1 à 3 semaines, stock de départ, coûts), vérifié pour que la méthode du cours batte la stratégie naïve.
   - Avant la partie : rappel de cours détaillé.
   - Pendant la partie : 4 cases (En stock, En commande avec semaines d'arrivée, Stock fin de semaine, Stock prévu semaine prochaine), bulles d'aide ⓘ, orange sous le stock de sécurité, rouge à 0. Bouton « Revoir la situation » (fenêtre sans perte de progression) et graphique.
   - À la fin : comparaison avec la méthode du cours (point de commande + Wilson) ; record = meilleur écart en %.
 
 ### Anglais (`src/pages/anglais/`, contenu dans `src/data/anglais/units.js`)
-- 7 unités, 12 leçons, 54 mots + 15 phrases. Difficulté progressive : mots (niveau 1) → mots en contexte (2) → phrases et mails (3, unité « Communiquer au travail »). Unité « Faux amis » avec notes.
+- 23 unités, 63 leçons, 310 mots + 103 phrases. Difficulté progressive : mots (niveau 1) → mots en contexte (2) → phrases et mails (3, unité « Communiquer au travail »). Unité « Faux amis » avec notes.
 - **Mots du jour = flashcards** (`DailyWords.jsx`) : 3 mots par jour (jamais vus). Le **recto** n'affiche que le mot, en anglais ou en français selon un tirage stable par mot et par jour (`cardFace` dans `src/lib/english.js`). Le haut-parleur n'est sur le recto que si le mot est en anglais. Un toucher retourne la carte (rotation 3D) : le **verso** donne le mot anglais + 🔊, la traduction, la définition (`def`), l'exemple, puis « Je connais » / « À revoir » (+2 XP). Une carte déjà triée s'ouvre retournée. La tuile « Word of the day » de l'accueil n'affiche que le recto (sans la réponse).
 - Chaque mot de `units.js` a un champ `def` (définition courte en français) : à renseigner pour tout nouveau mot.
 - Leçon : cartes de découverte (lues à voix haute), puis ~10 exercices générés (`src/lib/englishExercises.js`) : paires, QCM dans les deux sens, écoute, phrase à trous, remettre dans l'ordre, mot à taper (1 faute tolérée), **prononciation au micro** (correction souple ; si raté → réécouter + réessayer ; « passer » si micro indisponible, non compté).
 - Barre de correction en bas façon Duolingo. XP : 10 + 2 par bonne réponse la 1re fois, 5 en refaisant.
 - **Mon lexique** : mots rencontrés, recherche, filtres Tous / À revoir / Connus.
 - L'anglais fait partie de la rotation du défi du jour (Excel → calcul → cas → simulateur → anglais).
+
+## Architecture des lots de contenu (ajoutée pendant l'enrichissement)
+- `src/data/lots/lotNN.js` : pour chaque lot, `formulas`, `excel`, `cases`, `english` (nouvelles unités + `extend` pour ajouter des leçons à une unité existante). Le registre est `src/data/lots/index.js` (`LOTS`).
+- Cours : un fichier par module dans `src/data/courses/` ; les modules d'origine sont enrichis par `src/data/courses/ajouts/<module>.js` (`lessons` ajoutées + `more` : questions ajoutées par leçon) via `withExtras` dans `src/data/courses/index.js`.
+- Anglais : l'ordre des unités est dans `UNIT_ORDER` (`src/data/anglais/units.js`) ; chaque mot a un `def`, et l'exemple (`ex`) doit contenir le mot.
+- **`npm run verify`** (`scripts/verify.mjs`) : contrôle automatique du contenu (calculs refaits, bonnes réponses, doublons, 100 à 300 générations aléatoires, banques de 8 questions minimum). À lancer avant chaque livraison, avec `npm run build` et `npm run lint`.
+- **`A_VERIFIER.md`** : doutes sur des notions ou des chiffres, par lot, à relire par l'utilisateur.
+- Règle d'écriture des quiz : la bonne réponse ne doit pas être systématiquement la plus longue (objectif < 35 % ; le script le signale).
 
 ## Plan d'enrichissement du contenu (validé)
 
