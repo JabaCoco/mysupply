@@ -9,7 +9,8 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Avance un onglet à la fois et attends sa validation avant de passer au suivant.
 - Aucune API payante, aucune dépendance à Claude dans l'appli.
 - Avant de livrer : `npm run build` + `npm run lint`, et si possible un test de bout en bout dans Edge (playwright-core installé dans le dossier temporaire de session, pas dans le projet).
-- **Prochaine étape : onglet Révisions** (après validation de l'onglet Anglais par l'utilisateur).
+- **Étape en cours : enrichissement du contenu par lots** (voir « Plan d'enrichissement du contenu »). L'onglet Révisions viendra ensuite.
+- **Git** : dépôt local initialisé (branche `main`), un point de sauvegarde après chaque lot validé (`git add -A` puis `git commit`). Une archive ZIP d'avant les lots est dans `C:\Users\guito\Projets\sauvegardes\`.
 
 ## Choix techniques
 
@@ -69,11 +70,30 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 
 ### Anglais (`src/pages/anglais/`, contenu dans `src/data/anglais/units.js`)
 - 7 unités, 12 leçons, 54 mots + 15 phrases. Difficulté progressive : mots (niveau 1) → mots en contexte (2) → phrases et mails (3, unité « Communiquer au travail »). Unité « Faux amis » avec notes.
-- **Mots du jour** : 3 cartes par jour (mots jamais vus), boutons « Je connais » / « À revoir » (+2 XP). Le 1er mot alimente la tuile « Word of the day » de l'accueil.
+- **Mots du jour = flashcards** (`DailyWords.jsx`) : 3 mots par jour (jamais vus). Le **recto** n'affiche que le mot, en anglais ou en français selon un tirage stable par mot et par jour (`cardFace` dans `src/lib/english.js`). Le haut-parleur n'est sur le recto que si le mot est en anglais. Un toucher retourne la carte (rotation 3D) : le **verso** donne le mot anglais + 🔊, la traduction, la définition (`def`), l'exemple, puis « Je connais » / « À revoir » (+2 XP). Une carte déjà triée s'ouvre retournée. La tuile « Word of the day » de l'accueil n'affiche que le recto (sans la réponse).
+- Chaque mot de `units.js` a un champ `def` (définition courte en français) : à renseigner pour tout nouveau mot.
 - Leçon : cartes de découverte (lues à voix haute), puis ~10 exercices générés (`src/lib/englishExercises.js`) : paires, QCM dans les deux sens, écoute, phrase à trous, remettre dans l'ordre, mot à taper (1 faute tolérée), **prononciation au micro** (correction souple ; si raté → réécouter + réessayer ; « passer » si micro indisponible, non compté).
 - Barre de correction en bas façon Duolingo. XP : 10 + 2 par bonne réponse la 1re fois, 5 en refaisant.
 - **Mon lexique** : mots rencontrés, recherche, filtres Tous / À revoir / Connus.
 - L'anglais fait partie de la rotation du défi du jour (Excel → calcul → cas → simulateur → anglais).
+
+## Plan d'enrichissement du contenu (validé)
+
+Objectif : tenir plusieurs mois à 15-20 min par jour (aujourd'hui : tout se fait en une semaine).
+
+**Règles** : un lot à la fois ; script de vérification automatique (calculs refaits, bonnes réponses, doublons, 300 générations aléatoires sans erreur) ; relecture de l'exactitude des notions ; l'utilisateur teste et valide ; point de sauvegarde Git après chaque lot. **Ne pas modifier la présentation, le design ni le fonctionnement actuels** (sauf la flashcard du mot du jour, déjà faite) : ajouter seulement du contenu dans le même format. Les exercices doivent pouvoir être refaits sans connaître les réponses (chiffres aléatoires, questions tirées au hasard). Suivre l'ordre des cours de l'utilisateur et l'adapter s'il dit que ses cours changent. Progression du plus simple au plus difficile.
+
+**Cibles** :
+- Cours : 8 → 16 modules, 19 → environ 90 leçons. Chaque leçon avec une banque de 8 à 10 questions dont 5 tirées au hasard (questions de calcul à chiffres aléatoires).
+- Défis Excel : 13 → environ 60, en 6 niveaux (bases, conditions, recherche, synthèse, calculs supply chain, textes et dates), tableaux de données tirés au hasard à chaque essai ; le moteur de formules apprend les nouvelles fonctions.
+- Formules et calculs : 7 → environ 22 (cours + 4 à 6 exercices aléatoires + calculateur).
+- Études de cas : 4 → environ 24 (dont une dizaine à chiffres aléatoires).
+- Anglais : 7 → environ 20 unités, 70 leçons, 500 mots/phrases (avec `def`) : mots, mots en contexte, phrases et mails (entretien de stage, négociation, réclamation, etc.).
+
+**Lots, dans cet ordre** (chaque lot = module de cours + formules, défis Excel et cas de l'Atelier liés + unité d'anglais liée) :
+- Lot 0 : flashcard du mot du jour. **Fait.**
+- Lot 1 Bases (Fondamentaux) → 2 Transport → 3 Stocks → 4 Entrepôt → 5 Achats → 6 Prévision → 7 Production (nouveau) → 8 Distribution et e-commerce (nouveau) → 9 KPI → 10 Douane et international (nouveau) → 11 Outils et SI → 12 Lean (étendu) → 13 Supply chain durable (nouveau) → 14 Risques et résilience (nouveau) → 15 Finance et supply chain (nouveau) → 16 Stratégie et innovation (nouveau).
+- **À la fin, une fois tout le contenu ajouté** : le **jeu de la bière** dans le simulateur (effet coup de fouet) + 4 profils de demande (stable, saisonnière, en tendance, avec promotions) + proposer et ajouter 2 ou 3 autres ateliers interactifs utiles.
 
 ## Ce qu'il reste à faire
 

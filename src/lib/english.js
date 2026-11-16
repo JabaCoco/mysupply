@@ -12,6 +12,17 @@ export const XP_EN_CORRECT = 2 // par bonne réponse (1re fois)
 export const XP_EN_REPLAY = 5
 export const XP_DAILY_WORD = 2 // par carte du jour triée
 
+// Face affichée au recto d'une flashcard : 'en' (le mot anglais) ou 'fr' (le mot français).
+// Tirée "au hasard", mais stable pour un mot donné un jour donné (elle ne change pas à chaque affichage).
+export function cardFace(en, day = dayKey(new Date())) {
+  let h = 2166136261
+  for (const c of `${day}|${en}`) {
+    h ^= c.charCodeAt(0)
+    h = Math.imul(h, 16777619)
+  }
+  return (h >>> 16) & 1 ? 'fr' : 'en'
+}
+
 // ---------- Mots du jour ----------
 // Chaque jour, 3 mots jamais vus (ni dans une leçon, ni dans une carte du jour), dans l'ordre du parcours.
 export async function ensureDailyWords() {
