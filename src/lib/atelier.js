@@ -80,3 +80,22 @@ export async function recordSimulation(result) {
     return XP_SIMULATION
   })
 }
+
+// Partie du jeu de la bière terminée : garde le meilleur écart de coût du grossiste avec la règle automatique
+export async function recordBeerGame(result) {
+  await reportDaily('simulateur', 'simulateur')
+  return db.transaction('rw', db.workshop, db.activity, async () => {
+    const previous = await db.workshop.get('biere')
+    const today = dayKey(new Date())
+    const best = previous?.bestGap === undefined || result.gap < previous.bestGap
+    await db.workshop.put({
+      id: 'biere',
+      bestGap: best ? result.gap : previous.bestGap,
+      games: (previous?.games ?? 0) + 1,
+      lastXpDay: today,
+    })
+    if (previous?.lastXpDay === today) return 0
+    await addXp(XP_SIMULATION)
+    return XP_SIMULATION
+  })
+}

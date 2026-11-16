@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { CalendarClock, CalendarRange, ClipboardList, Minus, PackageCheck, Plus, Shuffle, Truck, Zap } from 'lucide-react'
+import { Link } from 'react-router'
+import { Beer, CalendarClock, CalendarRange, ClipboardList, Minus, PackageCheck, Plus, Shuffle, Truck, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
-import { forecast, generateScenario, newGame, playReference, playWeek, referenceFor, summarize } from '../../../lib/simulation.js'
+import { PROFILES, forecast, generateScenario, newGame, playReference, playWeek, referenceFor, summarize } from '../../../lib/simulation.js'
 import { recordSimulation, useWorkshop } from '../../../lib/atelier.js'
 import { celebrate } from '../../../lib/confetti.js'
 import SimCourse, { scenarioRows } from './SimCourse.jsx'
@@ -17,7 +18,8 @@ const gapText = (gap) => `${gap > 0 ? '+' : ''}${Math.round(gap * 100)} %`
 export default function Simulator() {
   const workshop = useWorkshop()
   // Nouveau scénario (demande, délai, coûts…) à chaque partie
-  const [scenario, setScenario] = useState(generateScenario)
+  const [profile, setProfile] = useState(null) // null = profil tiré au hasard
+  const [scenario, setScenario] = useState(() => generateScenario())
   const [game, setGame] = useState(null)
   const [order, setOrder] = useState(0)
   const [xp, setXp] = useState(null)
@@ -47,12 +49,17 @@ export default function Simulator() {
   }
 
   function newScenario() {
-    setScenario(generateScenario())
+    setScenario(generateScenario(profile))
     setGame(null)
     window.scrollTo({ top: 0 })
   }
 
-  if (!game) return <Intro params={scenario} onStart={start} onShuffle={() => setScenario(generateScenario())} best={best} />
+  function choose(id) {
+    setProfile(id)
+    setScenario(generateScenario(id))
+  }
+
+  if (!game) return <Intro params={scenario} onStart={start} onShuffle={() => setScenario(generateScenario(profile))} best={best} profile={profile} onChoose={choose} />
   if (finished) return <Results game={game} xp={xp} onRestart={newScenario} />
 
   const p = game.params
@@ -137,7 +144,7 @@ export default function Simulator() {
               <>
                 <p>Estimation à la fin de la semaine {week} :</p>
                 <p className="font-mono text-xs">
-                  en stock {game.stock} − demande moyenne {p.mean} = {f.endOfWeek}
+                  en stock {game.stock} − demande {p.profile === 'stable' ? 'moyenne' : 'prévue'} {f.d1} = {f.endOfWeek}
                 </p>
                 <p>Les livraisons de cette semaine sont déjà dans « En stock ». La vraie demande peut varier (± {p.sd} environ).</p>
               </>
@@ -156,7 +163,7 @@ export default function Simulator() {
               <>
                 <p>Estimation à la fin de la semaine {week + 1} :</p>
                 <p className="font-mono text-xs">
-                  stock fin de semaine {Math.max(0, f.endOfWeek)} + livraisons début S{week + 1} {f.arrivingNext} − demande moyenne {p.mean} = {f.nextWeekEnd}
+                  stock fin de semaine {Math.max(0, f.endOfWeek)} + livraisons début S{week + 1} {f.arrivingNext} − demande {p.profile === 'stable' ? 'moyenne' : 'prévue'} {f.d2} = {f.nextWeekEnd}
                 </p>
                 {p.lead === 1 && <p>Avec 1 semaine de délai, la quantité que tu es en train de commander est incluse dans les livraisons.</p>}
               </>
@@ -232,7 +239,7 @@ export default function Simulator() {
   )
 }
 
-function Intro({ params, onStart, onShuffle, best }) {
+function Intro({ params, onStart, onShuffle, best, profile, onChoose }) {
   return (
     <Page>
       <SubHeader back="/atelier" title="Simulateur de stock" subtitle="12 semaines pour gérer ton stock au meilleur coût" />
@@ -242,6 +249,17 @@ function Intro({ params, onStart, onShuffle, best }) {
           changent à chaque partie.
         </p>
         <Table title="Ta mission" rows={scenarioRows(params)} />
+        <div>
+          <p className="mb-1.5 text-xs font-bold tracking-wider text-muted uppercase">Profil de la demande</p>
+          <div className="flex flex-wrap gap-1.5">
+            {[[null, 'Au hasard'], ...Object.entries(PROFILES).map(([id, pr]) => [id, pr.label])].map(([id, label]) => (
+              <button key={label} type="button" onClick={() => onChoose(id)} aria-pressed={profile === id} className={`h-9 rounded-xl px-3 text-sm font-semibold ${profile === id ? 'bg-violet-500 text-white' : 'border border-line'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted">{PROFILES[params.profile].text}</p>
+        </div>
         <button type="button" onClick={onShuffle} className="flex items-center gap-1.5 text-sm font-semibold text-violet-400">
           <Shuffle size={16} /> Tirer un autre scénario
         </button>
@@ -263,6 +281,15 @@ function Intro({ params, onStart, onShuffle, best }) {
         <button type="button" onClick={onStart} className="h-12 w-full rounded-2xl bg-violet-500 font-bold text-white">
           Commencer la partie
         </button>
+        <Link to="/atelier/simulateur/biere" className="flex items-center gap-3 rounded-2xl border border-line bg-card p-3.5">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-500 text-white">
+            <Beer size={20} />
+          </span>
+          <span className="min-w-0">
+            <span className="block font-bold">Le jeu de la bière</span>
+            <span className="block text-xs text-muted">Découvre l'effet coup de fouet sur toute une chaîne</span>
+          </span>
+        </Link>
       </div>
     </Page>
   )
@@ -327,7 +354,7 @@ function Results({ game, xp, onRestart }) {
 
         <p className="rounded-2xl bg-amber-400/10 p-3.5 text-sm leading-snug">
           <span className="font-bold">La méthode du cours :</span> commander {ref.quantity} unités (Wilson : √(2 × {p.mean} × {p.orderCost} / {p.holding})) dès que la position de stock passe sous{' '}
-          {ref.reorderPoint} (point de commande : {p.mean} × {p.lead} + 1,65 × {p.sd} × √{p.lead}).
+          {ref.reorderPoint} ({p.profile === 'stable' ? `point de commande : ${p.mean} × ${p.lead} + 1,65 × ${p.sd} × √${p.lead}` : 'point de commande : demande prévue pendant le délai + 1,65 × ' + p.sd + ' × √' + p.lead}, recalculé chaque semaine).
         </p>
 
         <details className="rounded-2xl border border-line bg-card p-3 text-sm">

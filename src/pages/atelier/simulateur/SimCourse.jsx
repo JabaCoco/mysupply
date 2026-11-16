@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { referenceFor } from '../../../lib/simulation.js'
+import { PROFILES, referenceFor } from '../../../lib/simulation.js'
 
 const fmt = (n, d = 0) => n.toLocaleString('fr-FR', { maximumFractionDigits: d })
 
@@ -9,7 +9,7 @@ function sections(p) {
   const ref = referenceFor(p)
   const ss = 1.65 * p.sd * Math.sqrt(p.lead)
   const weeksBetween = Math.max(1, Math.round(ref.quantity / p.mean))
-  return [
+  const base = [
     {
       title: '1. Le délai de livraison',
       body: [
@@ -49,6 +49,18 @@ function sections(p) {
       ],
     },
   ]
+  if (p.profile === 'stable') return base
+  return [
+    ...base,
+    {
+      title: "6. Quand la demande n'est pas stable",
+      body: [
+        `Profil de cette partie : ${PROFILES[p.profile].label.toLowerCase()}. ${PROFILES[p.profile].text}`,
+        `Demande prévue par semaine : ${p.means.join(', ')} unités. Ce n'est qu'une prévision : la demande réelle varie autour (± ${p.sd}).`,
+        `Le point de commande suit alors la demande attendue pendant le délai : PC(semaine) = somme des prévisions des ${p.lead} prochaine${p.lead > 1 ? 's' : ''} semaine${p.lead > 1 ? 's' : ''} + stock de sécurité. Il monte avant un pic et redescend après.`,
+      ],
+    },
+  ]
 }
 
 export default function SimCourse({ params, defaultOpen = false }) {
@@ -81,6 +93,8 @@ export function scenarioRows(p) {
     ['Produit', p.product],
     ['Stock de départ (semaine 1)', `${p.initialStock} unités`],
     ['Demande moyenne', `${p.mean} unités / semaine`],
+    ['Profil de la demande', PROFILES[p.profile].label],
+    ...(p.profile === 'stable' ? [] : [['Demande prévue par semaine', p.means.join(' · ')]]),
     ['Variabilité (écart-type)', `${p.sd} unités / semaine`],
     ['Délai de livraison', `${p.lead} semaine${p.lead > 1 ? 's' : ''} (commande en S → arrivée début S+${p.lead})`],
     ['Coût de stockage', `${euros(p.holding)} par unité restant en fin de semaine`],

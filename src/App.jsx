@@ -11,6 +11,7 @@ import ExcelChallenge from './pages/atelier/excel/ExcelChallenge.jsx'
 import { CalculatorList, CalculatorPage } from './pages/atelier/calculs/CalculatorPages.jsx'
 import { CaseList, CasePage } from './pages/atelier/cas/CasePages.jsx'
 import Simulator from './pages/atelier/simulateur/Simulator.jsx'
+import BeerGame from './pages/atelier/simulateur/BeerGame.jsx'
 import Anglais from './pages/anglais/Anglais.jsx'
 import EnglishLesson from './pages/anglais/EnglishLesson.jsx'
 import Lexique from './pages/anglais/Lexique.jsx'
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/atelier/cas" element={<CaseList />} />
         <Route path="/atelier/cas/:id" element={<CasePage />} />
         <Route path="/atelier/simulateur" element={<Simulator />} />
+        <Route path="/atelier/simulateur/biere" element={<BeerGame />} />
         <Route path="/anglais" element={<Anglais />} />
         <Route path="/anglais/lexique" element={<Lexique />} />
         <Route path="/anglais/:unitId/:lessonId" element={<EnglishLesson />} />

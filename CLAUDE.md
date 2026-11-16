@@ -66,6 +66,8 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - **Simulateur de stock** : nouveau scénario aléatoire à chaque partie (produit, demande, écart-type, délai 1 à 3 semaines, stock de départ, coûts), vérifié pour que la méthode du cours batte la stratégie naïve.
   - Avant la partie : rappel de cours détaillé.
   - Pendant la partie : 4 cases (En stock, En commande avec semaines d'arrivée, Stock fin de semaine, Stock prévu semaine prochaine), bulles d'aide ⓘ, orange sous le stock de sécurité, rouge à 0. Bouton « Revoir la situation » (fenêtre sans perte de progression) et graphique.
+  - **4 profils de demande** (stable, saisonnière, en tendance, avec promotions) : choisis sur l'écran d'accueil du simulateur ou tirés au hasard ; la demande prévue de chaque semaine est affichée et le point de commande de la méthode du cours la suit (`src/lib/simulation.js`, `PROFILES`).
+  - **Jeu de la bière** (`/atelier/simulateur/biere`, `src/lib/beerGame.js`, `BeerGame.jsx`, `BeerChart.jsx`) : chaîne de 4 maillons, le joueur est le grossiste, 20 semaines, 5 profils de demande des clients ; résultats : graphique des commandes par maillon, amplification (effet coup de fouet), comparaison avec une chaîne qui partage l'information. Record : `biere` dans la table `workshop`.
   - À la fin : comparaison avec la méthode du cours (point de commande + Wilson) ; record = meilleur écart en %.
 
 ### Anglais (`src/pages/anglais/`, contenu dans `src/data/anglais/units.js`)
