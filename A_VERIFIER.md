@@ -83,3 +83,10 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[chiffre]** Conservation des documents douaniers « en général 3 ans » : durée variable selon le droit applicable.
 - **[chiffre]** Commission du crédit documentaire « 0,5 à 1,5 % » : ordre de grandeur, très variable selon la banque et le risque pays.
 - **[notion]** Cotation du change : « devise pour 1 € » (ex. 1,10 USD pour 1 €) ; division pour convertir en euros.
+
+## Lot 11 — Outils et SI
+- **[notion]** EDI : messages ORDERS, DESADV, INVOIC, RECADV (norme EDIFACT) : codes exacts. D'autres standards existent (ANSI X12 aux États-Unis, formats propriétaires).
+- **[notion]** Identifiants GS1 : GTIN (article), SSCC (unité logistique), GLN (lieu) : définitions courantes ; non détaillé : GS1-128, DataMatrix.
+- **[chiffre]** « Un ROI acceptable, délai de retour de moins de 3 ans » : repère courant en logistique, variable selon l'entreprise.
+- **[notion]** « Garbage in, garbage out » et « tour de contrôle » : vocabulaire courant en cours de SCM, définitions simplifiées.
+- **[chiffre]** Exemples fictifs (prix par utilisateur, nombre d'alertes, délais fournisseurs) : ils servent à calculer.

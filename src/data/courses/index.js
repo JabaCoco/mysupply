@@ -33,6 +33,7 @@ import entrepotPlus from './ajouts/entrepot.js'
 import achatsPlus from './ajouts/achats.js'
 import previsionPlus from './ajouts/prevision.js'
 import kpiPlus from './ajouts/kpi.js'
+import outilsPlus from './ajouts/outils.js'
 
 // Ajoute à un module ses leçons et ses questions supplémentaires
 function withExtras(module, extra) {
@@ -57,7 +58,7 @@ export const MODULES = [
   withExtras(distribution),
   withExtras(kpi, kpiPlus),
   withExtras(douane),
-  withExtras(outils),
+  withExtras(outils, outilsPlus),
 ]
 
 // Toutes les leçons à la suite, dans l'ordre du programme
