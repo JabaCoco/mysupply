@@ -82,9 +82,10 @@ function FlashCard({ word, index, total, status }) {
           />
         </div>
 
-        {/* VERSO : la réponse (mot anglais + 🔊, traduction), la définition, l'exemple, puis le tri */}
+        {/* VERSO : la réponse en gros (la traduction, ou le mot anglais + 🔊), puis définition, exemple et tri.
+            Toucher la carte (hors boutons) la retourne de nouveau vers le recto. */}
         <div
-          className={`flex flex-col ${FACE}`}
+          className={`relative flex flex-col ${FACE}`}
           style={{ ...HIDE_BACK, gridArea: '1 / 1', transform: 'rotateY(180deg)' }}
           aria-hidden={!flipped}
           inert={!flipped}
@@ -92,13 +93,28 @@ function FlashCard({ word, index, total, status }) {
           <p className="text-xs font-bold tracking-wider text-white/75 uppercase">
             Mot {index + 1} / {total} · réponse
           </p>
-          <div className="mt-2 flex items-center gap-3">
-            <SpeakButton text={word.en} />
-            <p className="text-3xl font-extrabold" lang="en">
-              {word.en}
+          <div className="mt-2 rounded-2xl bg-white/20 p-3">
+            <div className="flex items-center gap-3">
+              {face === 'fr' && (
+                <span className="relative z-10">
+                  <SpeakButton text={word.en} />
+                </span>
+              )}
+              <p className="text-4xl leading-tight font-extrabold" lang={face === 'fr' ? 'en' : 'fr'}>
+                {face === 'fr' ? word.en : word.fr}
+              </p>
+            </div>
+          </div>
+          <div className="mt-2 flex items-center gap-2 text-white/80">
+            {face === 'en' && (
+              <span className="relative z-10">
+                <SpeakButton text={word.en} size="sm" />
+              </span>
+            )}
+            <p className="text-base font-semibold" lang={face}>
+              {face === 'en' ? word.en : word.fr}
             </p>
           </div>
-          <p className="mt-1 text-lg text-white/90">{word.fr}</p>
           <p className="mt-2 text-sm leading-snug text-white/85">
             <span className="font-bold">Définition : </span>
             {word.def}
@@ -110,7 +126,14 @@ function FlashCard({ word, index, total, status }) {
             <p className="text-white/75">{word.exFr}</p>
           </div>
           {word.note && <p className="mt-2 text-xs leading-snug text-white/85">⚠ {word.note}</p>}
-          <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+          <p className="mt-3 text-center text-xs text-white/60">Touche la carte pour revenir au mot</p>
+          <button
+            type="button"
+            onClick={() => setFlipped(false)}
+            className="absolute inset-0 rounded-3xl"
+            aria-label="Retourner la carte pour revoir le mot"
+          />
+          <div className="relative z-10 mt-auto grid grid-cols-2 gap-2 pt-3">
             <button
               type="button"
               onClick={() => setWordStatus(word.en, 'known', true)}
