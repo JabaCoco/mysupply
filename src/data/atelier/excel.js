@@ -26,7 +26,7 @@ const ORDERS = [
   ['C-508', 'Decathlon', 'Paris', 'DHL', 'Route', 150, 1, 'À l\'heure'],
 ]
 
-export const EXCEL_CHALLENGES = [
+const BASE_CHALLENGES = [
   {
     id: 'somme',
     fn: 'SOMME',
@@ -244,6 +244,15 @@ export const EXCEL_CHALLENGES = [
     explain: '1,65 × 18 × √6 ≈ 72,75 → arrondi à l\'unité supérieure : 73 unités. On arrondit au-dessus pour ne pas sous-protéger.',
   },
 ]
+
+// Défis ajoutés par les lots (src/data/lots/). Un défi peut avoir `generate()` = { rows, extra } :
+// ses données sont alors tirées au hasard à chaque ouverture (la solution reste la même formule).
+// `tier` (1 à 6) fixe la progression : 1 bases · 2 conditions · 3 recherche · 4 synthèse · 5 calculs supply chain · 6 textes et dates.
+import { LOTS } from '../lots/index.js'
+const TIER_FROM_LEVEL = { 1: 1, 2: 3, 3: 5 }
+export const EXCEL_CHALLENGES = [...BASE_CHALLENGES, ...LOTS.flatMap((lot) => lot.excel ?? [])].sort(
+  (a, b) => (a.tier ?? TIER_FROM_LEVEL[a.level]) - (b.tier ?? TIER_FROM_LEVEL[b.level]),
+)
 
 // Construit l'objet { A1: …, B1: … } d'un défi
 export function buildCells(challenge) {

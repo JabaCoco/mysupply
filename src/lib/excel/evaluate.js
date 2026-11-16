@@ -20,6 +20,8 @@ function toNumber(v) {
   if (v === null || v === undefined || v === '') return 0
   if (typeof v === 'boolean') return v ? 1 : 0
   if (typeof v === 'number') return v
+  const asDate = parseDateText(String(v))
+  if (asDate !== null) return asDate // une date écrite "12/03/2026" vaut son numéro de série
   const n = Number(String(v).replace(',', '.'))
   if (Number.isNaN(n)) throw err('#VALEUR!', `« ${v} » n'est pas un nombre.`)
   return n
@@ -259,6 +261,189 @@ const FUNCTIONS = {
   MAJUSCULE: (a) => toText(a[0]).toUpperCase(),
 }
 
+// ---------- Dates : numéros de série Excel (1 = 01/01/1900) ----------
+const DAY_MS = 86_400_000
+const serialOf = (y, m, d) => Math.floor(Date.UTC(y, m - 1, d) / DAY_MS) + 25569
+const dateOf = (serial) => new Date((Math.floor(serial) - 25569) * DAY_MS)
+// "12/03/2026" ou "2026-03-12" → numéro de série ; sinon null
+function parseDateText(text) {
+  const t = text.trim()
+  const fr = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(t)
+  if (fr) return serialOf(Number(fr[3]), Number(fr[2]), Number(fr[1]))
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t)
+  if (iso) return serialOf(Number(iso[1]), Number(iso[2]), Number(iso[3]))
+  return null
+}
+const pad2 = (n) => String(n).padStart(2, '0')
+
+// Applique un format TEXTE("…") : dates (jj/mm/aaaa) ou nombres (0 ; 0,00 ; 0 % ; # ##0)
+function formatWith(value, format) {
+  if (/[jJaA]/.test(format) && !/^[#0 ,.%]+$/.test(format)) {
+    const d = dateOf(toNumber(value))
+    return format
+      .replace(/aaaa/gi, String(d.getUTCFullYear()))
+      .replace(/jj/gi, pad2(d.getUTCDate()))
+      .replace(/mm/gi, pad2(d.getUTCMonth() + 1))
+  }
+  const percent = format.includes('%')
+  const decimals = (format.split(/[,.]/)[1] ?? '').replace(/[^0#]/g, '').length
+  const n = toNumber(value) * (percent ? 100 : 1)
+  const grouped = format.includes('#') // "# ##0" ou "#,##0" : séparateur de milliers
+  const text = n.toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: grouped })
+  return percent ? `${text} %` : text
+}
+
+function conditionMask(a, from) {
+  const pairs = []
+  for (let i = from; i < a.length; i += 2) pairs.push([a[i], a[i + 1]])
+  return maskFor(pairs)
+}
+
+const EXTRA = {
+  'SI.CONDITIONS': (a) => {
+    if (a.length < 2 || a.length % 2) throw err('#VALEUR!', 'SI.CONDITIONS attend des paires condition ; valeur.')
+    for (let i = 0; i < a.length; i += 2) if (toBool(a[i])) return a[i + 1]
+    throw err('#N/A', "Aucune condition n'est vraie (ajoute VRAI ; valeur en dernière paire).")
+  },
+  'MAX.SI.ENS': (a) => {
+    if (a.length < 3 || a.length % 2 === 0) throw err('#VALEUR!', 'MAX.SI.ENS attend : plage ; puis des paires plage ; critère.')
+    const values = flat(a[0])
+    const mask = conditionMask(a, 1)
+    const picked = values.filter((v, i) => mask[i] && typeof v === 'number')
+    return picked.length ? Math.max(...picked) : 0
+  },
+  'MIN.SI.ENS': (a) => {
+    if (a.length < 3 || a.length % 2 === 0) throw err('#VALEUR!', 'MIN.SI.ENS attend : plage ; puis des paires plage ; critère.')
+    const values = flat(a[0])
+    const mask = conditionMask(a, 1)
+    const picked = values.filter((v, i) => mask[i] && typeof v === 'number')
+    return picked.length ? Math.min(...picked) : 0
+  },
+  'MOYENNE.SI.ENS': (a) => {
+    if (a.length < 3 || a.length % 2 === 0) throw err('#VALEUR!', 'MOYENNE.SI.ENS attend : plage ; puis des paires plage ; critère.')
+    const values = flat(a[0])
+    const mask = conditionMask(a, 1)
+    const picked = values.filter((v, i) => mask[i] && typeof v === 'number')
+    if (!picked.length) throw err('#DIV/0!', 'Aucune valeur ne correspond aux critères.')
+    return picked.reduce((s, v) => s + v, 0) / picked.length
+  },
+  MEDIANE: (a) => {
+    const n = numbersIn(a).sort((x, y) => x - y)
+    if (!n.length) throw err('#NOMBRE!', 'Aucune valeur numérique.')
+    const m = Math.floor(n.length / 2)
+    return n.length % 2 ? n[m] : (n[m - 1] + n[m]) / 2
+  },
+  PRODUIT: (a) => numbersIn(a).reduce((p, v) => p * v, 1),
+  'GRANDE.VALEUR': (a) => {
+    argCount('GRANDE.VALEUR', a, 2)
+    const n = numbersIn([a[0]]).sort((x, y) => y - x)
+    const k = toNumber(a[1])
+    if (k < 1 || k > n.length) throw err('#NOMBRE!', `Il n'y a pas de ${k}e valeur.`)
+    return n[k - 1]
+  },
+  'PETITE.VALEUR': (a) => {
+    argCount('PETITE.VALEUR', a, 2)
+    const n = numbersIn([a[0]]).sort((x, y) => x - y)
+    const k = toNumber(a[1])
+    if (k < 1 || k > n.length) throw err('#NOMBRE!', `Il n'y a pas de ${k}e valeur.`)
+    return n[k - 1]
+  },
+  RANG: (a) => {
+    argCount('RANG', a, 2, 3)
+    const v = toNumber(a[0])
+    const n = numbersIn([a[1]])
+    if (!n.includes(v)) throw err('#N/A', 'La valeur est absente de la plage.')
+    const ascending = a[2] !== undefined && a[2] !== null && toNumber(a[2]) !== 0
+    return n.filter((x) => (ascending ? x < v : x > v)).length + 1
+  },
+  CHOISIR: (a) => {
+    const i = Math.floor(toNumber(a[0]))
+    if (i < 1 || i >= a.length) throw err('#VALEUR!', `CHOISIR : le n° ${i} n'existe pas.`)
+    return a[i]
+  },
+  GAUCHE: (a) => toText(a[0]).slice(0, a[1] === undefined || a[1] === null ? 1 : Math.max(0, toNumber(a[1]))),
+  DROITE: (a) => {
+    const t = toText(a[0])
+    const n = a[1] === undefined || a[1] === null ? 1 : Math.max(0, toNumber(a[1]))
+    return n === 0 ? '' : t.slice(-n)
+  },
+  STXT: (a) => {
+    argCount('STXT', a, 3)
+    const start = toNumber(a[1])
+    if (start < 1) throw err('#VALEUR!', 'La position de départ doit être au moins 1.')
+    return toText(a[0]).substr(start - 1, Math.max(0, toNumber(a[2])))
+  },
+  NBCAR: (a) => toText(a[0]).length,
+  CHERCHE: (a) => {
+    argCount('CHERCHE', a, 2, 3)
+    const from = a[2] === undefined || a[2] === null ? 1 : toNumber(a[2])
+    const i = toText(a[1]).toLowerCase().indexOf(toText(a[0]).toLowerCase(), from - 1)
+    if (i < 0) throw err('#VALEUR!', `« ${toText(a[0])} » est introuvable.`)
+    return i + 1
+  },
+  TROUVE: (a) => {
+    argCount('TROUVE', a, 2, 3)
+    const from = a[2] === undefined || a[2] === null ? 1 : toNumber(a[2])
+    const i = toText(a[1]).indexOf(toText(a[0]), from - 1)
+    if (i < 0) throw err('#VALEUR!', `« ${toText(a[0])} » est introuvable (TROUVE distingue majuscules et minuscules).`)
+    return i + 1
+  },
+  SUBSTITUE: (a) => {
+    argCount('SUBSTITUE', a, 3)
+    return toText(a[0]).split(toText(a[1])).join(toText(a[2]))
+  },
+  MINUSCULE: (a) => toText(a[0]).toLowerCase(),
+  SUPPRESPACE: (a) => toText(a[0]).trim().replace(/\s+/g, ' '),
+  EXACT: (a) => toText(a[0]) === toText(a[1]),
+  TEXTE: (a) => {
+    argCount('TEXTE', a, 2)
+    return formatWith(a[0], toText(a[1]))
+  },
+  DATE: (a) => {
+    argCount('DATE', a, 3)
+    return serialOf(toNumber(a[0]), toNumber(a[1]), toNumber(a[2]))
+  },
+  JOUR: (a) => dateOf(toNumber(a[0])).getUTCDate(),
+  MOIS: (a) => dateOf(toNumber(a[0])).getUTCMonth() + 1,
+  ANNEE: (a) => dateOf(toNumber(a[0])).getUTCFullYear(),
+  JOURSEM: (a) => {
+    const day = dateOf(toNumber(a[0])).getUTCDay() // 0 = dimanche
+    const type = a[1] === undefined || a[1] === null ? 1 : toNumber(a[1])
+    return type === 2 ? ((day + 6) % 7) + 1 : day + 1
+  },
+  'NB.JOURS.OUVRES': (a) => {
+    argCount('NB.JOURS.OUVRES', a, 2)
+    const s = Math.floor(toNumber(a[0]))
+    const e = Math.floor(toNumber(a[1]))
+    const [from, to, sign] = s <= e ? [s, e, 1] : [e, s, -1]
+    let count = 0
+    for (let d = from; d <= to; d++) {
+      const day = dateOf(d).getUTCDay()
+      if (day !== 0 && day !== 6) count++
+    }
+    return sign * count
+  },
+  'NB.JOURS': (a) => (argCount('NB.JOURS', a, 2), Math.floor(toNumber(a[0])) - Math.floor(toNumber(a[1]))),
+  ESTNUM: (a) => typeof (Array.isArray(a[0]) ? a[0].flat(Infinity)[0] : a[0]) === 'number',
+  ESTVIDE: (a) => {
+    const v = Array.isArray(a[0]) ? a[0].flat(Infinity)[0] : a[0]
+    return v === null || v === undefined || v === ''
+  },
+  PLAFOND: (a) => {
+    argCount('PLAFOND', a, 2)
+    const m = toNumber(a[1])
+    if (m === 0) return 0
+    return Math.ceil(toNumber(a[0]) / m - 1e-9) * m
+  },
+  PLANCHER: (a) => {
+    argCount('PLANCHER', a, 2)
+    const m = toNumber(a[1])
+    if (m === 0) throw err('#DIV/0!', 'Le multiple ne peut pas être 0.')
+    return Math.floor(toNumber(a[0]) / m + 1e-9) * m
+  },
+}
+Object.assign(FUNCTIONS, EXTRA)
+
 // Autres noms acceptés (anciens noms français et noms anglais)
 const ALIASES = {
   ECARTYPE: 'ECARTYPE.STANDARD', 'ECARTYPE.S': 'ECARTYPE.STANDARD', ECARTYPEP: 'ECARTYPE.PEARSON',
@@ -269,6 +454,12 @@ const ALIASES = {
   ROUND: 'ARRONDI', ROUNDUP: 'ARRONDI.SUP', ROUNDDOWN: 'ARRONDI.INF', INT: 'ENT', SQRT: 'RACINE',
   POWER: 'PUISSANCE', 'STDEV.S': 'ECARTYPE.STANDARD', STDEV: 'ECARTYPE.STANDARD', 'STDEV.P': 'ECARTYPE.PEARSON',
   UPPER: 'MAJUSCULE',
+  IFS: 'SI.CONDITIONS', MAXIFS: 'MAX.SI.ENS', MINIFS: 'MIN.SI.ENS', AVERAGEIFS: 'MOYENNE.SI.ENS',
+  MEDIAN: 'MEDIANE', PRODUCT: 'PRODUIT', LARGE: 'GRANDE.VALEUR', SMALL: 'PETITE.VALEUR', RANK: 'RANG',
+  'RANK.EQ': 'RANG', CHOOSE: 'CHOISIR', LEFT: 'GAUCHE', RIGHT: 'DROITE', MID: 'STXT', LEN: 'NBCAR',
+  SEARCH: 'CHERCHE', FIND: 'TROUVE', SUBSTITUTE: 'SUBSTITUE', LOWER: 'MINUSCULE', TRIM: 'SUPPRESPACE',
+  TEXT: 'TEXTE', DAY: 'JOUR', MONTH: 'MOIS', YEAR: 'ANNEE', WEEKDAY: 'JOURSEM', NETWORKDAYS: 'NB.JOURS.OUVRES',
+  DAYS: 'NB.JOURS', ISNUMBER: 'ESTNUM', ISERROR: 'ESTERREUR', ISBLANK: 'ESTVIDE', CEILING: 'PLAFOND', FLOOR: 'PLANCHER',
 }
 export const canonicalName = (name) => ALIASES[name] ?? name
 export const KNOWN_FUNCTIONS = Object.keys(FUNCTIONS)
@@ -336,6 +527,15 @@ function evaluateNode(node, sheet) {
           return v
         } catch (e) {
           if (isErr(e)) return evaluateNode(node.args[1], sheet)
+          throw e
+        }
+      }
+      if (name === 'ESTERREUR') {
+        argCount('ESTERREUR', node.args, 1)
+        try {
+          return isErr(evaluateNode(node.args[0], sheet))
+        } catch (e) {
+          if (isErr(e)) return true
           throw e
         }
       }

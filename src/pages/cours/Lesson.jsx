@@ -5,6 +5,7 @@ import { ChevronLeft, X } from 'lucide-react'
 import { ALL_LESSONS, findLesson } from '../../data/courses/index.js'
 import { completeLesson, setLastLesson } from '../../lib/courses.js'
 import { celebrate } from '../../lib/confetti.js'
+import { drawQuiz } from '../../lib/quiz.js'
 import { moduleStyle } from './moduleStyle.js'
 import LessonCard from './LessonCard.jsx'
 import QuizQuestion from './QuizQuestion.jsx'
@@ -29,7 +30,9 @@ const slide = {
 function LessonPlayer({ lesson }) {
   const { color } = moduleStyle(lesson.module)
   const nCards = lesson.cards.length
-  const nQuiz = lesson.quiz.length
+  // 5 questions tirées au hasard dans la banque de la leçon (les questions de calcul ont des chiffres aléatoires)
+  const [quiz, setQuiz] = useState(() => drawQuiz(lesson.quiz))
+  const nQuiz = quiz.length
   const totalSteps = nCards + nQuiz // + l'écran de fin
 
   const [step, setStep] = useState(0)
@@ -64,6 +67,7 @@ function LessonPlayer({ lesson }) {
 
   function restart() {
     saved.current = false
+    setQuiz(drawQuiz(lesson.quiz))
     setScore(0)
     setXp(null)
     setDirection(-1)
@@ -116,7 +120,7 @@ function LessonPlayer({ lesson }) {
             {isCard && <LessonCard card={lesson.cards[step]} color={color} />}
             {!isCard && !isEnd && (
               <QuizQuestion
-                question={lesson.quiz[step - nCards]}
+                question={quiz[step - nCards]}
                 number={step - nCards + 1}
                 total={nQuiz}
                 onNext={answer}

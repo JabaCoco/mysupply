@@ -626,3 +626,10 @@ export function checkNumber(input, exercise) {
 }
 
 export const formatAnswer = (exercise) => `${fmt(exercise.answer)} ${exercise.unit}`
+
+// Formules ajoutées par les lots (src/data/lots/) : mêmes cours, exercices aléatoires et calculateur
+import { LOTS } from '../lots/index.js'
+for (const f of LOTS.flatMap((lot) => lot.formulas ?? [])) {
+  FORMULA_LIST.push({ id: f.id, title: f.title, short: f.short })
+  FORMULAS[f.id] = f.course
+}

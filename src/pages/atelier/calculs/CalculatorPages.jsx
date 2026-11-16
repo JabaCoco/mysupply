@@ -8,6 +8,7 @@ import { useWorkshop } from '../../../lib/atelier.js'
 import { CALCULATOR_COMPONENTS } from './definitions.jsx'
 import FormulaCourse from './FormulaCourse.jsx'
 import Exercises from './Exercises.jsx'
+import GenericCalculator from './GenericCalculator.jsx'
 
 // Liste des formules (/atelier/calculs)
 export function CalculatorList() {
@@ -83,7 +84,7 @@ export function CalculatorPage() {
 
       {tab === 'cours' && <FormulaCourse course={course} onStart={() => go('exercices')} />}
       {tab === 'exercices' && <Exercises formulaId={id} course={course} />}
-      {tab === 'calculateur' && <Free />}
+      {tab === 'calculateur' && (Free ? <Free /> : <GenericCalculator spec={course.calculator} />)}
     </Page>
   )
 }

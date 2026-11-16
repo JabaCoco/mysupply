@@ -2,7 +2,7 @@
 // Chaque choix rapporte de 0 à 3 points et affiche une explication.
 // `lesson` : leçon du cours à revoir (clé module/leçon).
 
-export const CASES = [
+const BASE_CASES = [
   {
     id: 'ruptures',
     title: 'Ruptures avant le Black Friday',
@@ -172,3 +172,8 @@ export const CASES = [
       "Une panne informatique se gère comme toute crise : contenir, coordonner, basculer en mode dégradé préparé à l'avance, puis tirer les leçons.",
   },
 ]
+
+// Cas ajoutés par les lots (src/data/lots/). Un cas peut avoir `generate()` : renvoie { intro, steps… }
+// avec des chiffres tirés au hasard à chaque partie.
+import { LOTS } from '../lots/index.js'
+export const CASES = [...BASE_CASES, ...LOTS.flatMap((lot) => lot.cases ?? [])]

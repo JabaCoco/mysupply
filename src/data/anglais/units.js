@@ -6,7 +6,7 @@
 //   phrase : { en, fr, blank }                   — blank = mot clé à trouver dans les exercices "à trous"
 // alt : autres réponses acceptées quand on tape le mot ; note : remarque affichée (faux amis…)
 
-export const UNITS = [
+const BASE_UNITS = [
   {
     id: 'bases',
     title: 'Les bases',
@@ -217,6 +217,19 @@ export const UNITS = [
     ],
   },
 ]
+
+// Unités et leçons ajoutées par les lots (src/data/lots/), puis tri dans l'ordre du parcours
+// (du plus simple au plus difficile). `extend` ajoute des leçons à une unité existante.
+import { LOTS } from '../lots/index.js'
+const UNIT_ORDER = [
+  'bases', 'chiffres', 'bureau', 'transport', 'incoterms-en', 'entrepot', 'achats', 'prevision', 'douane-en',
+  'production-en', 'kpi-en', 'ecommerce-en', 'faux-amis', 'faux-amis-2', 'phrasal', 'abreviations',
+  'communication', 'negociation', 'reunions', 'carriere',
+]
+const rank = (unit) => (UNIT_ORDER.includes(unit.id) ? UNIT_ORDER.indexOf(unit.id) : UNIT_ORDER.length)
+export const UNITS = [...BASE_UNITS, ...LOTS.flatMap((lot) => lot.english?.units ?? [])]
+  .map((unit) => ({ ...unit, lessons: [...unit.lessons, ...LOTS.flatMap((lot) => lot.english?.extend?.[unit.id] ?? [])] }))
+  .sort((a, b) => rank(a) - rank(b))
 
 export const LEVEL_LABELS = { 1: 'Mots', 2: 'Mots en contexte', 3: 'Phrases et mails' }
 

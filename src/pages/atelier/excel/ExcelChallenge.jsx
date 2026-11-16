@@ -24,7 +24,9 @@ export default function ExcelChallenge() {
 
 function ChallengePlayer({ challenge }) {
   const workshop = useWorkshop()
-  const cells = useMemo(() => buildCells(challenge), [challenge])
+  // Les défis à données aléatoires (challenge.generate) refabriquent leur tableau à chaque ouverture
+  const data = useMemo(() => (challenge.generate ? { ...challenge, ...challenge.generate() } : challenge), [challenge])
+  const cells = useMemo(() => buildCells(data), [data])
   const expected = useMemo(() => evaluateFormula(challenge.solution, cells).value, [challenge, cells])
   const index = EXCEL_CHALLENGES.indexOf(challenge)
   const nextChallenge = EXCEL_CHALLENGES[index + 1]

@@ -60,10 +60,14 @@ export function CasePage() {
   const { id } = useParams()
   const study = CASES.find((c) => c.id === id)
   if (!study) return <Navigate to="/atelier/cas" replace />
-  return <CasePlayer key={study.id} study={study} />
+  return <CasePlayer key={study.id} base={study} />
 }
 
-function CasePlayer({ study }) {
+// Un cas peut avoir une fonction generate() : chiffres tirés au hasard à chaque partie
+const materialize = (base) => (base.generate ? { ...base, ...base.generate() } : base)
+
+function CasePlayer({ base }) {
+  const [study, setStudy] = useState(() => materialize(base))
   const [step, setStep] = useState(0) // index de la décision en cours ; = nb d'étapes à la fin
   const [picked, setPicked] = useState(null)
   const [score, setScore] = useState(0)
@@ -91,7 +95,9 @@ function CasePlayer({ study }) {
     setScore(0)
     setPicked(null)
     setXp(null)
-    setOrders(shuffledOrders(study))
+    const fresh = materialize(base)
+    setStudy(fresh)
+    setOrders(shuffledOrders(fresh))
   }
 
   return (

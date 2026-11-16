@@ -1,4 +1,4 @@
-import { Boxes, Cpu, Gauge, Network, ShoppingCart, TrendingUp, Truck, Warehouse } from 'lucide-react'
+import { Boxes, Coins, Compass, Cpu, Factory, Gauge, Landmark, Leaf, Network, RefreshCw, ShieldAlert, ShoppingCart, Store, TrendingUp, Truck, Warehouse } from 'lucide-react'
 
 // Icône et couleurs de chaque module (classes Tailwind écrites en entier pour qu'elles soient générées)
 export const MODULE_ICONS = {
@@ -10,6 +10,14 @@ export const MODULE_ICONS = {
   trend: TrendingUp,
   gauge: Gauge,
   cpu: Cpu,
+  factory: Factory,
+  store: Store,
+  landmark: Landmark,
+  repeat: RefreshCw,
+  leaf: Leaf,
+  shield: ShieldAlert,
+  coins: Coins,
+  compass: Compass,
 }
 
 export const MODULE_COLORS = {
@@ -21,6 +29,12 @@ export const MODULE_COLORS = {
   pink: { solid: 'bg-pink-500', text: 'text-pink-400', soft: 'bg-pink-500/15', border: 'border-pink-500' },
   cyan: { solid: 'bg-cyan-500', text: 'text-cyan-400', soft: 'bg-cyan-500/15', border: 'border-cyan-500' },
   fuchsia: { solid: 'bg-fuchsia-500', text: 'text-fuchsia-400', soft: 'bg-fuchsia-500/15', border: 'border-fuchsia-500' },
+  lime: { solid: 'bg-lime-500', text: 'text-lime-400', soft: 'bg-lime-500/15', border: 'border-lime-500' },
+  teal: { solid: 'bg-teal-500', text: 'text-teal-400', soft: 'bg-teal-500/15', border: 'border-teal-500' },
+  rose: { solid: 'bg-rose-500', text: 'text-rose-400', soft: 'bg-rose-500/15', border: 'border-rose-500' },
+  indigo: { solid: 'bg-indigo-500', text: 'text-indigo-400', soft: 'bg-indigo-500/15', border: 'border-indigo-500' },
+  red: { solid: 'bg-red-500', text: 'text-red-400', soft: 'bg-red-500/15', border: 'border-red-500' },
+  yellow: { solid: 'bg-yellow-500', text: 'text-yellow-400', soft: 'bg-yellow-500/15', border: 'border-yellow-500' },
 }
 
 export function moduleStyle(module) {
