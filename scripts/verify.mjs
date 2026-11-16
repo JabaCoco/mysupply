@@ -17,6 +17,7 @@ import { CASES } from '../src/data/atelier/cases.js'
 import { UNITS, ALL_EN_LESSONS, ALL_WORDS } from '../src/data/anglais/units.js'
 import { buildExercises, checkOrder, checkTyped } from '../src/lib/englishExercises.js'
 import { generateLoad, suggestPlan, evaluate as evalLoad, emptyPlan, canStack } from '../src/lib/truckLoading.js'
+import { generateNegotiation, bestSequence, playSequence, totalCost, scoreNegotiation, initialState, applyLever, LEVERS, MAX_ROUNDS } from '../src/lib/negotiation.js'
 import { evaluateFormula, canonicalName } from '../src/lib/excel/evaluate.js'
 import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
@@ -348,6 +349,32 @@ for (let i = 0; i < 500; i++) {
   const revEval = evalLoad(load, rev)
   if (new Set(load.pallets.map((p) => p.client)).size === 3 && revEval.conflicts.length === 0) fail(w, "un plan inversé devrait gêner le déchargement")
   if (!canStack({ fragile: false, weight: 500 }, { weight: 400 }) || canStack({ fragile: true, weight: 500 }, { weight: 400 }) || canStack({ fragile: false, weight: 300 }, { weight: 400 })) fail(w, "règle d'empilage incorrecte")
+}
+
+// ---------- Atelier « Négociation » ----------
+for (let i = 0; i < 40; i++) {
+  const s = generateNegotiation()
+  const w = 'négociation #' + i
+  if (!(s.floor < s.price) || s.floor <= 0) fail(w, 'prix plancher incohérent')
+  const best = bestSequence(s)
+  if (best.seq.length > MAX_ROUNDS) fail(w, 'trop de leviers dans le meilleur enchaînement')
+  if (scoreNegotiation(s, playSequence(s, best.seq)) !== 100) fail(w, 'le meilleur enchaînement doit valoir 100')
+  if (scoreNegotiation(s, initialState(s)) !== 0) fail(w, 'ne rien négocier doit valoir 0')
+  for (let k = 0; k < 20; k++) {
+    const seq = [...LEVERS.map((l) => l.id)].sort(() => Math.random() - 0.5).slice(0, 1 + Math.floor(Math.random() * MAX_ROUNDS))
+    const st = playSequence(s, seq)
+    const sc = scoreNegotiation(s, st)
+    if (!(sc >= 0 && sc <= 100)) fail(w, 'score hors de 0 à 100')
+    if (st.price < s.floor - 1e-9) fail(w, 'le prix passe sous le plancher du fournisseur')
+    if (totalCost(s, st).total < best.total - 1e-6) fail(w, 'un enchaînement bat le « meilleur »')
+    if (st.log.some((m) => !m.reply || m.reply.length < 15)) fail(w, 'réponse du fournisseur vide')
+  }
+  // un faux devis concurrent (si aucun n'existe) réduit les concessions suivantes
+  if (!s.competitor) {
+    const a = playSequence(s, ['remise']).price
+    const b = playSequence(s, ['concurrent', 'remise']).price
+    if (!(b >= a)) fail(w, "le bluff devrait coûter cher sur la remise suivante")
+  }
 }
 
 // ---------- Compte rendu ----------
