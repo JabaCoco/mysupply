@@ -67,7 +67,7 @@ export default {
         },
         {
           q: 'Quel critère utilise-t-on pour classer les articles en ABC ?',
-          choices: ['Leur poids en kg', 'Leur ordre alphabétique', 'Consommation annuelle × prix unitaire', 'Leur date de création'],
+          choices: ['Leur poids en kg', 'Leur ordre alphabétique', 'Quantité × prix', 'Leur date de création'],
           answer: 2,
           explain: 'On classe selon la valeur consommée sur la période : quantité consommée × prix unitaire.',
         },
@@ -156,7 +156,7 @@ export default {
           q: 'À quoi sert le point de commande ?',
           choices: [
             'À fixer le prix de vente',
-            'À savoir quand déclencher une nouvelle commande',
+            'À déclencher la commande',
             'À calculer le nombre de fournisseurs',
             'À mesurer la satisfaction client',
           ],
@@ -231,7 +231,7 @@ export default {
         },
         {
           q: 'Quelle hypothèse fait le modèle de Wilson ?',
-          choices: ['Une demande très variable', 'Une demande constante et connue', 'Des remises sur quantité', 'Des ruptures volontaires'],
+          choices: ['Une demande très variable', 'Une demande constante', 'Des remises sur quantité', 'Des ruptures volontaires'],
           answer: 1,
           explain: 'Le modèle suppose une demande régulière et connue, ce qui est rarement parfaitement vrai.',
         },

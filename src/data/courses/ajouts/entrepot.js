@@ -12,13 +12,13 @@ export default {
       },
       {
         q: "Qu'appelle-t-on l'adressage d'un entrepôt ?",
-        choices: ["Donner une adresse unique à chaque emplacement", "Écrire l'adresse du client sur chaque colis", "Choisir l'adresse postale de l'entrepôt", "Envoyer les factures par la poste"],
+        choices: ["Une adresse par emplacement", "Écrire l'adresse du client sur chaque colis", "Choisir l'adresse postale de l'entrepôt", "Envoyer les factures par la poste"],
         answer: 0,
         explain: "Chaque emplacement a une adresse (allée, travée, niveau) : le système sait où est chaque produit et guide les préparateurs.",
       },
       {
         q: "Pourquoi enregistre-t-on la mise en stock dans le système ?",
-        choices: ["Pour savoir où est chaque produit et ce qui est disponible", "Pour calculer le salaire des préparateurs", "Pour choisir la couleur des étiquettes de palettes", "Pour fixer la date de l'inventaire annuel"],
+        choices: ["Pour localiser chaque produit", "Pour calculer le salaire des préparateurs", "Pour choisir la couleur des étiquettes de palettes", "Pour fixer la date de l'inventaire annuel"],
         answer: 0,
         explain: "Un produit rangé mais non enregistré est « perdu » : le système doit connaître son emplacement et la quantité disponible pour la préparation.",
       },
@@ -38,13 +38,13 @@ export default {
     picking: [
       {
         q: "En quoi consiste le picking par vagues ?",
-        choices: ["Lancer les commandes par groupes, selon l'heure de départ des camions", "Préparer une seule commande à la fois, en continu", "Déplacer les marchandises sur des vagues de convoyeurs", "Préparer les commandes uniquement la nuit"],
+        choices: ["Lancer les commandes par groupes", "Préparer une seule commande à la fois, en continu", "Déplacer les marchandises sur des vagues de convoyeurs", "Préparer les commandes uniquement la nuit"],
         answer: 0,
         explain: "On regroupe les commandes à préparer en « vagues » adaptées aux horaires de départ des transporteurs, pour étaler la charge de travail.",
       },
       {
         q: "Que fait le pick-to-light ?",
-        choices: ["Il allume un voyant à l'emplacement et indique la quantité", "Il imprime les étiquettes d'expédition des colis", "Il éclaire les allées de l'entrepôt la nuit", "Il pèse chaque colis préparé"],
+        choices: ["Il allume un voyant à l'emplacement", "Il imprime les étiquettes d'expédition des colis", "Il éclaire les allées de l'entrepôt la nuit", "Il pèse chaque colis préparé"],
         answer: 0,
         explain: "Des voyants lumineux guident le préparateur vers le bon emplacement et affichent la quantité à prélever : moins d'erreurs, plus de vitesse.",
       },
@@ -152,7 +152,7 @@ export default {
         },
         {
           q: "Où place-t-on les références à forte rotation ?",
-          choices: ["Dans la zone d'or, près des quais", "Tout au fond de l'entrepôt", "Au dernier niveau des racks", "Dans la zone de quarantaine"],
+          choices: ["Dans la zone d'or", "Tout au fond de l'entrepôt", "Au dernier niveau des racks", "Dans la zone de quarantaine"],
           answer: 0,
           explain: "Les articles les plus demandés doivent être les plus faciles d'accès : près de l'expédition et à hauteur d'homme, pour réduire les déplacements.",
         },
@@ -164,7 +164,7 @@ export default {
         },
         {
           q: "Que décrit un flux en U ?",
-          choices: ["Réception et expédition du même côté du bâtiment", "Réception et expédition sur deux côtés opposés", "Un entrepôt en forme de cercle", "Des camions qui tournent autour du bâtiment"],
+          choices: ["Réception et expédition du même côté", "Réception et expédition sur deux côtés opposés", "Un entrepôt en forme de cercle", "Des camions qui tournent autour du bâtiment"],
           answer: 0,
           explain: "Dans un flux en U, les marchandises entrent et sortent par la même façade : les quais peuvent être partagés et les surfaces mieux utilisées.",
         },
@@ -182,7 +182,7 @@ export default {
         },
         {
           q: "Que dit un taux d'occupation très élevé (par exemple 95 %) ?",
-          choices: ["L'entrepôt est presque plein et devient difficile à gérer", "L'entrepôt est bien optimisé et ne peut plus s'améliorer", "L'entrepôt est vide la plupart du temps", "Les produits sont tous de classe A"],
+          choices: ["Il est presque plein et difficile à gérer", "L'entrepôt est bien optimisé et ne peut plus s'améliorer", "L'entrepôt est vide la plupart du temps", "Les produits sont tous de classe A"],
           answer: 0,
           explain: "Au-delà de 85 à 90 %, il devient difficile de ranger et de réorganiser : manque de place pour les arrivages, déplacements supplémentaires.",
         },
@@ -260,13 +260,13 @@ export default {
         },
         {
           q: "Quel stockage respecte naturellement le FIFO ?",
-          choices: ["Le rayonnage dynamique (gravité)", "Le stockage drive-in", "Le stockage au sol en bloc", "Le rayonnage cantilever"],
+          choices: ["Le rack dynamique", "Le stockage drive-in", "Le stockage au sol en bloc", "Le rayonnage cantilever"],
           answer: 0,
           explain: "Dans un rayonnage dynamique, les palettes avancent sur des rails : on les charge d'un côté et on les prélève de l'autre, le plus ancien sortant en premier.",
         },
         {
           q: "Quel est l'inconvénient principal du drive-in ?",
-          choices: ["Les palettes ne sont pas toutes accessibles directement", "Il occupe beaucoup plus de place qu'un rack classique", "Il ne peut stocker que des palettes très légères", "Il ne convient à aucun produit alimentaire"],
+          choices: ["Accès limité à certaines palettes", "Il occupe beaucoup plus de place qu'un rack classique", "Il ne peut stocker que des palettes très légères", "Il ne convient à aucun produit alimentaire"],
           answer: 0,
           explain: "Pour atteindre une palette au fond du bloc, il faut parfois sortir d'abord celles qui sont devant : c'est le prix de la forte densité.",
         },
@@ -395,13 +395,13 @@ export default {
         },
         {
           q: "Quel est l'inconvénient principal de l'automatisation ?",
-          choices: ["Un investissement élevé et moins de flexibilité", "Une baisse de la précision des préparations", "Une augmentation du nombre d'erreurs de saisie", "Une impossibilité d'utiliser des racks hauts"],
+          choices: ["Un coût élevé et peu de flexibilité", "Une baisse de la précision des préparations", "Une augmentation du nombre d'erreurs de saisie", "Une impossibilité d'utiliser des racks hauts"],
           answer: 0,
           explain: "Une installation automatisée coûte cher et s'adapte mal à un changement rapide d'activité ou de produits.",
         },
         {
           q: "Que désignent les AGV ou AMR ?",
-          choices: ["Des robots qui se déplacent seuls dans l'entrepôt", "Des logiciels de gestion des commandes clients", "Des étagères à glissières pour les petits colis", "Des camions autonomes sur autoroute"],
+          choices: ["Des robots mobiles autonomes", "Des logiciels de gestion des commandes clients", "Des étagères à glissières pour les petits colis", "Des camions autonomes sur autoroute"],
           answer: 0,
           explain: "Les AGV (guidés) et AMR (autonomes) transportent des charges sans conducteur, par exemple des palettes ou des bacs.",
         },
@@ -419,7 +419,7 @@ export default {
         },
         {
           q: "À quoi sert un trieur automatique ?",
-          choices: ["Diriger chaque colis vers la bonne sortie", "Compter les palettes dans les racks", "Contrôler l'identité des chauffeurs", "Ranger les palettes en hauteur"],
+          choices: ["Aiguiller chaque colis", "Compter les palettes dans les racks", "Contrôler l'identité des chauffeurs", "Ranger les palettes en hauteur"],
           answer: 0,
           explain: "Le trieur lit l'étiquette de chaque colis et le pousse automatiquement vers la bonne destination (quai, zone d'expédition, client).",
         },
@@ -497,7 +497,7 @@ export default {
         },
         {
           q: "À quoi servent les EPI ?",
-          choices: ["Protéger la personne contre les risques du poste", "Calculer les salaires des préparateurs", "Mesurer la productivité de l'entrepôt", "Identifier les produits dans les racks"],
+          choices: ["Protéger contre les risques du poste", "Calculer les salaires des préparateurs", "Mesurer la productivité de l'entrepôt", "Identifier les produits dans les racks"],
           answer: 0,
           explain: "Les équipements de protection individuelle (chaussures de sécurité, gilet, casque, gants) réduisent la gravité des accidents.",
         },
@@ -521,7 +521,7 @@ export default {
         },
         {
           q: "Quel est le rôle d'un plan d'évacuation affiché ?",
-          choices: ["Indiquer le chemin vers les issues en cas d'urgence", "Montrer l'emplacement des produits les plus chers", "Fixer les horaires des équipes de nuit", "Planifier les livraisons des fournisseurs"],
+          choices: ["Montrer le chemin des issues", "Montrer l'emplacement des produits les plus chers", "Fixer les horaires des équipes de nuit", "Planifier les livraisons des fournisseurs"],
           answer: 0,
           explain: "En cas d'incendie ou d'alerte, chacun doit savoir où sont les issues de secours et le point de rassemblement.",
         },

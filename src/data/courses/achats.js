@@ -60,13 +60,13 @@ export default {
         },
         {
           q: 'Le sourcing consiste à…',
-          choices: ['Payer les fournisseurs', 'Rechercher et sélectionner des fournisseurs', 'Stocker les produits', 'Livrer les clients'],
+          choices: ['Payer les fournisseurs', 'Trouver les sources', 'Stocker les produits', 'Livrer les clients'],
           answer: 1,
           explain: 'Le sourcing est la recherche de fournisseurs capables de répondre au besoin.',
         },
         {
           q: 'Quelle est la première étape du processus achat ?',
-          choices: ['La négociation', "L'expression du besoin", 'Le paiement', "L'évaluation"],
+          choices: ['La négociation', "Le besoin", 'Le paiement', "L'évaluation"],
           answer: 1,
           explain: "On ne peut rien acheter sans savoir précisément ce dont on a besoin : c'est le cahier des charges.",
         },
@@ -74,7 +74,7 @@ export default {
           q: 'Pourquoi dit-on que les achats sont un levier de rentabilité ?',
           choices: [
             'Parce qu\'ils augmentent le prix de vente',
-            'Parce que chaque économie d\'achat améliore directement la marge',
+            'Car une économie d\'achat améliore la marge',
             'Parce qu\'ils réduisent les salaires',
             'Ils ne le sont pas',
           ],
@@ -137,7 +137,7 @@ export default {
         },
         {
           q: 'Le TCO prend en compte…',
-          choices: ['Uniquement le prix d\'achat', 'Tous les coûts liés à l\'achat, sur toute sa durée de vie', 'Seulement le transport', 'Le prix de vente au client'],
+          choices: ['Uniquement le prix d\'achat', 'Le coût total d\'usage', 'Seulement le transport', 'Le prix de vente au client'],
           answer: 1,
           explain: 'Total Cost of Ownership : prix, transport, douane, stock, qualité, maintenance, fin de vie…',
         },
@@ -149,7 +149,7 @@ export default {
         },
         {
           q: 'Pour des achats « leviers » (fort impact, faible risque), la meilleure stratégie est…',
-          choices: ['Un partenariat exclusif', 'La mise en concurrence des fournisseurs', 'Constituer un gros stock de sécurité', 'Ne rien faire'],
+          choices: ['Un partenariat exclusif', 'La mise en concurrence', 'Constituer un gros stock de sécurité', 'Ne rien faire'],
           answer: 1,
           explain: "Beaucoup de fournisseurs sont disponibles : on fait jouer la concurrence pour gagner sur le prix.",
         },

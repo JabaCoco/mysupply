@@ -8,6 +8,7 @@
 //  - défis Excel : la solution se calcule sans erreur sur 150 tableaux aléatoires ;
 //  - études de cas : structure, bonne réponse existante, lien vers une vraie leçon ;
 //  - anglais : mots uniques, définitions, phrases à trous valides, 100 générations par leçon.
+import fs from 'node:fs'
 import { MODULES, ALL_LESSONS, findLesson } from '../src/data/courses/index.js'
 import { MODULE_COLORS, MODULE_ICONS } from '../src/pages/cours/moduleStyle.js'
 import { FORMULAS, FORMULA_LIST, generateExercises, checkNumber } from '../src/data/atelier/formulas.js'
@@ -126,9 +127,10 @@ for (const m of MODULES) {
   }
 }
 const longestPct = staticChecked ? Math.round((longestIsRight / staticChecked) * 100) : 0
-if (longestPct > 40) {
-  warn('Quiz', `la bonne réponse est la plus longue dans ${longestPct} % des questions (biais à corriger, objectif < 35 %)`)
-  const worst = Object.entries(longestByLesson).filter(([, [n, t]]) => n / t > 0.5).map(([k, [n, t]]) => `${k} (${n}/${t})`)
+console.log(`Quiz : bonne réponse strictement la plus longue dans ${longestPct} % des questions fixes`)
+if (longestPct > 25) {
+  warn('Quiz', `la bonne réponse est la plus longue dans ${longestPct} % des questions (biais à corriger, objectif ≤ 25 %)`)
+  const worst = Object.entries(longestByLesson).filter(([, [n, t]]) => n / t > 0.4).map(([k, [n, t]]) => `${k} (${n}/${t})`)
   if (worst.length) warn('Quiz', `leçons les plus biaisées : ${worst.join(', ')}`)
   if (process.env.SHOW_LONGEST) warn('Quiz', `questions concernées : ${longestList.join(', ')}`)
 }
@@ -301,6 +303,30 @@ for (const l of ALL_EN_LESSONS) {
       if (bad) fail(w, `exercice invalide : ${JSON.stringify(e).slice(0, 140)}`)
     }
     if (errors.length > 40) break
+  }
+}
+
+// ---------- Convention du biais de prévision (cours de l'utilisateur) ----------
+// Biais (%) = [ Σ (Prévu − Réalisé) / Σ Prévu ] × 100 ; positif = prévisions trop optimistes.
+{
+  const files = ['src/data/lots/lot06.js', 'src/data/courses/ajouts/prevision.js', 'src/data/courses/prevision.js']
+  const banned = [/Biais\s*=\s*moyenne/i, /moyenne de \(prévu/i, /positif\s*=\s*sur-prévision/i, /biais.{0,40}unités par mois/i]
+  for (const file of files) {
+    const text = fs.readFileSync(new URL('../' + file, import.meta.url), 'utf8')
+    for (const re of banned) if (re.test(text)) fail('Biais', `${file} : formulation de l'ancienne convention (${re})`)
+  }
+  const biaisExcel = EXCEL_CHALLENGES.find((c) => c.id === 'biais-prevision')
+  if (!biaisExcel || !/SOMME\(C2:C7\)\*100/.test(biaisExcel.solution)) fail('Biais', "le défi Excel « biais-prevision » doit diviser par la somme des prévisions et multiplier par 100")
+  const sheet = FORMULAS['mape-biais']
+  for (let i = 0; i < 200 && sheet; i++) {
+    for (const ex of generateExercises('mape-biais')) {
+      if (!/Biais \(en %/.test(ex.question ?? '')) continue
+      const nums = (ex.data ?? []).map((d) => d[1].match(/réel (\d+) · prévu (\d+)/)).filter(Boolean).map((m) => [Number(m[1]), Number(m[2])])
+      const sf = nums.reduce((a, n) => a + n[1], 0)
+      const sr = nums.reduce((a, n) => a + n[0], 0)
+      const expected = ((sf - sr) / sf) * 100
+      if (Math.abs(expected - ex.answer) > 1e-6) fail('Biais', `exercice mape-biais : réponse ${ex.answer} au lieu de ${expected}`)
+    }
   }
 }
 

@@ -74,7 +74,7 @@ export default {
         },
         {
           q: 'Pour un produit totalement nouveau, sans historique, on utilise plutôt…',
-          choices: ['La moyenne mobile', 'Le lissage exponentiel', 'Une méthode qualitative', 'Le MAPE'],
+          choices: ['La moyenne mobile', 'Le lissage exponentiel', 'Avis d\'experts', 'Le MAPE'],
           answer: 2,
           explain: 'Sans historique, les calculs sont impossibles : on s\'appuie sur des avis d\'experts ou des produits comparables.',
         },
@@ -137,7 +137,7 @@ export default {
           q: "L'effet coup de fouet désigne…",
           choices: [
             'Une baisse des prix chez les fournisseurs',
-            "L'amplification de la variabilité de la demande en remontant la chaîne",
+            "L'amplification en amont",
             'Un retard de livraison',
             'Une méthode de prévision',
           ],
@@ -146,7 +146,7 @@ export default {
         },
         {
           q: 'Laquelle de ces pratiques AGGRAVE l\'effet coup de fouet ?',
-          choices: ['Partager les ventes réelles', 'Faire de fréquentes promotions', 'Réduire les délais', 'Mettre en place la GPA'],
+          choices: ['Partager les ventes réelles', 'Multiplier les promos', 'Réduire les délais', 'Mettre en place la GPA'],
           answer: 1,
           explain: 'Les promotions créent des pics d\'achat artificiels, suivis de creux.',
         },
@@ -165,7 +165,7 @@ export default {
           q: 'Quel est le remède le plus efficace contre le coup de fouet ?',
           choices: [
             'Commander de plus gros lots',
-            "Partager l'information sur la demande réelle",
+            "Partager la demande réelle",
             'Augmenter les prix',
             'Multiplier les intermédiaires',
           ],

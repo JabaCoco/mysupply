@@ -13,7 +13,7 @@ export default {
       course: {
         purpose:
           "Ces deux méthodes prévoient la demande à partir des ventes passées. La **moyenne mobile** fait la moyenne des n dernières périodes. Le **lissage exponentiel** pondère davantage les ventes récentes : il réagit plus vite aux changements tout en limitant le bruit.",
-        formulas: ['Moyenne mobile = (D(t) + D(t−1) + … + D(t−n+1)) / n', 'F(t+1) = α × D(t) + (1 − α) × F(t)', 'Erreur = D(t) − F(t)'],
+        formulas: ['Moyenne mobile = (D(t) + D(t−1) + … + D(t−n+1)) / n', 'F(t+1) = α × D(t) + (1 − α) × F(t)', 'Erreur = F(t) − D(t) (prévu − réalisé)'],
         terms: [
           ['n', 'Nombre de périodes utilisées dans la moyenne mobile (3, 6, 12…).'],
           ['D(t)', 'Demande réelle de la période t.'],
@@ -23,7 +23,7 @@ export default {
         ],
         example: {
           statement: 'Ventes des 3 derniers mois : 100, 120, 110. Prévision précédente 105 ; ventes réelles 120 ; α = 0,3.',
-          steps: ['Moyenne mobile sur 3 mois = (100 + 120 + 110) / 3 = 110', 'Lissage : F(t+1) = 0,3 × 120 + 0,7 × 105 = 36 + 73,5 = 109,5', 'Erreur = 120 − 105 = 15'],
+          steps: ['Moyenne mobile sur 3 mois = (100 + 120 + 110) / 3 = 110', 'Lissage : F(t+1) = 0,3 × 120 + 0,7 × 105 = 36 + 73,5 = 109,5', 'Erreur = 105 − 120 = −15 (prévision trop basse)'],
           result: 'Les deux méthodes donnent une prévision proche de 110 pour le mois suivant.',
         },
         exercises: [
@@ -77,14 +77,14 @@ export default {
             const demand = int(80, 220, 5)
             return {
               kind: 'number',
-              statement: 'Calcule l\'erreur de prévision de la période (réel − prévu).',
+              statement: 'Calcule l\'erreur de prévision de la période (prévu − réalisé).',
               data: [['Prévision F(t)', `${forecast} unités`], ['Demande réelle D(t)', `${demand} unités`]],
-              question: 'Erreur D − F (en unités, avec son signe) ?',
-              answer: demand - forecast,
+              question: 'Erreur F − D (en unités, avec son signe) ?',
+              answer: forecast - demand,
               unit: 'unités',
               tolerance: 0.5,
-              steps: [`Erreur = D − F = ${demand} − ${forecast} = ${demand - forecast}`],
-              conclusion: demand - forecast >= 0 ? 'Erreur positive : on a sous-estimé la demande.' : 'Erreur négative : on a sur-estimé la demande.',
+              steps: [`Erreur = F − D = ${forecast} − ${demand} = ${forecast - demand}`],
+              conclusion: forecast - demand >= 0 ? 'Erreur positive : prévision trop optimiste (surestimation).' : 'Erreur négative : prévision trop basse (sous-estimation).',
             }
           },
         ],
@@ -99,7 +99,7 @@ export default {
           outputs: [
             { label: 'Moyenne mobile (3 mois)', unit: 'unités', digits: 1, fn: (n) => (n.d1 + n.d2 + n.d3) / 3 },
             { label: 'Lissage exponentiel', unit: 'unités', digits: 1, highlight: true, fn: (n) => n.alpha * n.d3 + (1 - n.alpha) * n.f },
-            { label: 'Erreur du dernier mois', unit: 'unités', digits: 1, fn: (n) => n.d3 - n.f },
+            { label: 'Erreur du dernier mois', unit: 'unités', digits: 1, fn: (n) => n.f - n.d3 },
           ],
           steps: (n) => [`Moyenne mobile = (${fmt(n.d1)} + ${fmt(n.d2)} + ${fmt(n.d3)}) / 3 = ${fmt((n.d1 + n.d2 + n.d3) / 3, 1)}`, `Lissage = ${fmt(n.alpha)} × ${fmt(n.d3)} + ${fmt(1 - n.alpha)} × ${fmt(n.f)} = ${fmt(n.alpha * n.d3 + (1 - n.alpha) * n.f, 1)}`],
           note: 'Le lissage utilise ici la demande du mois 3 comme dernière demande observée.',
@@ -113,16 +113,16 @@ export default {
       course: {
         purpose:
           "Pour savoir si une méthode de prévision est bonne, on mesure ses erreurs. La **MAD** donne l'erreur moyenne en unités, le **MAPE** en pourcentage, et le **biais** indique si l'on prévoit trop ou trop peu **systématiquement**.",
-        formulas: ['MAD = moyenne de |réel − prévu|', 'MAPE = moyenne de |réel − prévu| / réel × 100', 'Biais = moyenne de (prévu − réel)'],
+        formulas: ['MAD = moyenne de |réel − prévu|', 'MAPE = moyenne de |réel − prévu| / réel × 100', 'Biais (%) = [Σ (Prévu − Réalisé) / Σ Prévu] × 100'],
         terms: [
           ['|…|', 'Valeur absolue : on enlève le signe, pour que les erreurs ne se compensent pas.'],
           ['MAD', "Erreur absolue moyenne, en unités."],
           ['MAPE', "Erreur absolue moyenne en % du réel : permet de comparer des produits de tailles différentes."],
-          ['Biais', 'Erreur moyenne avec son signe : positif = sur-prévision, négatif = sous-prévision.'],
+          ['Biais (%)', 'Écart total (prévu − réalisé) rapporté au total des prévisions : positif = prévisions trop optimistes (surestimation), négatif = trop basses (sous-estimation).'],
         ],
         example: {
           statement: 'Réel : 100, 120, 80. Prévu : 110, 100, 90.',
-          steps: ['Erreurs absolues : 10, 20, 10 → MAD = 40 / 3 ≈ 13,3', 'Erreurs en % : 10/100 = 10 %, 20/120 = 16,7 %, 10/80 = 12,5 % → MAPE ≈ 13,1 %', 'Biais = (10 − 20 + 10) / 3 = 0'],
+          steps: ['Erreurs absolues : 10, 20, 10 → MAD = 40 / 3 ≈ 13,3', 'Erreurs en % : 10/100 = 10 %, 20/120 = 16,7 %, 10/80 = 12,5 % → MAPE ≈ 13,1 %', 'Biais = (10 − 20 + 10) / 300 × 100 = 0 %'],
           result: 'Malgré des erreurs de 13 % en moyenne, le biais est nul : les erreurs se compensent.',
         },
         exercises: [
@@ -176,17 +176,19 @@ export default {
           () => {
             const real = Array.from({ length: 4 }, () => int(90, 130, 10))
             const forecast = real.map((r) => r + int(-10, 25, 5))
-            const bias = mean(real.map((r, i) => forecast[i] - r))
+            const sumF = forecast.reduce((a, b) => a + b, 0)
+            const sumR = real.reduce((a, b) => a + b, 0)
+            const bias = ((sumF - sumR) / sumF) * 100
             return {
               kind: 'number',
-              statement: 'Calcule le biais de la série (prévu − réel).',
+              statement: 'Calcule le biais de la série : [Σ (prévu − réalisé) / Σ prévu] × 100.',
               data: real.map((r, i) => [`Mois ${i + 1}`, `réel ${r} · prévu ${forecast[i]}`]),
-              question: 'Biais (en unités, avec son signe) ?',
+              question: 'Biais (en %, avec son signe) ?',
               answer: bias,
-              unit: 'unités',
-              tolerance: 0.3,
-              steps: real.map((r, i) => `Mois ${i + 1} : ${forecast[i]} − ${r} = ${forecast[i] - r}`).concat([`Biais = moyenne = ${fmt(bias, 1)}`]),
-              conclusion: bias > 0 ? 'Biais positif : on prévoit trop en moyenne, avec un risque de surstock.' : bias < 0 ? 'Biais négatif : on prévoit trop peu, avec un risque de rupture.' : 'Biais nul : les erreurs se compensent.',
+              unit: '%',
+              tolerance: 0.2,
+              steps: real.map((r, i) => `Mois ${i + 1} : ${forecast[i]} − ${r} = ${forecast[i] - r}`).concat([`Σ (prévu − réalisé) = ${sumF - sumR} ; Σ prévu = ${sumF}`, `Biais = ${sumF - sumR} / ${sumF} × 100 = ${fmt(bias, 1)} %`]),
+              conclusion: bias > 0 ? 'Biais positif : prévisions trop optimistes (surestimation), avec un risque de surstock.' : bias < 0 ? 'Biais négatif : prévisions trop basses (sous-estimation), avec un risque de rupture.' : 'Biais nul : les erreurs se compensent.',
             }
           },
         ],
@@ -202,10 +204,10 @@ export default {
           outputs: [
             { label: 'MAD', unit: 'unités', digits: 1, fn: (n) => (Math.abs(n.r1 - n.p1) + Math.abs(n.r2 - n.p2) + Math.abs(n.r3 - n.p3)) / 3 },
             { label: 'MAPE', unit: '%', digits: 1, highlight: true, fn: (n) => ((Math.abs(n.r1 - n.p1) / n.r1 + Math.abs(n.r2 - n.p2) / n.r2 + Math.abs(n.r3 - n.p3) / n.r3) / 3) * 100 },
-            { label: 'Biais (prévu − réel)', unit: 'unités', digits: 1, fn: (n) => (n.p1 - n.r1 + n.p2 - n.r2 + n.p3 - n.r3) / 3 },
+            { label: 'Biais (%)', unit: '%', digits: 1, fn: (n) => (n.p1 + n.p2 + n.p3 > 0 ? ((n.p1 - n.r1 + n.p2 - n.r2 + n.p3 - n.r3) / (n.p1 + n.p2 + n.p3)) * 100 : 0) },
           ],
           steps: (n) => [`Erreurs absolues : ${fmt(Math.abs(n.r1 - n.p1))} ; ${fmt(Math.abs(n.r2 - n.p2))} ; ${fmt(Math.abs(n.r3 - n.p3))}`, `Erreurs signées (prévu − réel) : ${fmt(n.p1 - n.r1)} ; ${fmt(n.p2 - n.r2)} ; ${fmt(n.p3 - n.r3)}`],
-          note: 'Le biais utilise la convention « prévu − réel » : positif = sur-prévision.',
+          note: 'Biais (%) = Σ (prévu − réel) / Σ prévu × 100 : positif = prévisions trop optimistes, négatif = trop basses.',
         },
       },
     },
@@ -273,15 +275,15 @@ export default {
       tier: 5,
       title: 'Le biais de prévision',
       context: 'Ton manager veut savoir si tes prévisions sont systématiquement trop hautes ou trop basses.',
-      instruction: 'En **D8**, calcule le **biais** : (total des prévisions − total des ventes réelles) ÷ nombre de mois, **arrondi à 1 décimale**.',
+      instruction: 'En **D8**, calcule le **biais en %** : (total des prévisions − total des ventes réelles) ÷ total des prévisions × 100, **arrondi à 1 décimale**.',
       generate() {
         const bias = int(-20, 25, 5)
-        return { rows: [['Mois', 'Réel', 'Prévu'], ...MONTHS.slice(0, 6).map((m) => { const r = int(80, 160, 5); return [m, r, r + bias + int(-15, 15, 5)] })], extra: { C8: 'Biais' } }
+        return { rows: [['Mois', 'Réel', 'Prévu'], ...MONTHS.slice(0, 6).map((m) => { const r = int(80, 160, 5); return [m, r, r + bias + int(-15, 15, 5)] })], extra: { C8: 'Biais (%)' } }
       },
       target: 'D8',
-      solution: '=ARRONDI((SOMME(C2:C7)-SOMME(B2:B7))/NB(B2:B7);1)',
-      mustUse: ['SOMME', 'NB', 'ARRONDI'],
-      hints: ['Total des prévus : SOMME(C2:C7) ; total des réels : SOMME(B2:B7).', 'Divise la différence par le nombre de mois NB(B2:B7), puis arrondis à 1 décimale.'],
+      solution: '=ARRONDI((SOMME(C2:C7)-SOMME(B2:B7))/SOMME(C2:C7)*100;1)',
+      mustUse: ['SOMME', 'ARRONDI'],
+      hints: ['Total des prévus : SOMME(C2:C7) ; total des réels : SOMME(B2:B7).', 'Divise la différence par le total des prévisions SOMME(C2:C7), multiplie par 100, puis arrondis à 1 décimale.'],
       explain: 'Le biais est l\'erreur moyenne avec son signe : positif, on sur-prévoit ; négatif, on sous-prévoit. Il ne dépend pas de la valeur absolue des erreurs, contrairement au MAPE.',
     },
   ],
@@ -298,7 +300,7 @@ export default {
         const fa = real.map((r) => Math.round((r * (1 + int(-6, 6) / 100)) / 10) * 10)
         const fb = real.map((r) => Math.round((r * (1 + int(9, 13) / 100)) / 10) * 10)
         const mape = (f) => mean(real.map((r, i) => (Math.abs(f[i] - r) / r) * 100))
-        const bias = (f) => mean(real.map((r, i) => f[i] - r))
+        const bias = (f) => ((f.reduce((a, b) => a + b, 0) - real.reduce((a, b) => a + b, 0)) / f.reduce((a, b) => a + b, 0)) * 100
         const mA = mape(fa)
         const mB = mape(fb)
         const bB = bias(fb)
@@ -311,16 +313,16 @@ export default {
               better: `Le MAPE de A est ${fmt(mA, 1)} % contre ${fmt(mB, 1)} % pour B : A se trompe moins en moyenne. B prévoit presque toujours plus que le réel, ce qui peut sembler « prudent » mais crée un surstock.`,
               choices: [
                 { text: `La méthode A, avec un MAPE de ${fmt(mA, 1)} % contre ${fmt(mB, 1)} %.`, points: 3, feedback: `Le MAPE le plus bas désigne la méthode la plus précise : A (${fmt(mA, 1)} %) contre B (${fmt(mB, 1)} %).` },
-                { text: 'La méthode B, car ses prévisions sont toujours plus hautes, donc plus prudentes.', points: 0, feedback: `Des prévisions toujours trop hautes (biais de +${fmt(bB, 0)} unités par mois) créent du surstock : ce n'est pas de la prudence, c'est une erreur.` },
+                { text: 'La méthode B, car ses prévisions sont toujours plus hautes, donc plus prudentes.', points: 0, feedback: `Des prévisions toujours trop hautes (biais de +${fmt(bB, 1)} %) créent du surstock : ce n'est pas de la prudence, c'est une erreur.` },
                 { text: 'Aucune : on ne peut pas comparer deux méthodes.', points: 1, feedback: 'On peut les comparer : avec les mêmes données réelles, le MAPE et le biais permettent de juger objectivement.' },
               ],
             },
             {
-              situation: `Le biais de B est de +${fmt(bB, 0)} unités par mois (A : ${fmt(bA, 0)}). Que fais-tu de ce biais ?`,
-              better: `Un biais constant de ${fmt(bB, 0)} unités se corrige : on recale la méthode ou on retire cet écart des prévisions. À l'inverse, des erreurs aléatoires comme celles de A se couvrent avec du stock de sécurité.`,
+              situation: `Le biais de B est de +${fmt(bB, 1)} % (A : ${fmt(bA, 1)} %). Que fais-tu de ce biais ?`,
+              better: `Un biais constant de ${fmt(bB, 1)} % se corrige : on recale la méthode ou on retire cet écart des prévisions. À l'inverse, des erreurs aléatoires comme celles de A se couvrent avec du stock de sécurité.`,
               choices: [
-                { text: "Je le corrige, car un biais constant se corrige facilement.", points: 3, feedback: `Un écart systématique de ${fmt(bB, 0)} unités peut être retiré ou intégré à la méthode : il ne demande pas de stock supplémentaire.` },
-                { text: 'Je l\'ignore : les erreurs se compensent avec le temps.', points: 0, feedback: `Ici elles ne se compensent pas : B se trompe toujours dans le même sens, de ${fmt(bB, 0)} unités par mois, donc le surstock s'accumule.` },
+                { text: "Je le corrige, car un biais constant se corrige facilement.", points: 3, feedback: `Un écart systématique de ${fmt(bB, 1)} % peut être retiré ou intégré à la méthode : il ne demande pas de stock supplémentaire.` },
+                { text: 'Je l\'ignore : les erreurs se compensent avec le temps.', points: 0, feedback: `Ici elles ne se compensent pas : B se trompe toujours dans le même sens, de ${fmt(bB, 1)} %, donc le surstock s'accumule.` },
                 { text: 'J\'abandonne toute prévision statistique.', points: 1, feedback: 'Les prévisions restent utiles : c\'est leur biais qu\'il faut corriger, pas la démarche qu\'il faut abandonner.' },
               ],
             },
@@ -334,7 +336,7 @@ export default {
               ],
             },
           ],
-          debrief: `On compare les méthodes avec le MAPE (ici A : ${fmt(mA, 1)} %, B : ${fmt(mB, 1)} %), on corrige les biais (B : +${fmt(bB, 0)} unités) et on enrichit la prévision avec l'information commerciale via un S&OP.`,
+          debrief: `On compare les méthodes avec le MAPE (ici A : ${fmt(mA, 1)} %, B : ${fmt(mB, 1)} %), on corrige les biais (B : +${fmt(bB, 1)} %) et on enrichit la prévision avec l'information commerciale via un S&OP.`,
         }
       },
     },

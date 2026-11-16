@@ -45,7 +45,7 @@ export default {
       },
       {
         q: "Comment classe-t-on les articles pour une analyse ABC ?",
-        choices: ["Par valeur annuelle consommée décroissante", "Par ordre alphabétique du nom", "Par poids unitaire croissant", "Par date de première commande"],
+        choices: ["Par valeur décroissante", "Par ordre alphabétique du nom", "Par poids unitaire croissant", "Par date de première commande"],
         answer: 0,
         explain: "On trie du plus gros au plus petit montant annuel (consommation × prix), puis on calcule les pourcentages cumulés pour fixer les classes A, B et C.",
       },
@@ -92,7 +92,7 @@ export default {
       },
       {
         q: "Contre quoi le stock de sécurité protège-t-il ?",
-        choices: ["Les variations de la demande et des délais", "L'augmentation du prix des fournisseurs", "Les erreurs de facturation des clients", "La concurrence des autres entreprises"],
+        choices: ["Les aléas de demande et de délai", "L'augmentation du prix des fournisseurs", "Les erreurs de facturation des clients", "La concurrence des autres entreprises"],
         answer: 0,
         explain: "Le stock de sécurité absorbe les écarts imprévus (demande plus forte, livraison en retard) pendant le délai d'approvisionnement.",
       },
@@ -235,19 +235,19 @@ export default {
         },
         {
           q: "Que comprend le coût de rupture ?",
-          choices: ["Ventes perdues, pénalités et clients perdus", "L'assurance et le loyer de l'entrepôt", "Le prix d'achat des marchandises", "Le temps administratif d'une commande"],
+          choices: ["Ventes et clients perdus", "L'assurance et le loyer de l'entrepôt", "Le prix d'achat des marchandises", "Le temps administratif d'une commande"],
           answer: 0,
           explain: "Une rupture coûte la vente manquée, parfois des pénalités contractuelles, et peut faire perdre un client durablement.",
         },
         {
           q: "Qu'appelle-t-on un stock dormant ?",
-          choices: ["Un stock sans mouvement depuis longtemps", "Un stock stocké de nuit seulement", "Un stock de sécurité très élevé", "Un stock en cours d'inventaire"],
+          choices: ["Un stock sans mouvement", "Un stock stocké de nuit seulement", "Un stock de sécurité très élevé", "Un stock en cours d'inventaire"],
           answer: 0,
           explain: "Un article qui ne sort plus (par exemple depuis 12 mois) est dormant : il coûte sans rapporter, et risque de devenir invendable.",
         },
         {
           q: "Pourquoi trop de stock est-il un problème ?",
-          choices: ["Il immobilise de l'argent et coûte à garder", "Il empêche toute livraison aux clients", "Il oblige à changer de fournisseur", "Il supprime le besoin de prévision"],
+          choices: ["Il immobilise de l'argent", "Il empêche toute livraison aux clients", "Il oblige à changer de fournisseur", "Il supprime le besoin de prévision"],
           answer: 0,
           explain: "Un stock excessif immobilise du capital et génère des coûts de possession (place, assurance, obsolescence), sans améliorer le service.",
         },
@@ -259,7 +259,7 @@ export default {
         },
         {
           q: "Pourquoi acheter en grande quantité peut-il être intéressant ?",
-          choices: ["Pour obtenir des remises et réduire les frais de commande", "Pour supprimer tout coût de stockage", "Pour éviter de calculer les besoins", "Pour ne plus jamais avoir de rupture"],
+          choices: ["Pour obtenir des remises", "Pour supprimer tout coût de stockage", "Pour éviter de calculer les besoins", "Pour ne plus jamais avoir de rupture"],
           answer: 0,
           explain: "Acheter en gros peut baisser le prix unitaire et le coût de passation, mais augmente le stock moyen et donc le coût de possession.",
         },
@@ -370,7 +370,7 @@ export default {
         },
         {
           q: "Quand le recomplètement périodique est-il particulièrement pratique ?",
-          choices: ["Pour grouper plusieurs articles du même fournisseur", "Pour un seul article très cher", "Pour les produits fabriqués sur mesure", "Quand on ne connaît pas la demande du tout"],
+          choices: ["Pour grouper les articles", "Pour un seul article très cher", "Pour les produits fabriqués sur mesure", "Quand on ne connaît pas la demande du tout"],
           answer: 0,
           explain: "En passant une commande régulière qui regroupe plusieurs références du même fournisseur, on réduit les frais de commande et de transport.",
         },
@@ -472,13 +472,13 @@ export default {
         },
         {
           q: "À quoi sert l'inventaire ?",
-          choices: ["Comparer stock réel et stock système, puis corriger", "Calculer le prix de vente", "Choisir le transporteur", "Négocier avec les fournisseurs"],
+          choices: ["Comparer réel et système", "Calculer le prix de vente", "Choisir le transporteur", "Négocier avec les fournisseurs"],
           answer: 0,
           explain: "Il vérifie que les quantités du système correspondent à la réalité, corrige les écarts et permet d'établir la valeur du stock.",
         },
         {
           q: "En quoi consiste un inventaire tournant ?",
-          choices: ["Compter quelques articles chaque jour ou semaine", "Compter tout le stock une seule fois par an", "Compter uniquement les articles en rupture", "Faire tourner les palettes dans l'entrepôt"],
+          choices: ["Compter un peu chaque jour", "Compter tout le stock une seule fois par an", "Compter uniquement les articles en rupture", "Faire tourner les palettes dans l'entrepôt"],
           answer: 0,
           explain: "L'inventaire tournant (ou cyclique) répartit le comptage dans le temps : l'activité continue et les écarts se corrigent plus vite.",
         },
@@ -490,13 +490,13 @@ export default {
         },
         {
           q: "Que mesure l'exactitude du stock ?",
-          choices: ["La part des références dont le système est juste", "Le nombre total d'articles en entrepôt", "La vitesse de préparation des commandes", "Le prix moyen d'un article en stock"],
+          choices: ["La part de références exactes", "Le nombre total d'articles en entrepôt", "La vitesse de préparation des commandes", "Le prix moyen d'un article en stock"],
           answer: 0,
           explain: "C'est le pourcentage de références pour lesquelles la quantité du système correspond à la quantité comptée : un bon indicateur de fiabilité.",
         },
         {
           q: "Pourquoi la méthode de valorisation (FIFO, CUMP) est-elle importante ?",
-          choices: ["Elle change la valeur du stock et le résultat", "Elle change la quantité physique en stock", "Elle modifie le délai du fournisseur", "Elle décide du transporteur à utiliser"],
+          choices: ["Elle change la valeur du stock", "Elle change la quantité physique en stock", "Elle modifie le délai du fournisseur", "Elle décide du transporteur à utiliser"],
           answer: 0,
           explain: "Pour les mêmes quantités, FIFO et CUMP donnent un coût des ventes et une valeur de stock final différents, donc un résultat comptable différent.",
         },

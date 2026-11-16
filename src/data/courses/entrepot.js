@@ -58,7 +58,7 @@ export default {
         },
         {
           q: 'Où place-t-on les produits qui sortent le plus souvent ?',
-          choices: ['Tout en haut des racks', 'Au fond de l\'entrepôt', 'Près des quais, à hauteur d\'homme', 'Dans un autre entrepôt'],
+          choices: ['Tout en haut des racks', 'Au fond de l\'entrepôt', 'Près des quais', 'Dans un autre entrepôt'],
           answer: 2,
           explain: 'On réduit ainsi les déplacements, qui coûtent cher en temps.',
         },
@@ -70,7 +70,7 @@ export default {
         },
         {
           q: 'Pourquoi le picking coûte-t-il si cher ?',
-          choices: ['À cause des déplacements des préparateurs', 'À cause des loyers', 'À cause des camions', 'Il ne coûte rien'],
+          choices: ['Les déplacements', 'À cause des loyers', 'À cause des camions', 'Il ne coûte rien'],
           answer: 0,
           explain: 'Les préparateurs passent une grande partie de leur temps à se déplacer entre les emplacements.',
         },
@@ -131,7 +131,7 @@ export default {
           q: 'Le cross-docking consiste à…',
           choices: [
             'Stocker longtemps la marchandise',
-            'Faire transiter la marchandise sans la stocker',
+            'Transiter sans stocker',
             'Fabriquer des produits sur mesure',
             'Compter le stock une fois par an',
           ],
@@ -146,7 +146,7 @@ export default {
         },
         {
           q: 'Principal avantage du cross-docking ?',
-          choices: ['Plus de stock', 'Moins de stock et des livraisons plus rapides', 'Des produits plus chers', 'Plus de manutention'],
+          choices: ['Plus de stock', 'Moins de stock', 'Des produits plus chers', 'Plus de manutention'],
           answer: 1,
           explain: 'Sans stockage, on réduit les stocks, les manipulations et le délai.',
         },

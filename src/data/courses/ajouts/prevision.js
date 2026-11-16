@@ -38,7 +38,7 @@ export default {
       },
       {
         q: "En quoi consiste la méthode Delphi ?",
-        choices: ["Interroger des experts en plusieurs tours, en partageant les réponses", "Calculer une moyenne mobile sur plusieurs années", "Faire voter les clients pour choisir un produit", "Utiliser un logiciel de prévision automatique"],
+        choices: ["Interroger des experts en plusieurs tours", "Calculer une moyenne mobile sur plusieurs années", "Faire voter les clients pour choisir un produit", "Utiliser un logiciel de prévision automatique"],
         answer: 0,
         explain: "Dans la méthode Delphi, des experts répondent à plusieurs tours de questions : après chaque tour, ils découvrent l'avis du groupe et peuvent ajuster le leur.",
       },
@@ -66,13 +66,13 @@ export default {
       },
       {
         q: "Comment réduire le délai d'approvisionnement aide-t-il contre le coup de fouet ?",
-        choices: ["Il réduit l'incertitude à couvrir et les stocks de précaution", "Il supprime toutes les commandes en cours", "Il augmente la taille des lots commandés", "Il ralentit la remontée des informations"],
+        choices: ["Il réduit l'incertitude à couvrir", "Il supprime toutes les commandes en cours", "Il augmente la taille des lots commandés", "Il ralentit la remontée des informations"],
         answer: 0,
         explain: "Un délai plus court demande moins de prévisions sur une période incertaine : les commandes sont plus proches de la demande réelle.",
       },
       {
         q: "En quoi une promotion peut-elle aggraver le coup de fouet ?",
-        choices: ["Elle crée des pics d'achat artificiels, suivis de creux", "Elle diminue le nombre de clients du magasin", "Elle supprime le besoin de réapprovisionner", "Elle augmente toujours les prix d'achat"],
+        choices: ["Elle crée des pics artificiels", "Elle diminue le nombre de clients du magasin", "Elle supprime le besoin de réapprovisionner", "Elle augmente toujours les prix d'achat"],
         answer: 0,
         explain: "Les clients achètent en masse pendant la promotion puis très peu ensuite : les commandes oscillent bien plus que la consommation réelle.",
       },
@@ -182,7 +182,7 @@ export default {
         },
         {
           q: "Qu'est-ce qu'une tendance ?",
-          choices: ["Une évolution lente et durable à la hausse ou à la baisse", "Un pic de ventes qui revient chaque décembre", "Un écart imprévisible lié à la météo", "La moyenne des erreurs de prévision"],
+          choices: ["Une évolution lente et durable", "Un pic de ventes qui revient chaque décembre", "Un écart imprévisible lié à la météo", "La moyenne des erreurs de prévision"],
           answer: 0,
           explain: "La tendance est le mouvement de fond de la demande, au-delà des variations saisonnières et des aléas.",
         },
@@ -194,7 +194,7 @@ export default {
         },
         {
           q: "Que signifie un indice saisonnier inférieur à 1 ?",
-          choices: ["Le mois est plus faible que la moyenne", "Le mois est plus fort que la moyenne", "Les ventes sont égales à la moyenne", "Il n'y a pas eu de ventes ce mois-ci"],
+          choices: ["Mois sous la moyenne", "Le mois est plus fort que la moyenne", "Les ventes sont égales à la moyenne", "Il n'y a pas eu de ventes ce mois-ci"],
           answer: 0,
           explain: "Un indice de 0,8 signifie que le mois vend 20 % de moins que la moyenne mensuelle : c'est un mois creux.",
         },
@@ -224,7 +224,7 @@ export default {
             ["Erreur absolue", "L'écart entre réel et prévu, sans le signe : |réel − prévu|."],
             ["MAD", "Erreur absolue moyenne, en unités."],
             ["MAPE", "Erreur absolue moyenne en pourcentage du réel : pratique pour comparer des produits."],
-            ["Biais", "Erreur moyenne avec son signe : on prévoit systématiquement trop ou trop peu."],
+            ["Biais", "Erreur avec son signe, rapportée aux prévisions : positif = prévisions trop optimistes, négatif = trop basses."],
             ["Tracking signal", "Cumul des erreurs divisé par la MAD : alerte quand le biais s'installe."],
           ],
         },
@@ -235,9 +235,9 @@ export default {
           legend: [
             ["MAD", "Moyenne de |réel − prévu|, en unités."],
             ["MAPE", "En pourcentage : 10 % signifie qu'on se trompe de 10 % en moyenne."],
-            ["Biais", "Moyenne de (prévu − réel) : positif = sur-prévision, négatif = sous-prévision."],
+            ["Biais (%)", "[ Σ (Prévu − Réalisé) / Σ Prévu ] × 100 : positif = prévisions trop optimistes (surestimation), négatif = trop basses (sous-estimation)."],
           ],
-          example: "Réel : 100, 120, 80 ; prévu : 110, 100, 90. Erreurs en %: 10 %, 16,7 %, 12,5 % → MAPE ≈ 13,1 %. Biais = (10 − 20 + 10) / 3 = 0.",
+          example: "Réel : 100, 120, 80 ; prévu : 110, 100, 90. Erreurs en %: 10 %, 16,7 %, 12,5 % → MAPE ≈ 13,1 %. Biais = (10 − 20 + 10) / 300 × 100 = 0 %. Autre série : prévu 110, 120, 130 (somme 360) pour un réel de 100, 100, 100 : biais = 60 / 360 × 100 ≈ 16,7 %.",
         },
         {
           type: "text",
@@ -248,7 +248,7 @@ export default {
           type: "key",
           points: [
             "Erreur absolue : |réel − prévu| ; MAD en unités ; MAPE en %.",
-            "Biais = moyenne de (prévu − réel) : positif = sur-prévision.",
+            "Biais (%) = [Σ (Prévu − Réalisé) / Σ Prévu] × 100 : positif = prévisions trop optimistes.",
             "Un biais se corrige ; le bruit se couvre avec du stock de sécurité.",
             "Un biais nul n'empêche pas une forte erreur.",
           ],
@@ -284,21 +284,23 @@ export default {
         () => {
           const real = [int(90, 130, 10), int(90, 130, 10), int(90, 130, 10), int(90, 130, 10)]
           const forecast = real.map((r) => r + int(5, 25, 5))
-          const bias = real.reduce((s, r, i) => s + (forecast[i] - r), 0) / 4
+          const sumF = forecast.reduce((s, f) => s + f, 0)
+          const sumR = real.reduce((s, r) => s + r, 0)
+          const bias = ((sumF - sumR) / sumF) * 100
           return numQuestion({
-            q: `Réel : ${real.join(", ")}. Prévu : ${forecast.join(", ")}. Quel est le biais (moyenne de prévu − réel) ?`,
+            q: `Réel : ${real.join(", ")}. Prévu : ${forecast.join(", ")}. Quel est le biais en % (Σ(prévu − réalisé) / Σ prévu × 100) ?`,
             answer: bias,
-            unit: "unités",
+            unit: "%",
             digits: 1,
-            explain: `Biais = moyenne de (prévu − réel) = ${fmt(bias, 1)} unités par mois : positif, donc on sur-prévoit systématiquement.`,
-            wrong: [-bias, bias * 2, bias / 2, 0],
+            explain: `Σ prévu = ${sumF} ; Σ(prévu − réalisé) = ${sumF - sumR} ; biais = ${sumF - sumR} / ${sumF} × 100 = ${fmt(bias, 1)} % : positif, prévisions trop optimistes.`,
+            wrong: [(sumF - sumR) / sumR * 100, -bias, bias * 2, bias / 2],
           })
         },
         {
           q: "Un biais positif signifie…",
-          choices: ["Qu'on sur-prévoit en moyenne", "Qu'on sous-prévoit en moyenne", "Que les erreurs se compensent toujours", "Que la prévision est parfaite"],
+          choices: ["Prévisions trop optimistes", "Que les prévisions sont trop basses", "Que les erreurs se compensent toujours", "Que la prévision est parfaite"],
           answer: 0,
-          explain: "Avec la définition « prévu − réel », un biais positif veut dire qu'on prévoit plus que ce qui se vend : risque de surstock.",
+          explain: "Biais = Σ(Prévu − Réalisé) / Σ Prévu × 100. Positif : on prévoit plus que ce qui se vend (surestimation), avec un risque de surstock.",
         },
         {
           q: "Que risque-t-on avec une sous-prévision systématique ?",
@@ -308,7 +310,7 @@ export default {
         },
         {
           q: "Pourquoi utilise-t-on le MAPE plutôt que la MAD pour comparer deux produits ?",
-          choices: ["Il s'exprime en pourcentage, indépendamment des volumes", "Il est toujours plus petit que la MAD", "Il ne dépend pas des données réelles", "Il supprime le biais de la prévision"],
+          choices: ["Il s'exprime en pourcentage", "Il est toujours plus petit que la MAD", "Il ne dépend pas des données réelles", "Il supprime le biais de la prévision"],
           answer: 0,
           explain: "Une erreur de 50 unités n'a pas la même importance sur 100 ou sur 10 000 unités : le pourcentage rend les produits comparables.",
         },
@@ -320,7 +322,7 @@ export default {
         },
         {
           q: "Une prévision peut-elle avoir un biais nul avec une forte erreur ?",
-          choices: ["Oui, si les écarts positifs et négatifs se compensent", "Non, un biais nul signifie zéro erreur", "Oui, mais seulement avec un lissage exponentiel", "Non, un biais ne dépend jamais du signe des erreurs"],
+          choices: ["Oui, si les écarts se compensent", "Non, un biais nul signifie zéro erreur", "Oui, mais seulement avec un lissage exponentiel", "Non, un biais ne dépend jamais du signe des erreurs"],
           answer: 0,
           explain: "Le biais additionne des erreurs signées : +10 et −10 donnent un biais nul alors que l'erreur absolue est de 10 à chaque fois.",
         },
@@ -394,7 +396,7 @@ export default {
         },
         {
           q: "Pourquoi organise-t-on un S&OP chaque mois ?",
-          choices: ["Aligner ventes, production et finance sur un plan commun", "Remplacer toutes les prévisions par des estimations", "Choisir la couleur des emballages du trimestre", "Fixer le prix d'achat de chaque matière première"],
+          choices: ["Aligner ventes, production et finance", "Remplacer toutes les prévisions par des estimations", "Choisir la couleur des emballages du trimestre", "Fixer le prix d'achat de chaque matière première"],
           answer: 0,
           explain: "Chaque mois, les informations changent (ventes, capacités, promotions) : le S&OP remet tout le monde d'accord sur un plan.",
         },
@@ -406,13 +408,13 @@ export default {
         },
         {
           q: "Que vérifie la revue de l'offre ?",
-          choices: ["Les capacités de production, d'achat et de stockage", "Le nombre de clients du service commercial", "Le prix de vente des concurrents", "Les décisions de la direction"],
+          choices: ["Les capacités de l'offre", "Le nombre de clients du service commercial", "Le prix de vente des concurrents", "Les décisions de la direction"],
           answer: 0,
           explain: "La revue de l'offre vérifie si l'entreprise peut produire et livrer ce qui est demandé : usines, fournisseurs, logistique, stocks.",
         },
         {
           q: "Quel arbitrage est typique d'un S&OP ?",
-          choices: ["Heures supplémentaires ou sous-traitance pour un pic", "Choix du nom d'un produit", "Calcul du salaire de chaque employé", "Décoration des locaux de l'usine"],
+          choices: ["Heures sup ou sous-traitance", "Choix du nom d'un produit", "Calcul du salaire de chaque employé", "Décoration des locaux de l'usine"],
           answer: 0,
           explain: "Quand la demande dépasse la capacité, on choisit comment la couvrir : heures supplémentaires, sous-traitance, stock anticipé ou limitation des ventes.",
         },
@@ -424,7 +426,7 @@ export default {
         },
         {
           q: "Quel est le but principal du S&OP ?",
-          choices: ["Un plan unique accepté par tous les services", "Une prévision statistique parfaite", "La suppression de tous les stocks", "La réduction du nombre de clients"],
+          choices: ["Un plan unique partagé", "Une prévision statistique parfaite", "La suppression de tous les stocks", "La réduction du nombre de clients"],
           answer: 0,
           explain: "Une prévision parfaite n'existe pas : l'enjeu est que ventes, opérations et finance travaillent sur le même plan et décident à temps.",
         },
@@ -496,37 +498,37 @@ export default {
         },
         {
           q: "Que partage un client avec son fournisseur dans une démarche de collaboration ?",
-          choices: ["Ses ventes réelles et ses niveaux de stock", "Ses salaires et ses marges internes", "Ses brevets non publiés", "Ses plans de recrutement"],
+          choices: ["Ventes réelles et stocks", "Ses salaires et ses marges internes", "Ses brevets non publiés", "Ses plans de recrutement"],
           answer: 0,
           explain: "Les ventes réelles (sell-out) et les stocks permettent au fournisseur de réagir à la vraie demande, pas aux commandes déformées.",
         },
         {
           q: "Que signifie CPFR ?",
-          choices: ["Planification, prévision et réapprovisionnement collaboratifs", "Contrôle des paiements et factures reçues", "Calcul prévisionnel des frais de route", "Centre de production des fournisseurs régionaux"],
+          choices: ["Planification et prévision collaboratives", "Contrôle des paiements et factures reçues", "Calcul prévisionnel des frais de route", "Centre de production des fournisseurs régionaux"],
           answer: 0,
           explain: "CPFR (Collaborative Planning, Forecasting and Replenishment) : client et fournisseur construisent ensemble prévisions et plans d'approvisionnement.",
         },
         {
           q: "Quel est un avantage de la GPA pour le client ?",
-          choices: ["Moins de ruptures et un stock mieux géré", "L'absence totale de stock chez lui", "La fin des paiements au fournisseur", "L'arrêt de toute prévision de ventes"],
+          choices: ["Moins de ruptures", "L'absence totale de stock chez lui", "La fin des paiements au fournisseur", "L'arrêt de toute prévision de ventes"],
           answer: 0,
           explain: "Le fournisseur surveille le stock et réapprovisionne à temps : le client a moins de ruptures et moins de travail de gestion.",
         },
         {
           q: "Quelle est une limite de la collaboration ?",
-          choices: ["Elle demande confiance et systèmes compatibles", "Elle supprime tous les contrats", "Elle augmente toujours l'effet coup de fouet", "Elle interdit de partager des données"],
+          choices: ["Elle exige de la confiance", "Elle supprime tous les contrats", "Elle augmente toujours l'effet coup de fouet", "Elle interdit de partager des données"],
           answer: 0,
           explain: "Partager des données sensibles demande de la confiance, des règles claires et des outils capables d'échanger l'information.",
         },
         {
           q: "Pourquoi les indicateurs doivent-ils être communs ?",
-          choices: ["Pour que les deux parties mesurent la même chose", "Pour cacher certaines informations à l'autre", "Pour supprimer la phase de planification", "Pour augmenter le nombre de réunions"],
+          choices: ["Pour mesurer la même chose", "Pour cacher certaines informations à l'autre", "Pour supprimer la phase de planification", "Pour augmenter le nombre de réunions"],
           answer: 0,
           explain: "Avec des indicateurs communs (taux de service, erreur de prévision), les discussions portent sur des faits partagés.",
         },
         {
           q: "Que fait un portail fournisseur ou un EDI ?",
-          choices: ["Échange automatiquement commandes, prévisions et stocks", "Imprime les étiquettes de transport", "Recrute de nouveaux fournisseurs", "Gère les paies des équipes"],
+          choices: ["Échange automatiquement les données", "Imprime les étiquettes de transport", "Recrute de nouveaux fournisseurs", "Gère les paies des équipes"],
           answer: 0,
           explain: "L'échange de données informatisé (EDI) ou les portails transmettent les informations sans ressaisie : plus rapide et plus fiable.",
         },
