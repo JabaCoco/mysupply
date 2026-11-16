@@ -124,3 +124,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** CA équivalent = économie / marge nette : raisonnement pédagogique (suppose que la marge nette reste constante sur les ventes additionnelles).
 - **[notion]** VAN, TRI, délai de retour : formules de base de finance d'entreprise ; le taux d'actualisation (6 à 10 %) est un exemple, pas une recommandation.
 - **[chiffre]** Exemples fictifs (stocks, créances, dettes, taux de marge) : ils servent à calculer.
+
+## Lot 16 — Stratégie et innovation
+- **[notion]** Supply chain « efficiente » ou « réactive » : modèle de Marshall Fisher (1997) simplifié (produits fonctionnels / innovants). Le cours ne cite pas le modèle « agile » ni le « leagile ».
+- **[notion]** Méthode du centre de gravité : première approximation uniquement (distance à vol d'oiseau, pas de contraintes de réseau routier) ; la notation pondérée dépend des poids choisis (subjectifs).
+- **[notion]** Make or buy : seuil = frais fixes / (prix d'achat − coût variable) : modèle linéaire simplifié (ignore délais, qualité, risque).
+- **[notion]** Technologies : blockchain « usages encore limités », drones et véhicules autonomes « en expérimentation » : jugements susceptibles d'évoluer vite.
+- **[notion]** Reshoring / nearshoring : définitions courantes ; les distinctions varient selon les auteurs.
+- **[chiffre]** Exemples fictifs (volumes, coordonnées, notes, prix) : ils servent à calculer.

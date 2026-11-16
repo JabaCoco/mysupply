@@ -30,6 +30,7 @@ import lean from './lean.js'
 import durable from './durable.js'
 import risques from './risques.js'
 import finance from './finance.js'
+import strategie from './strategie.js'
 import basesPlus from './ajouts/bases.js'
 import transportPlus from './ajouts/transport.js'
 import stocksPlus from './ajouts/stocks.js'
@@ -67,6 +68,7 @@ export const MODULES = [
   withExtras(durable),
   withExtras(risques),
   withExtras(finance),
+  withExtras(strategie),
 ]
 
 // Toutes les leçons à la suite, dans l'ordre du programme
