@@ -223,7 +223,7 @@ const BASE_UNITS = [
 import { LOTS } from '../lots/index.js'
 const UNIT_ORDER = [
   'bases', 'chiffres', 'bureau', 'transport', 'incoterms-en', 'entrepot', 'achats', 'prevision', 'douane-en',
-  'production-en', 'kpi-en', 'ecommerce-en', 'faux-amis', 'faux-amis-2', 'phrasal', 'abreviations',
+  'production-en', 'kpi-en', 'ecommerce-en', 'durable-en', 'faux-amis', 'faux-amis-2', 'phrasal', 'abreviations',
   'communication', 'negociation', 'reunions', 'carriere',
 ]
 const rank = (unit) => (UNIT_ORDER.includes(unit.id) ? UNIT_ORDER.indexOf(unit.id) : UNIT_ORDER.length)

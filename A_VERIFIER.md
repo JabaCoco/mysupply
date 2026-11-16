@@ -98,3 +98,12 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** PDCA attribué à Deming (roue de Deming) ; DMAIC propre à Six Sigma ; ceintures (jaune, verte, noire) : hiérarchie courante, variable selon les organismes.
 - **[notion]** SMED : « moins de 10 minutes » est l'objectif d'origine (Shigeo Shingo) ; en pratique, on parle plutôt de réduction progressive.
 - **[chiffre]** Exemples fictifs (consommations, takt time, nombre de changements) : ils servent à calculer.
+
+## Lot 13 — Supply chain durable
+- **[chiffre]** Facteurs d'émission (g CO₂e par tonne-km) : maritime 10-20, ferroviaire 20-30, fluvial 30-40, routier 60-100, aérien 600-1 000 ; gazole ≈ 2,5-3 kg CO₂e/litre. **Ce sont des ordres de grandeur pédagogiques** : pour un vrai bilan, utiliser la Base Empreinte (ADEME) ou le calculateur officiel (information CO₂ des prestations de transport).
+- **[chiffre]** « Le scope 3 représente souvent plus de 70 % des émissions » : ordre de grandeur courant, variable selon les secteurs.
+- **[notion]** Scopes 1/2/3 (GHG Protocol) : définitions simplifiées. La notion de « scope 2 location-based / market-based » n'est pas abordée.
+- **[notion]** CSRD : calendrier et champ d'application modifiés à plusieurs reprises (simplification européenne) : le cours ne donne ni dates ni seuils. Devoir de vigilance : loi française de 2017 (déjà notée au lot 5) ; la directive européenne CS3D n'est pas détaillée.
+- **[notion]** Loi AGEC : « interdiction de détruire certains invendus non alimentaires » : formulation simplifiée (la loi prévoit des exceptions et des dates d'entrée en vigueur).
+- **[notion]** ZFE : zones à faibles émissions ; le calendrier et le périmètre des ZFE en France ont évolué : non détaillés.
+- **[notion]** Faux amis du lot (sensible, location, commodity, fabric, lecture, journey, sympathetic, ignore) : traductions usuelles ; « location » peut aussi signifier « location (louer) » en français dans le seul sens inverse (rental).

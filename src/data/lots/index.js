@@ -17,5 +17,6 @@ import lot09 from './lot09.js'
 import lot10 from './lot10.js'
 import lot11 from './lot11.js'
 import lot12 from './lot12.js'
+import lot13 from './lot13.js'
 
-export const LOTS = [lot01, lot02, lot03, lot04, lot05, lot06, lot07, lot08, lot09, lot10, lot11, lot12]
+export const LOTS = [lot01, lot02, lot03, lot04, lot05, lot06, lot07, lot08, lot09, lot10, lot11, lot12, lot13]
