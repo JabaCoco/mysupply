@@ -90,3 +90,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[chiffre]** « Un ROI acceptable, délai de retour de moins de 3 ans » : repère courant en logistique, variable selon l'entreprise.
 - **[notion]** « Garbage in, garbage out » et « tour de contrôle » : vocabulaire courant en cours de SCM, définitions simplifiées.
 - **[chiffre]** Exemples fictifs (prix par utilisateur, nombre d'alertes, délais fournisseurs) : ils servent à calculer.
+
+## Lot 12 — Lean
+- **[notion]** Les 7 gaspillages (muda) : liste « classique » (surproduction, attente, transport, sur-traitement, stocks, mouvements, défauts) ; certains auteurs ajoutent un 8e (talents non exploités). Ordre des mots japonais des 5S : Seiri, Seiton, Seiso, Seiketsu, Shitsuke (traductions françaises variables).
+- **[notion]** Formule du nombre de cartes Kanban N = D × L × (1 + S) / C : forme la plus courante ; d'autres versions utilisent un « coefficient de sécurité » ou un « temps de cycle » différent.
+- **[chiffre]** Niveaux sigma (3 σ ≈ 66 800 DPMO, 4 σ ≈ 6 200, 5 σ ≈ 230, 6 σ = 3,4) : valeurs usuelles « avec décalage de 1,5 σ ». Ce décalage n'est pas expliqué dans le cours.
+- **[notion]** PDCA attribué à Deming (roue de Deming) ; DMAIC propre à Six Sigma ; ceintures (jaune, verte, noire) : hiérarchie courante, variable selon les organismes.
+- **[notion]** SMED : « moins de 10 minutes » est l'objectif d'origine (Shigeo Shingo) ; en pratique, on parle plutôt de réduction progressive.
+- **[chiffre]** Exemples fictifs (consommations, takt time, nombre de changements) : ils servent à calculer.

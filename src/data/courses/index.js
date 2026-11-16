@@ -26,6 +26,7 @@ import distribution from './distribution.js'
 import kpi from './kpi.js'
 import douane from './douane.js'
 import outils from './outils.js'
+import lean from './lean.js'
 import basesPlus from './ajouts/bases.js'
 import transportPlus from './ajouts/transport.js'
 import stocksPlus from './ajouts/stocks.js'
@@ -59,6 +60,7 @@ export const MODULES = [
   withExtras(kpi, kpiPlus),
   withExtras(douane),
   withExtras(outils, outilsPlus),
+  withExtras(lean),
 ]
 
 // Toutes les leçons à la suite, dans l'ordre du programme
