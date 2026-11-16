@@ -107,3 +107,12 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** Loi AGEC : « interdiction de détruire certains invendus non alimentaires » : formulation simplifiée (la loi prévoit des exceptions et des dates d'entrée en vigueur).
 - **[notion]** ZFE : zones à faibles émissions ; le calendrier et le périmètre des ZFE en France ont évolué : non détaillés.
 - **[notion]** Faux amis du lot (sensible, location, commodity, fabric, lecture, journey, sympathetic, ignore) : traductions usuelles ; « location » peut aussi signifier « location (louer) » en français dans le seul sens inverse (rental).
+
+## Lot 14 — Risques et résilience
+- **[chiffre]** Canal de Suez : « environ 12 % du commerce mondial » et blocage de l'Ever Given en mars 2021 « près d'une semaine » (23-29 mars) : chiffres très cités, à recouper (certaines sources donnent 10 à 15 %).
+- **[notion]** Crises citées (Japon 2011, inondations en Thaïlande 2011, Covid-19, semi-conducteurs 2020-2022, mer Rouge depuis fin 2023) : descriptions volontairement simples ; les causes de la pénurie de puces sont multiples (cours complets : demande, capacités, annulations de commandes, incendies d'usines…).
+- **[notion]** Matrice probabilité × gravité (notes de 1 à 5) et seuils « criticité élevée ≥ 15, moyenne ≥ 8 » : conventions courantes, pas une norme.
+- **[chiffre]** « Au-delà de 50 % chez un seul fournisseur, dépendance forte » ; indice de concentration = somme des carrés des parts (type HHI, de 0 à 10 000) : repères courants.
+- **[notion]** TTR / TTS : vocabulaire de la résilience (Simchi-Levi) ; RTO / RPO / BIA : vocabulaire de la continuité d'activité (norme ISO 22301 non citée).
+- **[notion]** Cyberattaque : « payer la rançon encourage de nouvelles attaques » : position courante des autorités, qui déconseillent de payer ; la décision relève de la direction et d'experts.
+- **[chiffre]** Exemples fictifs (coûts d'arrêt, probabilités, primes d'assurance) : ils servent à calculer.
