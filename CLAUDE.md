@@ -70,6 +70,13 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
   - **Jeu de la bière** (`/atelier/biere`, `src/lib/beerGame.js`, `BeerGame.jsx`, `BeerChart.jsx`) : chaîne de 4 maillons, le joueur est le grossiste, 20 semaines, 5 profils de demande des clients ; résultats : graphique des commandes par maillon, amplification (effet coup de fouet), comparaison avec une chaîne qui partage l'information. Record : `biere` dans la table `workshop`.
   - À la fin : comparaison avec la méthode du cours (point de commande + Wilson) ; record = meilleur écart en %.
 
+### Autres activités de l'Atelier (au même niveau que les défis, formules, cas et simulateur)
+- **Jeu de la bière** (`/atelier/biere`, `src/lib/beerGame.js`) : voir le simulateur ci-dessus ; il n'est plus dans la page Simulateur.
+- **Plan de chargement** (`/atelier/chargement`, `src/lib/truckLoading.js`) : placer des palettes dans un camion (ordre de livraison, charge utile, équilibre, palettes fragiles), score sur 100, plan suggéré.
+- **Négociation** (`/atelier/negociation`, `src/lib/negotiation.js`) : 5 leviers parmi 7 face à un fournisseur, coût total annuel, score vs meilleur enchaînement.
+- **Tournée de livraison** (`/atelier/tournee`, `src/lib/tour.js`) : relier dépôt et clients, comparaison avec le plus proche voisin et la tournée optimale (Held-Karp).
+- Le score et le meilleur résultat de chaque activité sont dans la table `workshop` (`chargement`, `negociation`, `tournee`, `biere`) via `recordScoreGame` / `recordBeerGame` (`src/lib/atelier.js`). Chaque test de logique est dans `scripts/verify.mjs`.
+
 ### Anglais (`src/pages/anglais/`, contenu dans `src/data/anglais/units.js`)
 - 23 unités, 63 leçons, 310 mots + 103 phrases. Difficulté progressive : mots (niveau 1) → mots en contexte (2) → phrases et mails (3, unité « Communiquer au travail »). Unité « Faux amis » avec notes.
 - **Mots du jour = flashcards** (`DailyWords.jsx`) : 3 mots par jour (jamais vus). Le **recto** n'affiche que le mot, en anglais ou en français selon un tirage stable par mot et par jour (`cardFace` dans `src/lib/english.js`). Le haut-parleur n'est sur le recto que si le mot est en anglais. Un toucher retourne la carte (rotation 3D) : le **verso** donne le mot anglais + 🔊, la traduction, la définition (`def`), l'exemple, puis « Je connais » / « À revoir » (+2 XP). Une carte déjà triée s'ouvre retournée. La tuile « Word of the day » de l'accueil n'affiche que le recto (sans la réponse).

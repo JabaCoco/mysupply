@@ -18,6 +18,7 @@ import { UNITS, ALL_EN_LESSONS, ALL_WORDS } from '../src/data/anglais/units.js'
 import { buildExercises, checkOrder, checkTyped } from '../src/lib/englishExercises.js'
 import { generateLoad, suggestPlan, evaluate as evalLoad, emptyPlan, canStack } from '../src/lib/truckLoading.js'
 import { generateNegotiation, bestSequence, playSequence, totalCost, scoreNegotiation, initialState, applyLever, LEVERS, MAX_ROUNDS } from '../src/lib/negotiation.js'
+import { generateTour, nearestNeighbor, optimalTour, routeLength, crossings, scoreTour, LEVELS } from '../src/lib/tour.js'
 import { evaluateFormula, canonicalName } from '../src/lib/excel/evaluate.js'
 import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
@@ -374,6 +375,32 @@ for (let i = 0; i < 40; i++) {
     const a = playSequence(s, ['remise']).price
     const b = playSequence(s, ['concurrent', 'remise']).price
     if (!(b >= a)) fail(w, "le bluff devrait coûter cher sur la remise suivante")
+  }
+}
+
+// ---------- Atelier « Tournée de livraison » ----------
+for (let i = 0; i < 120; i++) {
+  const n = Object.values(LEVELS)[i % 3]
+  const w = 'tournée #' + i
+  const { points } = generateTour(n)
+  if (points.length !== n + 1) fail(w, 'nombre de points incorrect')
+  const opt = optimalTour(points)
+  const nn = nearestNeighbor(points)
+  if (new Set(opt).size !== n || new Set(nn).size !== n) fail(w, 'une tournée ne visite pas chaque client une fois')
+  const lo = routeLength(points, opt)
+  if (routeLength(points, nn) < lo - 1e-9) fail(w, 'le plus proche voisin bat la tournée « optimale »')
+  if (crossings(points, opt) !== 0) fail(w, 'la tournée optimale se croise')
+  if (scoreTour(points, opt) !== 100) fail(w, 'la tournée optimale doit valoir 100')
+  if (Math.abs(routeLength(points, [...opt].reverse()) - lo) > 1e-9) fail(w, 'le sens de la tournée ne doit pas changer sa longueur')
+  if (n === 6) {
+    // vérification exacte par toutes les permutations
+    let bestLen = Infinity
+    const perm = (rest, cur) => {
+      if (!rest.length) return void (bestLen = Math.min(bestLen, routeLength(points, cur)))
+      rest.forEach((x, k) => perm([...rest.slice(0, k), ...rest.slice(k + 1)], [...cur, x]))
+    }
+    perm(opt.slice().sort((a, b) => a - b), [])
+    if (Math.abs(bestLen - lo) > 1e-9) fail(w, "Held-Karp ne donne pas l'optimum exact")
   }
 }
 

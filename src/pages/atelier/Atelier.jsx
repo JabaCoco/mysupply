@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { ArrowRight, Beer, Calculator, Check, Gamepad2, Handshake, Languages, Sheet, Truck, Users } from 'lucide-react'
+import { ArrowRight, Beer, Calculator, Check, Gamepad2, Handshake, Languages, Route, Sheet, Truck, Users } from 'lucide-react'
 import Page from '../../components/Page.jsx'
 import { EXCEL_CHALLENGES } from '../../data/atelier/excel.js'
 import { CASES } from '../../data/atelier/cases.js'
@@ -27,6 +27,7 @@ export default function Atelier() {
   const beer = workshop.get('biere')
   const truck = workshop.get('chargement')
   const nego = workshop.get('negociation')
+  const tour = workshop.get('tournee')
 
   const sections = [
     { to: '/atelier/excel', ...DAILY_STYLE.excel, title: 'Défis Excel', info: `${excelDone} / ${EXCEL_CHALLENGES.length} réussis` },
@@ -36,6 +37,7 @@ export default function Atelier() {
     { to: '/atelier/biere', icon: Beer, solid: 'bg-amber-500', title: 'Jeu de la bière', info: beer?.bestGap !== undefined ? `Meilleur écart : ${beer.bestGap > 0 ? '+' : ''}${Math.round(beer.bestGap * 100)} % vs règle auto` : 'Effet coup de fouet' },
     { to: '/atelier/chargement', icon: Truck, solid: 'bg-teal-500', title: 'Plan de chargement', info: truck?.bestScore !== undefined ? `Meilleur score : ${truck.bestScore} / 100` : 'Charge le camion' },
     { to: '/atelier/negociation', icon: Handshake, solid: 'bg-indigo-500', title: 'Négociation', info: nego?.bestScore !== undefined ? `Meilleur score : ${nego.bestScore} / 100` : 'Face à un fournisseur' },
+    { to: '/atelier/tournee', icon: Route, solid: 'bg-cyan-500', title: 'Tournée de livraison', info: tour?.bestScore !== undefined ? `Meilleur score : ${tour.bestScore} / 100` : 'Le chemin le plus court' },
   ]
 
   return (

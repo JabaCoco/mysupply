@@ -157,3 +157,9 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** Coût total annuel = achat − avantage de trésorerie du délai de paiement (achat × jours/365 × coût de l'argent) + coût de stock lié au délai de livraison (achat × jours/365 × coût de possession) + engagement non consommé (au-delà de 100 % du besoin). Formules de coût simples, cohérentes avec le cours Finance et supply chain ; le stock lié au délai est une approximation (couverture en jours × taux de possession).
 - **[notion]** Le score compare ton coût au meilleur enchaînement possible (calculé en essayant tous les ordres) : 100 = meilleur possible, 0 = rien négocié. Le fournisseur est entièrement déterministe (pas de hasard dans ses réponses).
 - **[notion]** Un faux devis concurrent divise par deux les concessions suivantes : hypothèse pédagogique sur la perte de crédibilité.
+
+## Atelier « Tournée de livraison »
+- **[notion]** Carte plane (distance à vol d'oiseau, 1 case = 1,5 km), un dépôt et 6, 8 ou 10 clients, sans capacité de camion ni créneaux horaires ni sens de circulation : problème du voyageur de commerce simple. Le coût du kilomètre (0,90 à 1,50 €) est fictif.
+- **[notion]** La tournée optimale est calculée exactement (programmation dynamique de Held-Karp) ; le script de vérification la compare à l'énumération de toutes les permutations pour 6 clients. Le « plus proche voisin » est l'heuristique classique.
+- **[notion]** Score : 100 − 2,5 points par % de kilomètres en plus (0 à partir de 40 % de trop) : barème de mon choix. « Pour 10 clients, plus de 3 millions de tournées » : 10! = 3 628 800 (en comptant les deux sens).
+- **[notion]** « Une tournée optimale n'a jamais de croisement » : vrai pour des distances euclidiennes ; vérifié par le script.
