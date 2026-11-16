@@ -116,3 +116,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** TTR / TTS : vocabulaire de la résilience (Simchi-Levi) ; RTO / RPO / BIA : vocabulaire de la continuité d'activité (norme ISO 22301 non citée).
 - **[notion]** Cyberattaque : « payer la rançon encourage de nouvelles attaques » : position courante des autorités, qui déconseillent de payer ; la décision relève de la direction et d'experts.
 - **[chiffre]** Exemples fictifs (coûts d'arrêt, probabilités, primes d'assurance) : ils servent à calculer.
+
+## Lot 15 — Finance et supply chain
+- **[notion]** BFR d'exploitation = stocks + créances clients − dettes fournisseurs : définition scolaire simplifiée (le vrai BFR comporte aussi d'autres postes : TVA, charges à payer…).
+- **[notion]** DIO / DSO / DPO sur 365 jours : certains cours utilisent 360 jours ; le DSO est ici calculé sur le CA (hors taxes) pour simplifier, alors que les créances sont souvent TTC.
+- **[chiffre]** « Coût de possession du stock de 15 à 25 % par an » : fourchette courante en logistique (capital, stockage, assurance, obsolescence), très variable selon le secteur.
+- **[notion]** CA équivalent = économie / marge nette : raisonnement pédagogique (suppose que la marge nette reste constante sur les ventes additionnelles).
+- **[notion]** VAN, TRI, délai de retour : formules de base de finance d'entreprise ; le taux d'actualisation (6 à 10 %) est un exemple, pas une recommandation.
+- **[chiffre]** Exemples fictifs (stocks, créances, dettes, taux de marge) : ils servent à calculer.
