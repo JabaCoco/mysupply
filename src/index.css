@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* ---------- Couleurs du thème ----------
+   Thème sombre par défaut. Le thème clair s'active avec data-theme="light"
+   sur la balise <html> (bouton lune/soleil de l'accueil). */
+:root {
+  color-scheme: dark;
+  --bg: #0a0a10;
+  --card: #15151d;
+  --line: #262631;
+  --fg: #f4f4f6;
+  --muted: #8d8d9b;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f4f8;
+  --card: #ffffff;
+  --line: #e3e3ea;
+  --fg: #15151c;
+  --muted: #6b6b78;
+}
+
+/* On rend ces couleurs utilisables en classes Tailwind :
+   bg-bg, bg-card, border-line, text-fg, text-muted… */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+}
+
+body {
+  @apply bg-bg text-fg antialiased;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Bandeau "flash info" qui défile ---------- */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  animation: ticker var(--ticker-duration, 40s) linear infinite;
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}
