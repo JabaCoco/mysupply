@@ -74,3 +74,12 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** QCDRSE (qualité, coût, délai, réactivité, service, RSE) : le sigle exact varie selon les entreprises (QCD, QCDM, QCDRSE…). ppm = pièces défectueuses par million, usage industriel courant.
 - **[notion]** OTIF multiplié « si les deux événements sont indépendants » : approximation pédagogique ; en réel, OTIF se mesure directement par commande.
 - **[notion]** Tableau de bord « 5 à 10 KPI » : règle de bonne pratique, pas une norme.
+
+## Lot 10 — Douane et international
+- **[notion]** Code SH 6 chiffres, NC 8 chiffres (UE), TARIC 10 chiffres : structure exacte. Le RTC (renseignement tarifaire contraignant) est « valable plusieurs années » : la durée légale précise (3 ans) n'est pas indiquée dans le cours.
+- **[notion]** Valeur en douane = prix + transport + assurance jusqu'à la frontière UE (base CIF) : règle générale de l'UE ; des ajustements existent (redevances, commissions…), non détaillés.
+- **[chiffre]** TVA à l'import à 20 % (taux normal français) ; droits de douane 2 à 12 % : exemples fictifs, les vrais taux dépendent du produit et de l'origine.
+- **[notion]** Les droits de douane en transit sont « dus au lieu de destination » : simplification. Types de régimes cités, non exhaustifs (perfectionnement passif non détaillé).
+- **[chiffre]** Conservation des documents douaniers « en général 3 ans » : durée variable selon le droit applicable.
+- **[chiffre]** Commission du crédit documentaire « 0,5 à 1,5 % » : ordre de grandeur, très variable selon la banque et le risque pays.
+- **[notion]** Cotation du change : « devise pour 1 € » (ex. 1,10 USD pour 1 €) ; division pour convertir en euros.

@@ -24,6 +24,7 @@ import prevision from './prevision.js'
 import production from './production.js'
 import distribution from './distribution.js'
 import kpi from './kpi.js'
+import douane from './douane.js'
 import outils from './outils.js'
 import basesPlus from './ajouts/bases.js'
 import transportPlus from './ajouts/transport.js'
@@ -55,6 +56,7 @@ export const MODULES = [
   withExtras(production),
   withExtras(distribution),
   withExtras(kpi, kpiPlus),
+  withExtras(douane),
   withExtras(outils),
 ]
 
