@@ -6,5 +6,6 @@
 //   english  : { units: [nouvelles unités], extend: { idUnité: [leçons ajoutées] } }
 // Les modules de COURS sont dans src/data/courses/ (et src/data/courses/ajouts/ pour les modules existants).
 import lot01 from './lot01.js'
+import lot02 from './lot02.js'
 
-export const LOTS = [lot01]
+export const LOTS = [lot01, lot02]

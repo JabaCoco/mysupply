@@ -24,6 +24,7 @@ import prevision from './prevision.js'
 import kpi from './kpi.js'
 import outils from './outils.js'
 import basesPlus from './ajouts/bases.js'
+import transportPlus from './ajouts/transport.js'
 
 // Ajoute à un module ses leçons et ses questions supplémentaires
 function withExtras(module, extra) {
@@ -39,7 +40,7 @@ function withExtras(module, extra) {
 
 export const MODULES = [
   withExtras(bases, basesPlus),
-  withExtras(transport),
+  withExtras(transport, transportPlus),
   withExtras(stocks),
   withExtras(entrepot),
   withExtras(achats),
