@@ -39,9 +39,7 @@ export const figures = [
   },
 ]
 
-// Contenus provisoires : ils seront remplacés par les vraies données
-// quand l'onglet Révisions sera construit.
+// Contenus provisoires : les badges seront branchés plus tard (la tuile « À réviser » est maintenant réelle).
 export const placeholders = {
-  cardsToReview: 8,
   badges: { won: 4, total: 30 },
 }

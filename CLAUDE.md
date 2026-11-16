@@ -9,7 +9,7 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Avance un onglet à la fois et attends sa validation avant de passer au suivant.
 - Aucune API payante, aucune dépendance à Claude dans l'appli.
 - Avant de livrer : `npm run build` + `npm run lint`, et si possible un test de bout en bout dans Edge (playwright-core installé dans le dossier temporaire de session, pas dans le projet).
-- **Étape en cours : les 16 lots de contenu sont terminés** (voir « Plan d'enrichissement du contenu »). Reste, dans l'ordre : récapitulatif + points à vérifier (`A_VERIFIER.md`), puis le jeu de la bière et 2-3 ateliers interactifs, puis l'onglet Révisions.
+- **Étape en cours : les 16 lots de contenu sont terminés** (voir « Plan d'enrichissement du contenu »). Les ateliers (jeu de la bière, plan de chargement, négociation, tournée) et l'onglet Révisions sont faits. Reste : version responsive PC/téléphone, pseudos éventuels, mise en ligne.
 - **Git** : dépôt local initialisé (branche `main`), un point de sauvegarde après chaque lot validé (`git add -A` puis `git commit`). Une archive ZIP d'avant les lots est dans `C:\Users\guito\Projets\sauvegardes\`.
 
 ## Choix techniques
@@ -18,7 +18,7 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Lancer : `npm run dev` → http://localhost:5173
 - **Windows ne distingue pas les majuscules dans les noms de fichiers** : ne jamais créer deux fichiers qui ne diffèrent que par la casse (ex. `Calculators.jsx` / `calculators.jsx`).
 - **Relais RSS / YouTube** (`vite.config.js`, `server.proxy` + `preview.proxy`) : les flux sans CORS passent par `/rss/<nom>` et `/rss/yt/<channelId>`, avec `followRedirects`. Ne marche qu'en `dev`/`preview` : **à recréer chez l'hébergeur** lors de la mise en ligne.
-- Base locale Dexie (`src/db.js`), versions 1 à 5 : `activity` (XP par jour), `feeds` (cache des flux), `meta` (réglages, `lastLesson`, `lastEnLesson`, `daily`, `englishDaily`, `demoSeeded`), `seen` (vidéos vues), `lessons` (progression des cours), `workshop` (Atelier : `excel/<id>`, `calc/<id>`, `cas/<id>`, `simulateur`), `english` (`lesson/<unité>/<leçon>` et `word/<mot>` avec statut `seen` / `known` / `review`).
+- Base locale Dexie (`src/db.js`), versions 1 à 6 : `activity` (XP par jour), `feeds` (cache des flux), `meta` (réglages, `lastLesson`, `lastEnLesson`, `daily`, `englishDaily`, `demoSeeded`), `seen` (vidéos vues), `lessons` (progression des cours), `workshop` (Atelier : `excel/<id>`, `calc/<id>`, `cas/<id>`, `simulateur`), `english` (`lesson/<unité>/<leçon>` et `word/<mot>` avec statut `seen` / `known` / `review`), `rvLots` (lots de révision importés, avec leurs contenus) et `rvProgress` (progression de chaque carte, répétition espacée).
 - Voix (`src/lib/speech.js`) : synthèse vocale et reconnaissance vocale du navigateur, gratuites (reconnaissance : Chrome/Edge/Safari, pas Firefox ; a besoin d'Internet). Toujours prévoir le secours « Passer l'exercice ».
 - XP et objectif : `src/lib/progress.js` (objectif 50 XP/jour, série = jours d'affilée avec l'objectif atteint, niveau = 100 XP).
 - **Données de démo** (5 jours de série + 30 XP) ajoutées une seule fois au démarrage (`seedDemoData` dans `main.jsx`), sans écraser de vraies données. Bouton « +10 XP (test) » visible seulement en dev. À retirer avant la mise en ligne.
@@ -77,6 +77,16 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - **Tournée de livraison** (`/atelier/tournee`, `src/lib/tour.js`) : relier dépôt et clients, comparaison avec le plus proche voisin et la tournée optimale (Held-Karp).
 - Le score et le meilleur résultat de chaque activité sont dans la table `workshop` (`chargement`, `negociation`, `tournee`, `biere`) via `recordScoreGame` / `recordBeerGame` (`src/lib/atelier.js`). Chaque test de logique est dans `scripts/verify.mjs`.
 
+### Révisions (`src/pages/revisions/`, `src/lib/rev*.js`)
+- **Principe** : l'utilisateur donne ses cours à Claude dans le chat, Claude produit un fichier au **format RV** (texte à directives, voir `FORMAT_REVISIONS.md`, modèle dans `src/lib/revTemplate.js`) que l'utilisateur importe. **Aucune API, aucun appel à Claude dans l'appli.**
+- **Format** (`src/lib/revFormat.js`) : `@lot`, `@matiere`, `@cours`, puis `@fiche`, `@flashcard`, `@qcm`, `@qa`, `@exercice` (avec tableaux `| a | b |`). `parseRevisions` vérifie le texte et renvoie les erreurs **ligne par ligne** (et des avertissements). Pour changer le format : modifier le parseur ET `revTemplate.js` ET `FORMAT_REVISIONS.md` (régénéré depuis `RV_PROMPT`), puis lancer `npm run verify`.
+- **Écrans** : `/revisions` (à réviser aujourd'hui, recherche, lots classés par matière puis cours), `/revisions/importer` (fichier **et** zone de collage, erreurs, aperçu, remplacement d'un lot identique), `/revisions/lot/:id` (modes, renommer, supprimer), `.../fiches`, `.../exercices`, `/revisions/etude/:lot|tous/:jour|flash|qcm|qa` (séances), `/revisions/exercice/:lot/:id`, `/revisions/sauvegarde`.
+- **Répétition espacée** (`revSrs.js`) : boîtes de Leitner (1, 2, 4, 8, 16, 32, 64 jours) ; « À revoir » retombe en boîte 0 (demain + une 2e fois dans la séance) ; flashcards dans les deux sens ; séance de 20 cartes max dont 10 nouvelles.
+- **XP** : carte connue +2 / à revoir +1, QCM +3 / +1, exercice +5 / +1, une fois par carte et par jour (`revStore.js`).
+- **Sauvegarde** (`revBackup.js`, `revStore.js`) : un fichier JSON de toutes les tables sauf `feeds` ; fusion ou remplacement. Export = feuille de partage sur iPhone, téléchargement ailleurs ; copier/coller avec secours (`src/lib/device.js`).
+- **Accueil** : la tuile « À réviser aujourd'hui » lit le vrai nombre de cartes (`useDueCount`). Les badges restent provisoires (`placeholders`).
+- `npm run verify` contrôle : le modèle est valide, 11 fichiers erronés sont signalés à la bonne ligne, la répétition espacée, la sauvegarde (formats, fusion).
+
 ### Anglais (`src/pages/anglais/`, contenu dans `src/data/anglais/units.js`)
 - 23 unités, 63 leçons, 310 mots + 103 phrases. Difficulté progressive : mots (niveau 1) → mots en contexte (2) → phrases et mails (3, unité « Communiquer au travail »). Unité « Faux amis » avec notes.
 - **Mots du jour = flashcards** (`DailyWords.jsx`) : 3 mots par jour (jamais vus). Le **recto** n'affiche que le mot, en anglais ou en français selon un tirage stable par mot et par jour (`cardFace` dans `src/lib/english.js`). Le haut-parleur n'est sur le recto que si le mot est en anglais. Un toucher retourne la carte (rotation 3D) : le **verso** donne le mot anglais + 🔊, la traduction, la définition (`def`), l'exemple, puis « Je connais » / « À revoir » (+2 XP). Une carte déjà triée s'ouvre retournée. La tuile « Word of the day » de l'accueil n'affiche que le recto (sans la réponse).
@@ -114,8 +124,9 @@ Objectif : tenir plusieurs mois à 15-20 min par jour (aujourd'hui : tout se fai
 
 ## Ce qu'il reste à faire
 
-1. **Onglet Révisions** : cartes de révision (répétition espacée) avec un **format d'import des fiches** à définir avec l'utilisateur (ex. CSV ou JSON : recto, verso, thème). Brancher ensuite la tuile « À réviser aujourd'hui » et les badges de l'accueil (`placeholders`). Les mots d'anglais « À revoir » pourront y devenir des fiches.
-2. **Dernières modifs** :
+1. **Dernières modifs** :
    - Version responsive PC et téléphone (aujourd'hui pensée mobile, `max-w-xl`).
    - Peut-être des pseudos pour partager l'appli avec la classe (sans API payante : à étudier).
    - Mise en ligne : recréer les relais RSS/YouTube chez l'hébergeur, retirer les données de démo et le bouton de test XP.
+   - Après la mise en ligne : tester sur un vrai iPhone (Safari et appli installée) l import, l export, le copier-coller de l onglet Révisions (voir A_VERIFIER.md).
+   - Idée : transformer les mots d anglais « À revoir » en cartes de révision.

@@ -34,3 +34,11 @@ db.version(5).stores({
   // { id: 'lesson/bases/acteurs', bestScore, total } ou { id: 'word/supplier', status: 'known' | 'review' | 'seen' }
   english: 'id',
 })
+
+// Version 6 : onglet Révisions
+db.version(6).stores({
+  // Un lot importé : { id, title, matiere, cours, createdAt, updatedAt, items: [...] }
+  rvLots: 'id, matiere, cours',
+  // Progression d'une carte : { id: 'lot|contenu|f', lotId, itemId, dir, box, due, reps, lapses, last, xpDay }
+  rvProgress: 'id, lotId, due',
+})

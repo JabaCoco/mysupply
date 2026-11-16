@@ -15,18 +15,25 @@ import BeerGame from './pages/atelier/simulateur/BeerGame.jsx'
 import TruckLoading from './pages/atelier/chargement/TruckLoading.jsx'
 import Negotiation from './pages/atelier/negociation/Negotiation.jsx'
 import DeliveryTour from './pages/atelier/tournee/DeliveryTour.jsx'
+import Revisions from './pages/revisions/Revisions.jsx'
+import ImportPage from './pages/revisions/ImportPage.jsx'
+import LotPage from './pages/revisions/LotPage.jsx'
+import Fiches from './pages/revisions/Fiches.jsx'
+import Study from './pages/revisions/Study.jsx'
+import Exercise, { ExerciseList } from './pages/revisions/Exercise.jsx'
+import Backup from './pages/revisions/Backup.jsx'
 import Anglais from './pages/anglais/Anglais.jsx'
 import EnglishLesson from './pages/anglais/EnglishLesson.jsx'
 import Lexique from './pages/anglais/Lexique.jsx'
 import { tabs } from './tabs.js'
 
 // Onglets déjà construits ; les autres affichent une page provisoire
-const BUILT = ['/', '/actu', '/cours', '/atelier', '/anglais']
+const BUILT = ['/', '/actu', '/cours', '/atelier', '/anglais', '/revisions']
 
 export default function App() {
   const location = useLocation()
   // Pendant une leçon, on masque la barre du bas pour rester concentré
-  const inLesson = matchPath('/cours/:moduleId/:lessonId', location.pathname) || matchPath('/anglais/:unitId/:lessonId', location.pathname)
+  const inLesson = matchPath('/cours/:moduleId/:lessonId', location.pathname) || matchPath('/anglais/:unitId/:lessonId', location.pathname) || matchPath('/revisions/etude/:scope/:mode', location.pathname) || matchPath('/revisions/exercice/:lotId/:itemId', location.pathname)
 
   return (
     <div className="min-h-dvh">
@@ -47,6 +54,14 @@ export default function App() {
         <Route path="/atelier/chargement" element={<TruckLoading />} />
         <Route path="/atelier/negociation" element={<Negotiation />} />
         <Route path="/atelier/tournee" element={<DeliveryTour />} />
+        <Route path="/revisions" element={<Revisions />} />
+        <Route path="/revisions/importer" element={<ImportPage />} />
+        <Route path="/revisions/sauvegarde" element={<Backup />} />
+        <Route path="/revisions/lot/:id" element={<LotPage />} />
+        <Route path="/revisions/lot/:id/fiches" element={<Fiches />} />
+        <Route path="/revisions/lot/:id/exercices" element={<ExerciseList />} />
+        <Route path="/revisions/etude/:scope/:mode" element={<Study />} />
+        <Route path="/revisions/exercice/:lotId/:itemId" element={<Exercise />} />
         <Route path="/anglais" element={<Anglais />} />
         <Route path="/anglais/lexique" element={<Lexique />} />
         <Route path="/anglais/:unitId/:lessonId" element={<EnglishLesson />} />

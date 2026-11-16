@@ -19,6 +19,10 @@ import { buildExercises, checkOrder, checkTyped } from '../src/lib/englishExerci
 import { generateLoad, suggestPlan, evaluate as evalLoad, emptyPlan, canStack } from '../src/lib/truckLoading.js'
 import { generateNegotiation, bestSequence, playSequence, totalCost, scoreNegotiation, initialState, applyLever, LEVERS, MAX_ROUNDS } from '../src/lib/negotiation.js'
 import { generateTour, nearestNeighbor, optimalTour, routeLength, crossings, scoreTour, LEVELS } from '../src/lib/tour.js'
+import { parseRevisions, cardsOf, hashId, checkNumericAnswer } from '../src/lib/revFormat.js'
+import { RV_EXAMPLE, RV_PROMPT } from '../src/lib/revTemplate.js'
+import { schedule, pickSession, dueToday, levelOf, INTERVALS, DAILY_LIMIT, NEW_LIMIT } from '../src/lib/revSrs.js'
+import { validateBackup, mergeRow, BACKUP_FORMAT } from '../src/lib/revBackup.js'
 import { evaluateFormula, canonicalName } from '../src/lib/excel/evaluate.js'
 import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
@@ -402,6 +406,84 @@ for (let i = 0; i < 120; i++) {
     perm(opt.slice().sort((a, b) => a - b), [])
     if (Math.abs(bestLen - lo) > 1e-9) fail(w, "Held-Karp ne donne pas l'optimum exact")
   }
+}
+
+// ---------- Onglet Révisions : format d'import, répétition espacée, sauvegarde ----------
+{
+  const w = 'Révisions'
+  // 1) le modèle donné à Claude est lui-même un fichier valide, avec un exemple de chaque type
+  const ex = parseRevisions(RV_EXAMPLE)
+  if (!ex.ok) fail(w, 'le modèle RV_EXAMPLE est invalide : ' + ex.errors.map((e) => 'ligne ' + e.line + ' ' + e.message).join(' | '))
+  else {
+    for (const t of ['fiche', 'flashcard', 'qcm', 'qa', 'exercice']) if (ex.counts[t] !== 1) fail(w, 'le modèle doit contenir exactement 1 ' + t)
+    if (ex.warnings.length) fail(w, "le modèle ne doit pas produire d'avertissement : " + ex.warnings.map((x) => x.message).join(' | '))
+    const exo = ex.lot.items.find((i) => i.type === 'exercice')
+    if (!exo.enonce.includes('| Semaine | Ventes |') || exo.questions.length !== 3 || !exo.questions[0].numeric || exo.questions[2].numeric) fail(w, "l'exercice du modèle est mal lu (tableau, questions, types de réponses)")
+    if (cardsOf(ex.lot).length !== 4) fail(w, 'flashcard (2 sens) + QCM + Q/R doivent donner 4 cartes')
+    if (parseRevisions(RV_EXAMPLE).lot.items.map((i) => i.id).join() !== ex.lot.items.map((i) => i.id).join()) fail(w, 'les identifiants de contenus doivent être stables')
+  }
+  const fence = '`'.repeat(3)
+  const start = RV_PROMPT.indexOf(fence + '\n')
+  const end = RV_PROMPT.indexOf(fence, start + 4)
+  if (start < 0 || end < 0 || !parseRevisions(RV_PROMPT.slice(start + 4, end)).ok) fail(w, 'le bloc exemple du texte à donner à Claude doit être valide')
+  // 2) erreurs : chaque cas doit être signalé à la bonne ligne
+  const cases = [
+    ['@matiere X\n@fiche A\ntexte', 1, 'lot'],
+    ['@lot L\n@fiche A\ntexte', 1, 'matiere'],
+    ['@lot L\n@matiere M\n@qcm\nquestion: Q\na) un\nc) trois\nreponse: a\nexplication: e', 6, 'choix'],
+    ['@lot L\n@matiere M\n@qcm\nquestion: Q\na) un\nb) deux\nreponse: z\nexplication: e', 7, 'lettre'],
+    ['@lot L\n@matiere M\n@flashcard\nrecto: seulement', 3, 'verso'],
+    ['@lot L\n@matiere M\n@truc\nx', 3, 'inconnue'],
+    ['@lot L\n@matiere M\n@fiche T\ntexte\n| a | b |\n| --- |\n| 1 | 2 |', 6, 'colonne'],
+    ['@lot L\n@matiere M\n@exercice E\nenonce: x\nreponse: 3', 5, 'apres une'],
+    ['@lot L\n@matiere M\n@qa\nquestion: Q\nreponse: R\nreponse: R2', 6, 'deux fois'],
+    ['@lot L\n@matiere M\n@flashcard\nrecto: a\nverso: b\nnote: n\ntolerance: 2', 7, "n'existe pas"],
+    ['', 1, 'vide'],
+  ]
+  for (const [text, line, hint] of cases) {
+    const r = parseRevisions(text)
+    if (r.ok) fail(w, "une erreur attendue n'est pas détectée (" + hint + ') dans : ' + JSON.stringify(text.slice(0, 40)))
+    else if (!r.errors.some((e) => e.line === line)) fail(w, 'erreur ' + hint + ' attendue ligne ' + line + ', obtenu : ' + r.errors.map((e) => e.line + ':' + e.message.slice(0, 30)).join(' | '))
+  }
+  // un fichier avec retours Windows, BOM et commentaires est accepté
+  const win = parseRevisions('﻿// c\r\n@lot L\r\n@matiere M\r\n@flashcard\r\nrecto: a\r\nverso: b\r\n')
+  if (!win.ok || win.counts.flashcard !== 1) fail(w, 'les fichiers Windows (retours \\r\\n, BOM) doivent être acceptés')
+  const acc = parseRevisions('@lot L\n@matiere M\n@qa\nQuestion: Q ?\nRéponse: R')
+  if (!acc.ok) fail(w, 'les clés avec accents/majuscules (Réponse:) doivent être acceptées')
+  // réponses numériques
+  const q = { value: 280, tolerance: 0.5 }
+  if (checkNumericAnswer(q, '280') !== true || checkNumericAnswer(q, '280,4') !== true || checkNumericAnswer(q, '283') !== false || checkNumericAnswer(q, 'abc') !== null) fail(w, 'la vérification des réponses numériques est incorrecte')
+  if (hashId('a') === hashId('b')) fail(w, 'hashId')
+
+  // 3) répétition espacée
+  const d0 = new Date(2026, 0, 10)
+  let card = schedule(null, true, d0)
+  if (card.box !== 0 || card.due !== '2026-01-11') fail(w, 'première réussite : boîte 0, retour dans 1 jour')
+  for (let i = 1; i < 10; i++) card = schedule(card, true, d0)
+  if (card.box !== INTERVALS.length - 1) fail(w, 'la boîte doit plafonner à ' + (INTERVALS.length - 1))
+  const miss = schedule({ ...card, lapses: 0 }, false, d0)
+  if (miss.box !== 0 || miss.due !== '2026-01-11' || miss.lapses !== 1) fail(w, 'une carte à revoir retombe en boîte 0, retour demain')
+  if (levelOf(null) !== 'nouvelle' || levelOf({ box: 5, lapses: 0 }) !== 'maîtrisée' || levelOf({ box: 0, lapses: 2 }) !== 'à revoir') fail(w, 'niveaux de cartes')
+  if (!(INTERVALS[0] < INTERVALS[3])) fail(w, 'les intervalles doivent croître')
+  const many = Array.from({ length: 80 }, (_, i) => ({ key: 'k' + i, progress: i < 30 ? { due: '2026-01-01', lapses: i % 3 } : i < 60 ? { due: '2099-01-01', lapses: 0 } : null }))
+  const sess = pickSession(many, '2026-01-10')
+  if (sess.length > DAILY_LIMIT) fail(w, 'séance trop longue')
+  if (sess.filter((k) => Number(k.slice(1)) >= 60).length > NEW_LIMIT) fail(w, 'trop de cartes nouvelles dans la séance')
+  if (sess.some((k) => Number(k.slice(1)) >= 30 && Number(k.slice(1)) < 60)) fail(w, 'une carte pas encore due est dans la séance')
+  if (dueToday(many, '2026-01-10') !== Math.min(DAILY_LIMIT, 30 + NEW_LIMIT)) fail(w, 'décompte des cartes du jour')
+
+  // 4) sauvegarde
+  const schema = { rvLots: 'id', rvProgress: 'id', activity: 'date' }
+  const good = JSON.stringify({ format: BACKUP_FORMAT, version: 1, exportedAt: new Date().toISOString(), tables: { rvLots: [{ id: 'l1', title: 'T', matiere: 'M', cours: 'C', items: [{ id: 'a', type: 'fiche' }] }], rvProgress: [], activity: [{ date: '2026-01-01', xp: 10 }] } }, null, 1)
+  if (!validateBackup(good, schema).ok) fail(w, 'une sauvegarde valide est refusée')
+  const badJson = validateBackup(good.slice(0, 120), schema)
+  if (badJson.ok || !badJson.errors[0].message.includes('JSON')) fail(w, 'une sauvegarde coupée doit être refusée avec un message clair')
+  if (validateBackup('{"format":"autre","tables":{}}', schema).ok) fail(w, 'un mauvais format doit être refusé')
+  if (validateBackup(good.replace('rvProgress', 'inconnue'), schema).ok) fail(w, 'une table inconnue doit être refusée')
+  if (validateBackup(good.replace('"id": "l1"', '"x": "l1"'), schema).ok) fail(w, 'une ligne sans clé doit être refusée')
+  if (mergeRow('activity', { date: 'd', xp: 30 }, { date: 'd', xp: 50 }).xp !== 50 || mergeRow('activity', { date: 'd', xp: 60 }, { date: 'd', xp: 50 }).xp !== 60) fail(w, 'fusion des XP : on garde le plus haut')
+  if (mergeRow('rvProgress', { last: '2026-01-02' }, { last: '2026-01-05' }).last !== '2026-01-05') fail(w, 'fusion de la progression : le plus récent gagne')
+  if (mergeRow('lessons', { id: 'a', v: 1 }, { id: 'a', v: 2 }).v !== 1) fail(w, 'fusion : ce qui existe déjà est conservé pour les autres tables')
 }
 
 // ---------- Compte rendu ----------
