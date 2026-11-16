@@ -50,3 +50,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[notion]** Cycle S&OP en 5 étapes (prévision statistique, revue demande, revue offre, pré-S&OP, décision) : c'est le modèle le plus courant en cours, les entreprises l'adaptent. « PIC » = nom français du S&OP, parfois présenté comme un niveau distinct (plan agrégé) du PDP.
 - **[chiffre]** « Le S&OP travaille sur 12 à 24 mois » : fourchette courante, pas une norme.
 - **[notion]** CPFR décrit comme une démarche « surtout utilisée entre grands industriels et distributeurs » : jugement général.
+
+## Lot 7 — Production
+- **[notion]** TRS / TRG / TRE : en France les trois sigles ne se calculent pas tout à fait de la même façon (temps de référence différent). Le cours utilise TRS = OEE = disponibilité × performance × qualité. « TRS mondial de 85 % » : repère courant, pas une norme.
+- **[notion]** Zones de temps du PDP (gelée / ferme / libre) : vocabulaire courant en cours de gestion de production ; certains manuels parlent de « horizon gelé », « semi-ferme », « libre ».
+- **[notion]** Lot économique de fabrication : formule Q* = √(2DS / (H × (1 − d/p))) (modèle EPQ). Le cours suppose une demande régulière et une cadence p supérieure à d.
+- **[notion]** Ratio critique : défini comme (échéance − aujourd'hui) / temps de production restant ; certaines écoles l'appellent « ratio d'urgence » ou utilisent l'inverse.
+- **[notion]** Loi de Little (L = λ × W) : valable pour un flux stable ; le cours la présente avec des pièces par jour.
+- **[chiffre]** Exemples fictifs (stocks, cadences, capacités) : ils servent à calculer, pas à représenter une usine réelle.
