@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { Link } from 'react-router'
-import { Beer, CalendarClock, CalendarRange, ClipboardList, Minus, PackageCheck, Plus, Shuffle, Truck, Zap } from 'lucide-react'
+import { CalendarClock, CalendarRange, ClipboardList, Minus, PackageCheck, Plus, Shuffle, Truck, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
 import { PROFILES, forecast, generateScenario, newGame, playReference, playWeek, referenceFor, summarize } from '../../../lib/simulation.js'
@@ -281,15 +280,6 @@ function Intro({ params, onStart, onShuffle, best, profile, onChoose }) {
         <button type="button" onClick={onStart} className="h-12 w-full rounded-2xl bg-violet-500 font-bold text-white">
           Commencer la partie
         </button>
-        <Link to="/atelier/simulateur/biere" className="flex items-center gap-3 rounded-2xl border border-line bg-card p-3.5">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-500 text-white">
-            <Beer size={20} />
-          </span>
-          <span className="min-w-0">
-            <span className="block font-bold">Le jeu de la bière</span>
-            <span className="block text-xs text-muted">Découvre l'effet coup de fouet sur toute une chaîne</span>
-          </span>
-        </Link>
       </div>
     </Page>
   )

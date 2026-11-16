@@ -51,7 +51,7 @@ export default function BeerGame() {
 
   return (
     <Page>
-      <SubHeader back="/atelier/simulateur" title="Le jeu de la bière" subtitle={`Tu es le grossiste · semaine ${week} / ${WEEKS}`} />
+      <SubHeader back="/atelier" title="Le jeu de la bière" subtitle={`Tu es le grossiste · semaine ${week} / ${WEEKS}`} />
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-2.5">
           <Box icon={Inbox} label="Commande reçue" value={view.incoming} detail="du détaillant, cette semaine" />
@@ -147,7 +147,7 @@ function Box({ icon: Icon, label, value, detail, align, level }) {
 function Intro({ profile, onProfile, onStart, best }) {
   return (
     <Page>
-      <SubHeader back="/atelier/simulateur" title="Le jeu de la bière" subtitle="Découvre l'effet coup de fouet" />
+      <SubHeader back="/atelier" title="Le jeu de la bière" subtitle="Découvre l'effet coup de fouet" />
       <div className="space-y-4">
         <p className="text-[15px] leading-relaxed">
           Une chaîne de 4 maillons livre de la bière : <span className="font-semibold">détaillant → grossiste → distributeur → usine</span>. <span className="font-semibold">Tu es le grossiste.</span> Chaque semaine, tu
@@ -210,7 +210,7 @@ function Results({ game, xp, onRestart }) {
   const upstreamRatio = mine.stages.at(-1).ratio
   return (
     <Page>
-      <SubHeader back="/atelier/simulateur" title="Résultat" subtitle={`Jeu de la bière · ${BEER_PROFILES[game.profile].label}`} />
+      <SubHeader back="/atelier" title="Résultat" subtitle={`Jeu de la bière · ${BEER_PROFILES[game.profile].label}`} />
       <div className="space-y-4">
         <div className={`rounded-3xl p-5 text-white ${won ? 'bg-emerald-500' : 'bg-violet-500'}`}>
           <p className="text-sm text-white/85">Ton coût (grossiste)</p>

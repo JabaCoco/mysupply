@@ -83,7 +83,6 @@ export async function recordSimulation(result) {
 
 // Partie du jeu de la bière terminée : garde le meilleur écart de coût du grossiste avec la règle automatique
 export async function recordBeerGame(result) {
-  await reportDaily('simulateur', 'simulateur')
   return db.transaction('rw', db.workshop, db.activity, async () => {
     const previous = await db.workshop.get('biere')
     const today = dayKey(new Date())
@@ -91,6 +90,24 @@ export async function recordBeerGame(result) {
     await db.workshop.put({
       id: 'biere',
       bestGap: best ? result.gap : previous.bestGap,
+      games: (previous?.games ?? 0) + 1,
+      lastXpDay: today,
+    })
+    if (previous?.lastXpDay === today) return 0
+    await addXp(XP_SIMULATION)
+    return XP_SIMULATION
+  })
+}
+
+// Activité de l'Atelier avec un score sur 100 (plan de chargement, négociation, tournée) :
+// garde le meilleur score et le nombre de parties ; XP une fois par jour et par activité.
+export async function recordScoreGame(id, score) {
+  return db.transaction('rw', db.workshop, db.activity, async () => {
+    const previous = await db.workshop.get(id)
+    const today = dayKey(new Date())
+    await db.workshop.put({
+      id,
+      bestScore: Math.max(score, previous?.bestScore ?? 0),
       games: (previous?.games ?? 0) + 1,
       lastXpDay: today,
     })

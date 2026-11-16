@@ -16,6 +16,7 @@ import { EXCEL_CHALLENGES, buildCells } from '../src/data/atelier/excel.js'
 import { CASES } from '../src/data/atelier/cases.js'
 import { UNITS, ALL_EN_LESSONS, ALL_WORDS } from '../src/data/anglais/units.js'
 import { buildExercises, checkOrder, checkTyped } from '../src/lib/englishExercises.js'
+import { generateLoad, suggestPlan, evaluate as evalLoad, emptyPlan, canStack } from '../src/lib/truckLoading.js'
 import { evaluateFormula, canonicalName } from '../src/lib/excel/evaluate.js'
 import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
@@ -328,6 +329,25 @@ for (const l of ALL_EN_LESSONS) {
       if (Math.abs(expected - ex.answer) > 1e-6) fail('Biais', `exercice mape-biais : réponse ${ex.answer} au lieu de ${expected}`)
     }
   }
+}
+
+// ---------- Atelier « Plan de chargement » ----------
+for (let i = 0; i < 500; i++) {
+  const load = generateLoad()
+  const w = 'chargement #' + i
+  const total = load.pallets.reduce((s, p) => s + p.weight, 0)
+  if (total > load.payload) fail(w, 'la charge utile est inférieure au poids total')
+  if (load.pallets.length > 16) fail(w, 'plus de palettes que de places')
+  const good = evalLoad(load, suggestPlan(load))
+  if (good.missing || good.overweight || good.conflicts.length) fail(w, 'le plan suggéré est invalide')
+  if (good.score < 90) fail(w, 'le plan suggéré devrait valoir au moins 90 (' + good.score + ')')
+  const empty = evalLoad(load, emptyPlan())
+  if (empty.score >= good.score) fail(w, 'un camion vide ne doit pas valoir autant que le plan suggéré')
+  // un plan à l'envers (client A au fond) doit créer des conflits
+  const rev = suggestPlan({ ...load, pallets: load.pallets.map((p) => ({ ...p, client: p.client === 'A' ? 'C' : p.client === 'C' ? 'A' : 'B' })) })
+  const revEval = evalLoad(load, rev)
+  if (new Set(load.pallets.map((p) => p.client)).size === 3 && revEval.conflicts.length === 0) fail(w, "un plan inversé devrait gêner le déchargement")
+  if (!canStack({ fragile: false, weight: 500 }, { weight: 400 }) || canStack({ fragile: true, weight: 500 }, { weight: 400 }) || canStack({ fragile: false, weight: 300 }, { weight: 400 })) fail(w, "règle d'empilage incorrecte")
 }
 
 // ---------- Compte rendu ----------

@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { ArrowRight, Calculator, Check, Gamepad2, Languages, Sheet, Users } from 'lucide-react'
+import { ArrowRight, Beer, Calculator, Check, Gamepad2, Languages, Sheet, Truck, Users } from 'lucide-react'
 import Page from '../../components/Page.jsx'
 import { EXCEL_CHALLENGES } from '../../data/atelier/excel.js'
 import { CASES } from '../../data/atelier/cases.js'
@@ -24,12 +24,16 @@ export default function Atelier() {
   const casesDone = CASES.filter((c) => workshop.has(`cas/${c.id}`)).length
   const solved = FORMULA_LIST.reduce((s, f) => s + (workshop.get(`calc/${f.id}`)?.solved ?? 0), 0)
   const sim = workshop.get('simulateur')
+  const beer = workshop.get('biere')
+  const truck = workshop.get('chargement')
 
   const sections = [
     { to: '/atelier/excel', ...DAILY_STYLE.excel, title: 'Défis Excel', info: `${excelDone} / ${EXCEL_CHALLENGES.length} réussis` },
     { to: '/atelier/calculs', ...DAILY_STYLE.calcul, title: 'Formules et calculs', info: solved ? `${solved} exercices réussis` : 'Cours + exercices' },
     { to: '/atelier/cas', ...DAILY_STYLE.cas, title: 'Études de cas', info: `${casesDone} / ${CASES.length} terminées` },
     { to: '/atelier/simulateur', ...DAILY_STYLE.simulateur, title: 'Simulateur', info: sim?.bestGap !== undefined ? `Meilleur écart : ${sim.bestGap > 0 ? '+' : ''}${Math.round(sim.bestGap * 100)} % vs cours` : 'Gère ton stock' },
+    { to: '/atelier/biere', icon: Beer, solid: 'bg-amber-500', title: 'Jeu de la bière', info: beer?.bestGap !== undefined ? `Meilleur écart : ${beer.bestGap > 0 ? '+' : ''}${Math.round(beer.bestGap * 100)} % vs règle auto` : 'Effet coup de fouet' },
+    { to: '/atelier/chargement', icon: Truck, solid: 'bg-teal-500', title: 'Plan de chargement', info: truck?.bestScore !== undefined ? `Meilleur score : ${truck.bestScore} / 100` : 'Charge le camion' },
   ]
 
   return (
