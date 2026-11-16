@@ -34,3 +34,11 @@ Règle de rédaction du contenu : tous les chiffres d'exercices sont fictifs (sa
 - **[date]** CACES : catégories R489 (chariots élévateurs à conducteur porté) et R485 (gerbeurs à conducteur accompagnant), « valable souvent 5 ans ». Les catégories et durées ont évolué avec les recommandations de l'Assurance maladie (R485 et R489 depuis 2020) : à confirmer.
 - **[notion]** Flux en U et flux traversant : définitions classiques de cours d'implantation, les noms peuvent varier (flux « en I », « en L »).
 - **[notion]** Études de cas Entrepôt : les chiffres de maintenance (8 % de l'investissement par an) et d'économies (80 % du coût des postes) sont des hypothèses pédagogiques, pas des données de marché.
+
+## Lot 5 — Achats
+- **[date]** Devoir de vigilance : « loi française de 2017 qui impose aux grandes entreprises de prévenir les atteintes graves aux droits humains et à l'environnement dans leur chaîne d'approvisionnement » (loi du 27 mars 2017). J'ai volontairement écrit « grandes entreprises » sans citer les seuils d'effectifs. La directive européenne sur le devoir de vigilance (CS3D) est plus récente et son calendrier d'application a évolué : non citée dans le cours.
+- **[notion]** RFI / RFQ / RFP : définitions classiques ; certaines écoles parlent aussi de « DAO » (dossier d'appel d'offres) ou de « consultation ». « Appel d'offres obligatoire dans le public » : seulement au-dessus de certains seuils pour les marchés publics (je ne détaille pas les seuils).
+- **[notion]** Matrice de Kraljic : j'utilise « critique (ou goulot) » pour le quadrant faible impact / fort risque ; la terminologie varie (« goulot », « contraignant », « critique »).
+- **[notion]** « Les conditions particulières signées l'emportent sur les conditions générales » (principe de droit des contrats français) : simplifié pour le cours.
+- **[chiffre]** Exemples fictifs : pénalité 0,5 % par jour plafonnée à 10 % ; coût de l'argent 3 à 6 % par an ; remise de 3 % sur 1,2 M€. Ils servent à calculer, pas à fixer des usages de marché.
+- **[notion]** EcoVadis est cité comme exemple de plateforme de notation RSE (nom de marque réel).

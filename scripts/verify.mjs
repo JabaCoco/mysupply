@@ -20,7 +20,7 @@ import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
 
 // Modules dont chaque leçon doit avoir une banque d'au moins 8 questions (on l'élargit lot après lot)
-const ENFORCE_BANK = new Set(['bases', 'transport', 'stocks', 'entrepot'])
+const ENFORCE_BANK = new Set(['bases', 'transport', 'stocks', 'entrepot', 'achats'])
 const MIN_BANK = 8
 // Calculateurs libres écrits à la main (les autres formules doivent avoir un `calculator` décrit en données)
 const HAND_CALCULATORS = new Set(['stock-securite', 'wilson', 'abc', 'rotation', 'otif', 'tco', 'incoterms'])
