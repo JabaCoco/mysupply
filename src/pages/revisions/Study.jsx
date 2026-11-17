@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { motion } from 'motion/react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../../db.js'
 import { CheckCircle2, RotateCcw, X, XCircle, Zap } from 'lucide-react'
 import Page from '../../components/Page.jsx'
 import { Inline } from '../../components/RichText.jsx'
@@ -28,12 +30,14 @@ export default function Study() {
   const [session, setSession] = useState(null)
   const started = useRef(false)
   const busy = useRef(false)
+  // Réglage retenu : 'recto' (recto d'abord, par défaut) ou 'both' (dans les deux sens, au hasard)
+  const flashMode = useLiveQuery(async () => (await db.meta.get('rvFlashMode'))?.value ?? 'recto', [])
 
   const back = scope === 'tous' ? '/revisions' : `/revisions/lot/${scope}`
 
   // Toutes les cartes de la portée choisie (un lot ou tous), filtrées par mode
   const universe = useMemo(() => {
-    if (!data) return []
+    if (!data || !flashMode) return []
     const wanted = TYPE_OF_MODE[mode]
     return data.lots
       .filter((l) => scope === 'tous' || l.id === scope)
@@ -42,23 +46,32 @@ export default function Study() {
         return cardsOf(lot)
           .map((c) => ({ key: cardKey(lot.id, c.itemId, c.dir), item: byId.get(c.itemId), dir: c.dir, lot }))
           .filter((c) => !wanted || c.item.type === wanted)
+          // « Recto d'abord » : on ne propose pas les cartes dans le sens verso → recto
+          .filter((c) => flashMode === 'both' || c.item.type !== 'flashcard' || c.dir === 'f')
       })
-  }, [data, scope, mode])
+  }, [data, scope, mode, flashMode])
+
+  async function chooseFlashMode(value) {
+    if (value === flashMode) return
+    started.current = false // la séance est recomposée avec le nouveau réglage
+    await db.meta.put({ key: 'rvFlashMode', value })
+  }
 
   function begin(keys) {
     setSession({ queue: keys, index: 0, known: 0, review: 0, xp: 0, requeued: [], missed: [] })
   }
 
   useEffect(() => {
-    if (!data || started.current) return
+    if (!data || !flashMode || started.current) return
     started.current = true
     const withProgress = universe.map((c) => ({ key: c.key, progress: data.progress.get(c.key) }))
     const all = search.get('tout') === '1'
     const keys = all ? shuffle(universe.map((c) => c.key)) : pickSession(withProgress, data.today, { limit: mode === 'jour' ? 20 : 40 })
     begin(keys)
-  }, [data, universe, mode, search])
+  }, [data, universe, mode, search, flashMode])
 
-  if (!data || !session) return null
+  if (!data || !session || !flashMode) return null
+  const hasFlash = universe.some((c) => c.item.type === 'flashcard')
   const byKey = new Map(universe.map((c) => [c.key, c]))
   const total = session.queue.length
   const done = session.index >= total
@@ -102,6 +115,18 @@ export default function Study() {
         </span>
       </div>
 
+      {hasFlash && session.index === 0 && (
+        <div className="mb-3 flex rounded-2xl border border-line bg-card p-1 text-sm font-bold" role="radiogroup" aria-label="Sens des flashcards">
+          {[
+            ['recto', 'Recto d\'abord'],
+            ['both', 'Dans les deux sens'],
+          ].map(([value, label]) => (
+            <button key={value} type="button" role="radio" aria-checked={flashMode === value} onClick={() => chooseFlashMode(value)} className={`h-10 flex-1 rounded-xl ${flashMode === value ? 'bg-violet-500 text-white' : 'text-muted'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
       {total === 0 && <Empty back={back} hasCards={universe.length > 0} onAll={() => begin(shuffle(universe.map((c) => c.key)))} />}
       {total > 0 && done && <Summary session={session} back={back} onRetry={() => begin(shuffle(session.missed))} />}
       {current && (
