@@ -45,19 +45,34 @@ export default function Home() {
   const flash = articles.filter((a) => a !== article).slice(0, 8)
 
   return (
-    <Page wide>
+    <Page full>
       <div className="space-y-4">
         <Header streak={progress.streak} />
         <FlashTicker items={flash} />
-        {/* Téléphone : une colonne (même ordre qu'avant). Grand écran : deux colonnes équilibrées. */}
-        <div className="space-y-4 lg:columns-2 lg:gap-4 lg:space-y-0 lg:*:mb-4 lg:*:break-inside-avoid">
-          <CafeCard shorts={recentShorts(news.items)} seen={seen} loading={loading} />
-          <GoalCard xp={progress.todayXp} level={progress.level} goalReached={progress.goalReached} />
-          <WeekCalendar week={progress.week} streak={progress.streak} />
-          <ResumeCard />
-          <QuickGrid />
-          <FigureCard />
-          <ArticleCard article={article} loading={loading} />
+        {/* Téléphone : une colonne, même ordre qu'avant. Écran large : grille de 2 / 3 / 4 colonnes qui remplit la largeur
+            (grid-flow-dense : les petites cartes comblent les trous). Chaque carte s'étire à la hauteur de sa ligne. */}
+        <div className="grid grid-cols-1 gap-4 md:grid-flow-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 *:h-full [&>*>*]:h-full">
+          <div className="md:col-span-2">
+            <CafeCard shorts={recentShorts(news.items)} seen={seen} loading={loading} />
+          </div>
+          <div>
+            <GoalCard xp={progress.todayXp} level={progress.level} goalReached={progress.goalReached} />
+          </div>
+          <div>
+            <WeekCalendar week={progress.week} streak={progress.streak} />
+          </div>
+          <div className="md:col-span-2">
+            <ResumeCard />
+          </div>
+          <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
+            <QuickGrid />
+          </div>
+          <div>
+            <FigureCard />
+          </div>
+          <div className="lg:col-span-2 xl:col-span-1">
+            <ArticleCard article={article} loading={loading} />
+          </div>
         </div>
       </div>
     </Page>

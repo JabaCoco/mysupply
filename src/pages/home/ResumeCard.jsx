@@ -12,9 +12,9 @@ export default function ResumeCard() {
 
   if (!next) {
     return (
-      <section>
+      <section className="flex flex-col">
         <h2 className="mb-2 font-bold">Reprendre</h2>
-        <Link to="/cours" className="flex items-center gap-3 rounded-3xl border border-line bg-card p-4">
+        <Link to="/cours" className="flex flex-1 items-center gap-3 rounded-3xl border border-line bg-card p-4">
           <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-400 text-slate-900">
             <GraduationCap size={22} />
           </span>
@@ -31,11 +31,11 @@ export default function ResumeCard() {
   const stats = progress.modules[next.module.id]
 
   return (
-    <section>
+    <section className="flex flex-col">
       <h2 className="mb-2 font-bold">Reprendre</h2>
       <Link
         to={`/cours/${next.key}`}
-        className="flex items-center gap-3 rounded-3xl border border-line bg-card p-4 transition-transform active:scale-[0.98]"
+        className="flex flex-1 items-center gap-3 rounded-3xl border border-line bg-card p-4 transition-transform active:scale-[0.98]"
       >
         <span className={`grid size-12 shrink-0 place-items-center rounded-2xl text-white ${color.solid}`}>
           <Icon size={22} />

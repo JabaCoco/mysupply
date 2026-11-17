@@ -18,14 +18,14 @@ export default function DailyWords({ words, status }) {
           {sorted} / {words.length} triés · +{XP_DAILY_WORD} XP par carte
         </p>
       </div>
-      <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:overflow-visible lg:px-0">
+      <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] xl:mx-0 xl:overflow-visible xl:px-0">
         {words.map((word, i) => (
           <motion.li
             key={word.en}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
-            className="w-[85%] shrink-0 snap-center sm:w-72 lg:w-auto lg:flex-1"
+            className="w-[85%] shrink-0 snap-center sm:w-72 xl:w-auto xl:min-w-0 xl:flex-1 xl:shrink"
           >
             <FlashCard word={word} index={i} total={words.length} status={status(word.en)} />
           </motion.li>
@@ -47,7 +47,7 @@ function FlashCard({ word, index, total, status }) {
   return (
     <div className="h-full" style={{ perspective: 1000 }}>
       <motion.div
-        className="grid h-full"
+        className="grid h-full grid-cols-[minmax(0,1fr)]"
         style={{ transformStyle: 'preserve-3d' }}
         initial={false}
         animate={{ rotateY: flipped ? 180 : 0 }}

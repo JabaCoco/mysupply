@@ -13,7 +13,7 @@ const WEEK = 7 * 24 // heures
 
 function Skeleton({ view }) {
   return view === 'videos' ? (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
       {[0, 1, 2, 3].map((n) => (
         <div key={n} className="aspect-[9/16] animate-pulse rounded-2xl bg-card" />
       ))}
@@ -44,7 +44,7 @@ export default function Actu() {
   ]
 
   return (
-    <Page wide>
+    <Page full>
       <div className="space-y-4">
         <header className="flex items-start justify-between gap-3">
           <div>
@@ -65,7 +65,7 @@ export default function Actu() {
         </header>
 
         {/* Choix Vidéos / Articles */}
-        <div className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-card p-1" role="tablist">
+        <div className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-card p-1 md:max-w-md" role="tablist">
           {views.map(({ id, label, icon: Icon, count }) => (
             <button
               key={id}

@@ -15,7 +15,7 @@ export default function NewsList({ items }) {
   }
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 xl:grid-cols-3 2xl:grid-cols-4">
       {items.map((item) => (
         <li key={item.id}>
           <a

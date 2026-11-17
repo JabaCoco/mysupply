@@ -35,7 +35,7 @@ export default function QuickGrid() {
   const style = DAILY_STYLE[daily?.type ?? 'excel']
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <Tile
         to={daily?.to ?? '/atelier'}
         icon={daily?.done ? CheckCircle2 : style.icon}

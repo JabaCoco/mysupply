@@ -1,20 +1,22 @@
 import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight } from 'lucide-react'
 import { moduleStyle } from './moduleStyle.js'
 
 // Carte d'un module : en-tête cliquable + liste de ses leçons (dépliable)
-export default function ModuleCard({ module, number, progress, open, onToggle }) {
+// `selected` (true / false) : mode « liste à gauche » du grand écran (le détail s'affiche à droite) → pas de dépliage, une flèche et un contour.
+export default function ModuleCard({ module, number, progress, open, onToggle, selected }) {
   const { Icon, color } = moduleStyle(module)
   const stats = progress.modules[module.id]
   const complete = stats.done === stats.total
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-line bg-card">
+    <section className={`overflow-hidden rounded-3xl border bg-card ${selected ? 'border-violet-500 ring-1 ring-violet-500/60' : 'border-line'}`}>
       <button
         type="button"
         onClick={onToggle}
-        aria-expanded={open}
+        aria-expanded={selected === undefined ? open : undefined}
+        aria-current={selected ? 'true' : undefined}
         className="flex w-full items-center gap-3 p-4 text-left"
       >
         <span className={`grid size-12 shrink-0 place-items-center rounded-2xl text-white ${color.solid}`}>
@@ -35,7 +37,11 @@ export default function ModuleCard({ module, number, progress, open, onToggle })
             </span>
           </span>
         </span>
-        <ChevronDown size={20} className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
+        {selected === undefined ? (
+          <ChevronDown size={20} className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
+        ) : (
+          <ChevronRight size={20} className={`shrink-0 ${selected ? 'text-violet-400' : 'text-muted'}`} />
+        )}
       </button>
 
       <AnimatePresence initial={false}>

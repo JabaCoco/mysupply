@@ -41,16 +41,16 @@ export default function Atelier() {
   ]
 
   return (
-    <Page wide>
+    <Page full>
       <div className="space-y-4">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Atelier</h1>
           <p className="text-sm text-muted">Pratique : Excel, calculs, cas réels et simulation</p>
         </header>
 
-        {daily && <DailyCard daily={daily} />}
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {/* Grille qui remplit la largeur : le défi du jour occupe 2 × 2 cases à côté des tuiles (grand écran) */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-flow-dense 2xl:grid-cols-6">
+          {daily && <DailyCard daily={daily} />}
           {sections.map(({ to, icon: Icon, solid, title, info }) => (
             <Link key={to} to={to} className="block rounded-3xl border border-line bg-card p-4 transition-transform active:scale-[0.97]">
               <span className={`grid size-10 place-items-center rounded-xl text-white ${solid}`}>
@@ -70,7 +70,7 @@ export default function Atelier() {
 function DailyCard({ daily }) {
   const { icon: Icon, gradient } = DAILY_STYLE[daily.type]
   return (
-    <Link to={daily.to} className={`block rounded-3xl bg-linear-to-br p-5 text-white shadow-lg transition-transform active:scale-[0.98] ${gradient}`}>
+    <Link to={daily.to} className={`col-span-2 block rounded-3xl bg-linear-to-br p-5 text-white shadow-lg transition-transform active:scale-[0.98] sm:col-span-4 lg:col-span-2 lg:row-span-2 lg:flex lg:flex-col lg:justify-between lg:p-6 ${gradient}`}>
       <div className="flex items-center gap-3">
         <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-white/20">
           <Icon size={22} />

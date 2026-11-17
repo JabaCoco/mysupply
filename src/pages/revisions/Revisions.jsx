@@ -52,13 +52,16 @@ export default function Revisions() {
   const { summary } = data
 
   return (
-    <Page>
+    <Page full>
       <div className="space-y-4">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Révisions</h1>
           <p className="text-sm text-muted">Tes fiches, flashcards, QCM et exercices</p>
         </header>
 
+        {/* Écran large : à gauche le résumé du jour, les boutons et la recherche ; à droite tes lots */}
+        <div className="space-y-4 lg:grid lg:grid-cols-[minmax(20rem,26rem)_1fr] lg:items-start lg:gap-6 lg:space-y-0">
+        <div className="space-y-4 lg:sticky lg:top-8">
         <div className="rounded-3xl bg-linear-to-br from-orange-500 to-amber-400 p-5 text-white shadow-lg">
           <p className="text-xs font-bold tracking-wider text-white/80 uppercase">À réviser aujourd'hui</p>
           <p className="text-4xl font-extrabold">
@@ -91,6 +94,15 @@ export default function Revisions() {
           </Link>
         </div>
 
+        {data.lots.length > 0 && (
+          <label className="flex h-11 items-center gap-2 rounded-2xl border border-line bg-card px-3">
+            <Search size={18} className="text-muted" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un lot ou un mot" className="min-w-0 flex-1 bg-transparent text-[16px] outline-none" aria-label="Rechercher" />
+          </label>
+        )}
+        </div>
+
+        <div className="space-y-4">
         {data.lots.length === 0 ? (
           <div className="space-y-3 rounded-3xl border border-line bg-card p-5 text-sm leading-relaxed">
             <p className="text-base font-bold">Comment ça marche ?</p>
@@ -115,10 +127,6 @@ export default function Revisions() {
           </div>
         ) : (
           <>
-            <label className="flex h-11 items-center gap-2 rounded-2xl border border-line bg-card px-3">
-              <Search size={18} className="text-muted" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un lot ou un mot" className="min-w-0 flex-1 bg-transparent text-[16px] outline-none" aria-label="Rechercher" />
-            </label>
             {groups.length === 0 && <p className="text-sm text-muted">Aucun résultat.</p>}
             {groups.map(([matiere, courses]) => (
               <section key={matiere} className="space-y-2">
@@ -126,6 +134,7 @@ export default function Revisions() {
                 {courses.map(([cours, rows]) => (
                   <div key={cours} className="space-y-2">
                     <h3 className="text-xs font-bold tracking-wider text-muted uppercase">{cours}</h3>
+                    <div className="space-y-2 xl:grid xl:grid-cols-2 xl:gap-2 xl:space-y-0 2xl:grid-cols-3">
                     {rows.map(({ lot, hits }) => {
                       const info = data.byLot.get(lot.id)
                       const c = countsOf(lot)
@@ -142,12 +151,15 @@ export default function Revisions() {
                         </Link>
                       )
                     })}
+                    </div>
                   </div>
                 ))}
               </section>
             ))}
           </>
         )}
+        </div>
+        </div>
       </div>
     </Page>
   )

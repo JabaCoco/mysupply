@@ -14,7 +14,7 @@ export default function Anglais() {
   const doneCount = en.done.size
 
   return (
-    <Page wide>
+    <Page full>
       <div className="space-y-5">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Anglais</h1>
@@ -26,8 +26,12 @@ export default function Anglais() {
           </div>
         </header>
 
-        <DailyWords words={en.dailyWords} status={en.status} />
-
+        {/* Écran large : les mots du jour sur toute la largeur, puis la suite du parcours et le lexique côte à côte */}
+        <div className="space-y-5">
+        <div className="min-w-0">
+          <DailyWords words={en.dailyWords} status={en.status} />
+        </div>
+        <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-5 lg:space-y-0">
         {en.next ? (
           <Link to={`/anglais/${en.next.key}`} className="flex items-center gap-4 rounded-3xl bg-indigo-500 p-5 text-white shadow-lg transition-transform active:scale-[0.98]">
             <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/20">
@@ -58,14 +62,16 @@ export default function Anglais() {
         </Link>
 
         {!canListen() && (
-          <p className="flex gap-2 rounded-2xl bg-amber-400/10 p-3 text-sm leading-snug">
+          <p className="flex gap-2 rounded-2xl bg-amber-400/10 p-3 text-sm leading-snug lg:col-span-2">
             <Mic size={18} className="shrink-0 text-amber-400" />
             Ton navigateur ne gère pas la reconnaissance vocale : les exercices de prononciation pourront être passés. Pour les faire, utilise Chrome ou Edge.
           </p>
         )}
+        </div>
+        </div>
 
         <h2 className="font-bold">Le parcours</h2>
-        <ol className="space-y-3 lg:grid lg:grid-cols-2 lg:items-start lg:gap-3 lg:space-y-0">
+        <ol className="space-y-3 md:grid md:grid-cols-2 md:items-start md:gap-3 md:space-y-0 xl:grid-cols-3 2xl:grid-cols-4">
           {UNITS.map((unit, u) => {
             const { Icon, color } = unitStyle(unit)
             const lessonsDone = unit.lessons.filter((l) => en.done.has(`${unit.id}/${l.id}`)).length
