@@ -25,8 +25,8 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Contenus provisoires restants dans `src/data/daily.js` → `placeholders` : « À réviser aujourd'hui : 8 cartes » et « Badges 4/30 » (à brancher avec Révisions).
 
 ## Nom et icônes
-- L'appli s'appelle **MySupply** (manifeste, `<title>`, `apple-mobile-web-app-title`). Logo = `public/icon.svg` (M noir + S orange au pinceau, fond blanc).
-- Les PNG (`pwa-192/512`, `pwa-maskable-192/512` avec logo réduit à 60 % pour la zone sûre, `apple-touch-icon` 180, `favicon-16/32/48`, `favicon.ico`) sont générés depuis le SVG par une capture Edge (playwright, hors projet) : si le logo change, les régénérer.
+- L'appli s'appelle **MySupply** (manifeste, `<title>`, `apple-mobile-web-app-title`). Logo = `public/icon.svg` (M noir + S orange au pinceau, **fond transparent**, liseré blanc fin autour des lettres pour que le M noir reste lisible sur fond sombre).
+- Les PNG (`pwa-192/512` et `favicon-*` transparents, `pwa-maskable-192/512` transparents avec logo réduit à 60 % pour la zone sûre, `apple-touch-icon` 180 sur fond blanc sans transparence, logo à 82 % et sans liseré, `favicon.ico`) sont générés depuis le SVG par une capture Edge (playwright, hors projet) : si le logo change, les régénérer.
 
 ## Design
 

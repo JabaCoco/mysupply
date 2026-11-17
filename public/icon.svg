@@ -1,30 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <filter id="pinceau" x="-10%" y="-10%" width="120%" height="120%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="7" result="bruit"/>
-      <feDisplacementMap in="SourceGraphic" in2="bruit" scale="9" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-    <filter id="fibres" x="-10%" y="-10%" width="120%" height="120%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.06" numOctaves="2" seed="3" result="grain"/>
-      <feDisplacementMap in="SourceGraphic" in2="grain" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="11" result="bruit"/>
+      <feDisplacementMap in="SourceGraphic" in2="bruit" scale="5" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
   </defs>
 
-  <rect width="512" height="512" fill="#FFFFFF"/>
+  <!-- Fond transparent : pas de rectangle de fond. Liseré blanc fin (trait dessiné derrière le remplissage) pour que le M noir reste lisible sur fond sombre. -->
 
-  <!-- M noir : quatre traits de pinceau -->
-  <g filter="url(#pinceau)">
-    <g fill="none" stroke="#111111" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M 34 346 C 24 262 40 150 56 56" stroke-width="46"/>
-      <path d="M 56 56 C 110 110 150 210 176 292" stroke-width="30"/>
-      <path d="M 176 292 C 210 214 252 126 306 46" stroke-width="38"/>
-      <path d="M 306 46 C 322 140 310 250 328 360" stroke-width="26"/>
-    </g>
+  <!-- M noir : calligraphie au pinceau, pleins épais et déliés fins -->
+  <g filter="url(#pinceau)" fill="#111111" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
+    <path d="M 70 70 C 52 130 44 210 54 290 C 58 322 52 346 30 372 C 56 362 78 340 86 306 C 98 236 98 150 108 96 C 100 80 84 70 70 70 Z"/>
+    <path d="M 22 112 C 40 70 78 40 118 50 C 96 52 62 74 44 118 Z"/>
+    <path d="M 96 60 C 128 120 160 190 196 276 C 206 300 224 300 232 276 C 230 252 214 224 198 192 C 172 140 146 94 124 62 C 114 54 102 54 96 60 Z"/>
+    <path d="M 232 280 C 252 214 282 140 330 62 C 336 54 342 56 340 66 C 306 150 272 224 248 296 Z"/>
+    <path d="M 318 52 C 336 140 344 250 330 330 C 326 360 340 382 380 396 C 352 372 354 344 360 312 C 372 230 366 132 350 56 C 342 46 326 44 318 52 Z"/>
+    <path d="M 380 84 C 408 72 436 78 452 96 C 430 88 404 90 382 100 Z"/>
   </g>
 
-  <!-- S orange : un seul trait fluide -->
-  <g filter="url(#fibres)">
-    <path d="M 452 236 C 410 170 270 190 262 272 C 254 356 442 330 440 418 C 438 500 286 504 224 426"
-          fill="none" stroke="#D97757" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- S orange : grande lettre au pinceau, plein à la courbe, déliés aux extrémités -->
+  <g filter="url(#pinceau)" fill="#D97757" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
+    <path d="M 456 250 C 430 214 392 196 346 200 C 292 206 246 246 252 296 C 256 330 288 350 330 360 C 370 370 396 388 392 416 C 388 446 346 462 300 452 C 270 446 246 432 230 408 C 244 448 288 482 346 484 C 410 486 450 452 446 408 C 442 368 404 346 360 336 C 322 328 298 316 298 290 C 298 262 330 238 368 238 C 404 238 438 252 456 250 Z"/>
+    <path d="M 470 236 C 484 222 494 206 490 188 C 482 206 468 220 452 230 Z"/>
+    <path d="M 232 410 C 206 420 176 416 150 396 C 172 430 208 444 240 432 Z"/>
   </g>
 </svg>
