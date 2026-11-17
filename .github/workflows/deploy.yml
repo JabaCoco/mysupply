@@ -1,0 +1,64 @@
+# Mise en ligne de MySupply sur GitHub Pages (gratuit).
+# Se déclenche : à chaque envoi de code sur la branche main, toutes les 2 heures (pour rafraîchir l'Actu), et à la demande.
+name: Mise en ligne (GitHub Pages)
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+
+# Droits nécessaires pour publier sur GitHub Pages (aucun mot de passe ni clé à ajouter)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule mise en ligne à la fois
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier le contenu (npm run verify)
+        run: npm run verify
+
+      - name: Télécharger les flux RSS et YouTube (remplace les relais du mode développement)
+        run: node scripts/fetch-feeds.mjs
+
+      - name: Construire l'appli
+        run: npm run build
+        env:
+          # L'appli est publiée dans un sous-dossier : https://<pseudo>.github.io/<nom-du-depot>/
+          VITE_BASE: /${{ github.event.repository.name }}/
+
+      - name: Gérer les adresses directes (page 404 = l'appli)
+        run: cp dist/index.html dist/404.html
+
+      - name: Préparer la publication
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Publier
+        id: deployment
+        uses: actions/deploy-pages@v4

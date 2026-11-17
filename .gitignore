@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Flux RSS telecharges au moment de la mise en ligne (scripts/fetch-feeds.mjs)
+public/rss

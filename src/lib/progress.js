@@ -1,4 +1,3 @@
-import Dexie from 'dexie'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db.js'
 import { addDays, dayKey, startOfWeek } from './dates.js'
@@ -21,25 +20,6 @@ export async function addXp(amount) {
 
 export async function markCelebrated(date) {
   await db.activity.update(date, { celebrated: true })
-}
-
-// DONNÉES DE DÉMO, en attendant que les autres onglets fassent gagner des XP :
-// 5 jours d'objectif atteint + 30 XP aujourd'hui. Ajoutées une seule fois.
-// À retirer quand Cours et Révisions seront branchés.
-export async function seedDemoData() {
-  await db.transaction('rw', db.activity, db.meta, async () => {
-    if (await db.meta.get('demoSeeded')) return
-    const today = new Date()
-    const rows = [1, 2, 3, 4, 5].map((n) => ({
-      date: dayKey(addDays(today, -n)),
-      xp: DAILY_GOAL,
-      celebrated: true,
-    }))
-    rows.push({ date: dayKey(today), xp: 30, celebrated: false })
-    // bulkAdd + ignorer les doublons : on n'écrase jamais des XP déjà gagnés
-    await db.activity.bulkAdd(rows).catch(Dexie.BulkError, () => {})
-    await db.meta.put({ key: 'demoSeeded', value: true })
-  })
 }
 
 // Nombre de jours d'affilée où l'objectif a été atteint.

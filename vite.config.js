@@ -2,11 +2,16 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vite'
+import { ARTICLE_FEEDS } from './feeds.config.mjs'
+
+// Adresse de base de l'appli : « / » en local. Sur GitHub Pages, l'appli vit dans un sous-dossier
+// (https://<pseudo>.github.io/<nom-du-depot>/) : le workflow de mise en ligne fournit VITE_BASE=/<nom-du-depot>/.
+const base = process.env.VITE_BASE || '/'
 
 // Relais RSS : le navigateur n'a pas le droit de lire directement ces flux
 // (protection "CORS"). Vite va donc les chercher à sa place.
-// Ça marche avec `npm run dev` et `npm run preview`. Quand on mettra l'appli
-// en ligne, il faudra recréer ces relais chez l'hébergeur.
+// Ça marche avec `npm run dev` et `npm run preview`. En ligne (GitHub Pages, hébergement statique),
+// il n'y a pas de relais : les flux sont téléchargés à l'avance par scripts/fetch-feeds.mjs (voir .github/workflows/deploy.yml).
 // Relais simple : /rss/<nom> → adresse complète du flux
 const feed = (url) => {
   const { origin, pathname, search } = new URL(url)
@@ -15,17 +20,7 @@ const feed = (url) => {
 }
 
 const rssProxy = {
-  '/rss/scm': feed('https://www.supplychainmagazine.fr/rss'),
-  '/rss/wk': feed('https://www.wk-transport-logistique.fr/rss'),
-  '/rss/lemonde-eco': feed('https://www.lemonde.fr/economie/rss_full.xml'),
-  '/rss/bfm-eco': feed('https://www.bfmtv.com/rss/economie/'),
-  '/rss/latribune': feed('https://www.latribune.fr/feed.xml'),
-  '/rss/maddyness': feed('https://www.maddyness.com/feed/'),
-  '/rss/siecledigital': feed('https://siecledigital.fr/feed/'),
-  '/rss/jdn': feed('https://www.journaldunet.com/rss/'),
-  '/rss/actuia': feed('https://www.actuia.com/feed/'),
-  '/rss/lmi': feed('https://www.lemondeinformatique.fr/flux-rss/thematique/toutes-les-actualites/rss.xml'),
-  '/rss/zataz': feed('https://www.zataz.com/feed/'),
+  ...Object.fromEntries(Object.entries(ARTICLE_FEEDS).map(([name, url]) => [`/rss/${name}`, feed(url)])),
   // Flux officiel des chaînes YouTube : /rss/yt/<identifiant de la chaîne>
   '/rss/yt': {
     target: 'https://www.youtube.com',
@@ -36,6 +31,7 @@ const rssProxy = {
 
 // https://vite.dev/config/
 export default defineConfig({
+  base,
   server: { proxy: rssProxy },
   preview: { proxy: rssProxy },
   plugins: [
@@ -45,15 +41,18 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'favicon.ico', 'favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png'],
       workbox: {
-        // Les adresses /rss/… doivent toujours aller au relais, jamais à l'appli
-        navigateFallbackDenylist: [/^\/rss\//],
+        // Les adresses …/rss/… sont des flux, jamais des pages de l'appli
+        navigateFallbackDenylist: [/\/rss\//],
       },
       manifest: {
+        // Nom affiché sous l'icône (écran d'accueil iPhone / Android, menu Démarrer et barre des tâches Windows)
         name: 'MySupply',
         short_name: 'MySupply',
         description: 'Apprendre la supply chain : cours, actu, atelier, anglais et révisions.',
         lang: 'fr',
-        start_url: '/',
+        id: base,
+        start_url: base,
+        scope: base,
         display: 'standalone',
         background_color: '#0a0a10',
         theme_color: '#0a0a10',

@@ -3,31 +3,35 @@
 // - theme : thème donné d'office à tout ce que publie la source.
 //   null = source variée : on ne garde que ce qui parle de supply chain, d'éco ou de tech.
 // - lang : 'fr' ou 'en' (en anglais : badge "EN" et sous-titres français dans le lecteur)
-// Les adresses /rss/… passent par le relais défini dans vite.config.js.
+// Les adresses rss/… passent par le relais de vite.config.js en développement, et par des fichiers
+// téléchargés à l'avance (scripts/fetch-feeds.mjs) une fois l'appli en ligne.
 
-const youtube = (channelId) => `/rss/yt/${channelId}`
+// Adresse de base de l'appli (« / » en local, « /<depot>/ » sur GitHub Pages).
+// En Node (script fetch-feeds), import.meta.env n'existe pas : d'où le « ?. ».
+const RSS = (import.meta.env?.BASE_URL ?? '/') + 'rss/'
+const youtube = (channelId) => `${RSS}yt/${channelId}`
 
 export const SOURCES = [
   // ---------- Articles de presse ----------
   // Supply chain
-  { id: 'scm', name: 'Supply Chain Magazine', kind: 'article', url: '/rss/scm', theme: 'supply', lang: 'fr' },
-  { id: 'wk', name: 'WK Transport Logistique', kind: 'article', url: '/rss/wk', theme: 'supply', lang: 'fr' },
+  { id: 'scm', name: 'Supply Chain Magazine', kind: 'article', url: RSS + 'scm', theme: 'supply', lang: 'fr' },
+  { id: 'wk', name: 'WK Transport Logistique', kind: 'article', url: RSS + 'wk', theme: 'supply', lang: 'fr' },
   // Ces deux-là autorisent la lecture directe, sans relais
   { id: 'freightwaves', name: 'FreightWaves', kind: 'article', url: 'https://www.freightwaves.com/news/feed', theme: 'supply', lang: 'en' },
   { id: 'scdive', name: 'Supply Chain Dive', kind: 'article', url: 'https://www.supplychaindive.com/feeds/news/', theme: 'supply', lang: 'en' },
   // Économie
-  { id: 'lemonde-eco', name: 'Le Monde Économie', kind: 'article', url: '/rss/lemonde-eco', theme: 'eco', lang: 'fr' },
-  { id: 'bfm-eco', name: 'BFM Éco', kind: 'article', url: '/rss/bfm-eco', theme: 'eco', lang: 'fr' },
-  { id: 'latribune', name: 'La Tribune', kind: 'article', url: '/rss/latribune', theme: null, lang: 'fr' },
+  { id: 'lemonde-eco', name: 'Le Monde Économie', kind: 'article', url: RSS + 'lemonde-eco', theme: 'eco', lang: 'fr' },
+  { id: 'bfm-eco', name: 'BFM Éco', kind: 'article', url: RSS + 'bfm-eco', theme: 'eco', lang: 'fr' },
+  { id: 'latribune', name: 'La Tribune', kind: 'article', url: RSS + 'latribune', theme: null, lang: 'fr' },
   // Tech et innovation
-  { id: 'maddyness', name: 'Maddyness', kind: 'article', url: '/rss/maddyness', theme: 'tech', lang: 'fr' },
-  { id: 'siecledigital', name: 'Siècle Digital', kind: 'article', url: '/rss/siecledigital', theme: 'tech', lang: 'fr' },
-  { id: 'jdn', name: 'Journal du Net', kind: 'article', url: '/rss/jdn', theme: null, lang: 'fr' },
+  { id: 'maddyness', name: 'Maddyness', kind: 'article', url: RSS + 'maddyness', theme: 'tech', lang: 'fr' },
+  { id: 'siecledigital', name: 'Siècle Digital', kind: 'article', url: RSS + 'siecledigital', theme: 'tech', lang: 'fr' },
+  { id: 'jdn', name: 'Journal du Net', kind: 'article', url: RSS + 'jdn', theme: null, lang: 'fr' },
   // IA, informatique et pannes / cybersécurité
-  { id: 'actuia', name: 'ActuIA', kind: 'article', url: '/rss/actuia', theme: 'ia', lang: 'fr' },
+  { id: 'actuia', name: 'ActuIA', kind: 'article', url: RSS + 'actuia', theme: 'ia', lang: 'fr' },
   { id: 'zdnet', name: 'ZDNet France', kind: 'article', url: 'https://www.zdnet.fr/feeds/rss/actualites/', theme: null, lang: 'fr' },
-  { id: 'lmi', name: 'Le Monde Informatique', kind: 'article', url: '/rss/lmi', theme: null, lang: 'fr' },
-  { id: 'zataz', name: 'Zataz', kind: 'article', url: '/rss/zataz', theme: null, lang: 'fr' },
+  { id: 'lmi', name: 'Le Monde Informatique', kind: 'article', url: RSS + 'lmi', theme: null, lang: 'fr' },
+  { id: 'zataz', name: 'Zataz', kind: 'article', url: RSS + 'zataz', theme: null, lang: 'fr' },
 
   // ---------- Shorts YouTube ----------
   // En français

@@ -13,7 +13,7 @@ export default function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-bg/90 pb-[env(safe-area-inset-bottom)] backdrop-blur rail:inset-x-auto rail:inset-y-0 rail:left-0 rail:flex rail:max-lg:w-[calc(6rem+env(safe-area-inset-left))] rail:flex-col rail:overflow-y-auto rail:border-t-0 rail:border-r rail:bg-bg rail:pb-0 rail:pl-[env(safe-area-inset-left)] lg:w-60"
     >
       <div className="hidden items-center gap-3 px-5 pt-6 pb-3 lg:flex">
-        <img src="/icon.svg" alt="" className="size-11" />
+        <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="size-11" />
         <span className="text-xl font-extrabold tracking-tight">MySupply</span>
       </div>
       <ul className="mx-auto grid max-w-xl grid-cols-6 rail:flex rail:max-w-none rail:flex-col rail:gap-1 rail:px-2 rail:py-3 short:gap-0 short:py-1">
