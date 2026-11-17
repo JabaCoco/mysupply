@@ -41,7 +41,7 @@ export default function Atelier() {
   ]
 
   return (
-    <Page>
+    <Page wide>
       <div className="space-y-4">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Atelier</h1>
@@ -50,7 +50,7 @@ export default function Atelier() {
 
         {daily && <DailyCard daily={daily} />}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {sections.map(({ to, icon: Icon, solid, title, info }) => (
             <Link key={to} to={to} className="block rounded-3xl border border-line bg-card p-4 transition-transform active:scale-[0.97]">
               <span className={`grid size-10 place-items-center rounded-xl text-white ${solid}`}>

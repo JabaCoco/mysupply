@@ -157,7 +157,7 @@ function Map({ points, routes, order, onPick, done }) {
   const visited = new Set(order)
   return (
     <figure className="rounded-2xl border border-line bg-card p-2">
-      <svg viewBox="0 0 100 100" className="w-full touch-manipulation" role="img" aria-label="Carte des clients et du dépôt">
+      <svg viewBox="0 0 100 100" className="w-full touch-manipulation short:mx-auto short:h-[72dvh] short:w-auto" role="img" aria-label="Carte des clients et du dépôt">
         <rect x="0" y="0" width="100" height="100" rx="4" className="fill-bg" />
         {[25, 50, 75].map((g) => (
           <g key={g} className="stroke-line" strokeWidth="0.3">

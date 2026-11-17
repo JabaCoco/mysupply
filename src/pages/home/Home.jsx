@@ -45,17 +45,20 @@ export default function Home() {
   const flash = articles.filter((a) => a !== article).slice(0, 8)
 
   return (
-    <Page>
+    <Page wide>
       <div className="space-y-4">
         <Header streak={progress.streak} />
         <FlashTicker items={flash} />
-        <CafeCard shorts={recentShorts(news.items)} seen={seen} loading={loading} />
-        <GoalCard xp={progress.todayXp} level={progress.level} goalReached={progress.goalReached} />
-        <WeekCalendar week={progress.week} streak={progress.streak} />
-        <ResumeCard />
-        <QuickGrid />
-        <FigureCard />
-        <ArticleCard article={article} loading={loading} />
+        {/* Téléphone : une colonne (même ordre qu'avant). Grand écran : deux colonnes équilibrées. */}
+        <div className="space-y-4 lg:columns-2 lg:gap-4 lg:space-y-0 lg:*:mb-4 lg:*:break-inside-avoid">
+          <CafeCard shorts={recentShorts(news.items)} seen={seen} loading={loading} />
+          <GoalCard xp={progress.todayXp} level={progress.level} goalReached={progress.goalReached} />
+          <WeekCalendar week={progress.week} streak={progress.streak} />
+          <ResumeCard />
+          <QuickGrid />
+          <FigureCard />
+          <ArticleCard article={article} loading={loading} />
+        </div>
       </div>
     </Page>
   )

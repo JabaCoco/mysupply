@@ -14,7 +14,7 @@ export default function Anglais() {
   const doneCount = en.done.size
 
   return (
-    <Page>
+    <Page wide>
       <div className="space-y-5">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Anglais</h1>
@@ -65,7 +65,7 @@ export default function Anglais() {
         )}
 
         <h2 className="font-bold">Le parcours</h2>
-        <ol className="space-y-3">
+        <ol className="space-y-3 lg:grid lg:grid-cols-2 lg:items-start lg:gap-3 lg:space-y-0">
           {UNITS.map((unit, u) => {
             const { Icon, color } = unitStyle(unit)
             const lessonsDone = unit.lessons.filter((l) => en.done.has(`${unit.id}/${l.id}`)).length

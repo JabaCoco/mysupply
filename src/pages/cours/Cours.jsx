@@ -18,7 +18,7 @@ export default function Cours() {
   const currentOpen = openId === undefined ? next?.module.id : openId
 
   return (
-    <Page>
+    <Page wide>
       <div className="space-y-4">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Cours</h1>
@@ -38,7 +38,7 @@ export default function Cours() {
         {next ? <ContinueCard lesson={next} /> : <AllDone />}
 
         <h2 className="pt-1 font-bold">Programme</h2>
-        <div className="space-y-3">
+        <div className="space-y-3 lg:grid lg:grid-cols-2 lg:items-start lg:gap-3 lg:space-y-0">
           {MODULES.map((module, index) => (
             <ModuleCard
               key={module.id}

@@ -13,7 +13,7 @@ const WEEK = 7 * 24 // heures
 
 function Skeleton({ view }) {
   return view === 'videos' ? (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {[0, 1, 2, 3].map((n) => (
         <div key={n} className="aspect-[9/16] animate-pulse rounded-2xl bg-card" />
       ))}
@@ -44,7 +44,7 @@ export default function Actu() {
   ]
 
   return (
-    <Page>
+    <Page wide>
       <div className="space-y-4">
         <header className="flex items-start justify-between gap-3">
           <div>

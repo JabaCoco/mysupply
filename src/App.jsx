@@ -36,7 +36,8 @@ export default function App() {
   const inLesson = matchPath('/cours/:moduleId/:lessonId', location.pathname) || matchPath('/anglais/:unitId/:lessonId', location.pathname) || matchPath('/revisions/etude/:scope/:mode', location.pathname) || matchPath('/revisions/exercice/:lotId/:itemId', location.pathname)
 
   return (
-    <div className="min-h-dvh">
+    // Avec la navigation latérale (tablette / PC / paysage), le contenu est décalé de sa largeur ; les marges « encoche » servent au téléphone couché
+    <div className={`min-h-dvh pr-[env(safe-area-inset-right)] ${inLesson ? 'pl-[env(safe-area-inset-left)]' : 'rail:max-lg:pl-[calc(6rem+env(safe-area-inset-left))] lg:pl-60'}`}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/actu" element={<Actu />} />

@@ -16,7 +16,7 @@ export default function Sheet({ cells, target, targetDisplay, targetState, onCel
   }[targetState]
 
   return (
-    <div className="-mx-4 overflow-x-auto px-4">
+    <div className="-mx-4 overflow-x-auto px-4 rail:-mx-6 rail:px-6">
       <table className="border-separate border-spacing-0 font-mono text-[13px]">
         <thead>
           <tr>

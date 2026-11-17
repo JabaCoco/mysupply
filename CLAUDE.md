@@ -9,7 +9,7 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Avance un onglet à la fois et attends sa validation avant de passer au suivant.
 - Aucune API payante, aucune dépendance à Claude dans l'appli.
 - Avant de livrer : `npm run build` + `npm run lint`, et si possible un test de bout en bout dans Edge (playwright-core installé dans le dossier temporaire de session, pas dans le projet).
-- **Étape en cours : tout le contenu est fait** : les 16 lots (Cours, Atelier, Anglais), les ateliers (jeu de la bière, plan de chargement, négociation, tournée), l'onglet Révisions (flashcards en « Recto d'abord » par défaut, réglage « Dans les deux sens »), l'onglet Anglais, et le logo/icônes PWA (nom MySupply). Reste, dans cet ordre : 1) responsive PC paysage / téléphone vertical, 2) mise en ligne gratuite + installation iPhone, 3) comptes avec pseudo et synchronisation via Supabase (voir « Ce qu'il reste à faire »).
+- **Étape en cours : tout le contenu est fait** : les 16 lots (Cours, Atelier, Anglais), les ateliers (jeu de la bière, plan de chargement, négociation, tournée), l'onglet Révisions (flashcards en « Recto d'abord » par défaut, réglage « Dans les deux sens »), l'onglet Anglais, et le logo/icônes PWA (nom MySupply). Responsive PC / tablette / téléphone : **fait** (à valider par l'utilisateur). Reste, dans cet ordre : 2) mise en ligne gratuite + installation iPhone, 3) comptes avec pseudo et synchronisation via Supabase (voir « Ce qu'il reste à faire »).
 - **Git** : dépôt local initialisé (branche `main`), un point de sauvegarde après chaque lot validé (`git add -A` puis `git commit`). Une archive ZIP d'avant les lots est dans `C:\Users\guito\Projets\sauvegardes\`.
 
 ## Choix techniques
