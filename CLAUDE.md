@@ -9,7 +9,7 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Avance un onglet à la fois et attends sa validation avant de passer au suivant.
 - Aucune API payante, aucune dépendance à Claude dans l'appli.
 - Avant de livrer : `npm run build` + `npm run lint`, et si possible un test de bout en bout dans Edge (playwright-core installé dans le dossier temporaire de session, pas dans le projet).
-- **Étape en cours : les 16 lots de contenu sont terminés** (voir « Plan d'enrichissement du contenu »). Les ateliers (jeu de la bière, plan de chargement, négociation, tournée) et l'onglet Révisions sont faits. Reste : version responsive PC/téléphone, pseudos éventuels, mise en ligne.
+- **Étape en cours : tout le contenu est fait** : les 16 lots (Cours, Atelier, Anglais), les ateliers (jeu de la bière, plan de chargement, négociation, tournée), l'onglet Révisions (flashcards en « Recto d'abord » par défaut, réglage « Dans les deux sens »), l'onglet Anglais, et le logo/icônes PWA (nom MySupply). Reste, dans cet ordre : 1) responsive PC paysage / téléphone vertical, 2) mise en ligne gratuite + installation iPhone, 3) comptes avec pseudo et synchronisation via Supabase (voir « Ce qu'il reste à faire »).
 - **Git** : dépôt local initialisé (branche `main`), un point de sauvegarde après chaque lot validé (`git add -A` puis `git commit`). Une archive ZIP d'avant les lots est dans `C:\Users\guito\Projets\sauvegardes\`.
 
 ## Choix techniques
@@ -25,7 +25,7 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - Contenus provisoires restants dans `src/data/daily.js` → `placeholders` : « À réviser aujourd'hui : 8 cartes » et « Badges 4/30 » (à brancher avec Révisions).
 
 ## Nom et icônes
-- L'appli s'appelle **MySupply** (manifeste, `<title>`, `apple-mobile-web-app-title`). Logo = `public/icon.svg` (M noir + S orange au pinceau, **fond transparent**, liseré blanc fin autour des lettres pour que le M noir reste lisible sur fond sombre).
+- L'appli s'appelle **MySupply** (manifeste, `<title>`, `apple-mobile-web-app-title`). Logo **validé par l'utilisateur** (ne plus changer la forme des lettres) = `public/icon.svg` : M noir en calligraphie anglaise (pleins épais, déliés fins) + S orange `#D97757` à boucles, placé en bas à droite du M avec chevauchement, ensemble centré, **fond transparent**, liseré blanc fin autour des lettres pour que le M noir reste lisible sur fond sombre. Les lettres sont des polygones à largeur variable générés par un script (hors projet, scratchpad de session) : pour modifier le logo, demander à Claude de le régénérer.
 - Les PNG (`pwa-192/512` et `favicon-*` transparents, `pwa-maskable-192/512` transparents avec logo réduit à 60 % pour la zone sûre, `apple-touch-icon` 180 sur fond blanc sans transparence, logo à 82 % et sans liseré, `favicon.ico`) sont générés depuis le SVG par une capture Edge (playwright, hors projet) : si le logo change, les régénérer.
 
 ## Design
@@ -128,9 +128,12 @@ Objectif : tenir plusieurs mois à 15-20 min par jour (aujourd'hui : tout se fai
 
 ## Ce qu'il reste à faire
 
-1. **Dernières modifs** :
-   - Version responsive PC et téléphone (aujourd'hui pensée mobile, `max-w-xl`).
-   - Peut-être des pseudos pour partager l'appli avec la classe (sans API payante : à étudier).
-   - Mise en ligne : recréer les relais RSS/YouTube chez l'hébergeur, retirer les données de démo et le bouton de test XP.
-   - Après la mise en ligne : tester sur un vrai iPhone (Safari et appli installée) l import, l export, le copier-coller de l onglet Révisions (voir A_VERIFIER.md).
-   - Idée : transformer les mots d anglais « À revoir » en cartes de révision.
+**Ordre de reprise (décidé le 2026-11-17), un point à la fois, validation avant le suivant :**
+
+1. **Version responsive** : paysage sur PC (aujourd'hui `max-w-xl` centré, pensé mobile), vertical sur téléphone. Ne pas casser le rendu mobile actuel ; tester dans Edge à plusieurs largeurs.
+2. **Mise en ligne gratuite + installation sur iPhone** :
+   - Le nom « MySupply » est déjà réglé (manifeste, titre, titre iPhone) : vérifier qu'il s'affiche bien sous l'icône sur iPhone et sur PC une fois installé.
+   - Choisir un hébergeur gratuit ; **recréer les relais RSS/YouTube** (`vite.config.js`, `server.proxy`/`preview.proxy`, qui ne marchent qu'en dev/preview) chez l'hébergeur ; retirer les données de démo (`seedDemoData` dans `main.jsx`) et le bouton « +10 XP (test) ».
+   - Tester sur un vrai iPhone (Safari + appli installée) l'import, l'export et le copier-coller de l'onglet Révisions (voir A_VERIFIER.md) ; Safari n'a jamais été testé (seulement Edge).
+3. **Comptes avec pseudo + progression synchronisée PC ↔ téléphone, avec Supabase** (offre gratuite). Attention : cela contredit la règle « aucune dépendance » seulement si l'appli devient inutilisable hors ligne ; garder le mode local (Dexie) comme source principale et synchroniser en plus. Aucune API payante, aucun appel à Claude. À étudier : tables à synchroniser (voir `revBackup.js` : toutes les tables sauf `feeds`), fusion (`mergeRow`), sécurité (RLS), pseudo unique.
+4. Plus tard : idée de transformer les mots d'anglais « À revoir » en cartes de révision ; badges de l'accueil encore provisoires (`placeholders` dans `src/data/daily.js`).
