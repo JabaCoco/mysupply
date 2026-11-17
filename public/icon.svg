@@ -1,27 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <filter id="pinceau" x="-10%" y="-10%" width="120%" height="120%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="11" result="bruit"/>
-      <feDisplacementMap in="SourceGraphic" in2="bruit" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    <filter id="encre" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="5" result="bruit"/>
+      <feDisplacementMap in="SourceGraphic" in2="bruit" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
   </defs>
 
   <!-- Fond transparent : pas de rectangle de fond. Liseré blanc fin (trait dessiné derrière le remplissage) pour que le M noir reste lisible sur fond sombre. -->
 
-  <!-- M noir : calligraphie au pinceau, pleins épais et déliés fins -->
-  <g filter="url(#pinceau)" fill="#111111" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
-    <path d="M 70 70 C 52 130 44 210 54 290 C 58 322 52 346 30 372 C 56 362 78 340 86 306 C 98 236 98 150 108 96 C 100 80 84 70 70 70 Z"/>
-    <path d="M 22 112 C 40 70 78 40 118 50 C 96 52 62 74 44 118 Z"/>
-    <path d="M 96 60 C 128 120 160 190 196 276 C 206 300 224 300 232 276 C 230 252 214 224 198 192 C 172 140 146 94 124 62 C 114 54 102 54 96 60 Z"/>
-    <path d="M 232 280 C 252 214 282 140 330 62 C 336 54 342 56 340 66 C 306 150 272 224 248 296 Z"/>
-    <path d="M 318 52 C 336 140 344 250 330 330 C 326 360 340 382 380 396 C 352 372 354 344 360 312 C 372 230 366 132 350 56 C 342 46 326 44 318 52 Z"/>
-    <path d="M 380 84 C 408 72 436 78 452 96 C 430 88 404 90 382 100 Z"/>
+  <!-- M noir : calligraphie anglaise (copperplate), pleins épais et déliés très fins -->
+  <g filter="url(#encre)" fill="#111111" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
+    <path d="M 24 232 C 22 206 40 190 64 190 C 104 190 140 226 150 270 C 144 232 112 204 70 202 C 48 202 34 214 34 232 C 36 250 58 256 84 244 C 70 258 38 262 26 244 C 24 240 24 236 24 232 Z"/>
+    <path d="M 112 150 C 176 100 270 84 360 104 C 420 118 462 112 492 90 C 470 124 424 138 360 128 C 276 112 186 124 128 168 Z"/>
+    <path d="M 118 156 C 112 200 108 262 120 318 C 124 338 118 358 102 372 C 124 366 142 352 148 326 C 160 268 160 206 150 170 C 146 154 130 148 118 156 Z"/>
+    <path d="M 150 150 C 188 210 226 280 258 344 C 266 362 284 364 294 346 C 292 322 276 290 258 258 C 232 212 202 168 178 140 C 166 130 152 138 150 150 Z"/>
+    <path d="M 292 346 C 314 280 346 204 392 134 C 398 126 408 130 404 140 C 372 214 340 286 316 352 Z"/>
+    <path d="M 380 138 C 396 214 404 292 392 350 C 388 374 400 392 428 394 C 450 394 468 384 480 366 C 462 380 440 382 424 374 C 414 366 414 348 418 322 C 428 256 420 192 404 140 C 398 126 384 126 380 138 Z"/>
   </g>
 
-  <!-- S orange : grande lettre au pinceau, plein à la courbe, déliés aux extrémités -->
-  <g filter="url(#pinceau)" fill="#D97757" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
-    <path d="M 456 250 C 430 214 392 196 346 200 C 292 206 246 246 252 296 C 256 330 288 350 330 360 C 370 370 396 388 392 416 C 388 446 346 462 300 452 C 270 446 246 432 230 408 C 244 448 288 482 346 484 C 410 486 450 452 446 408 C 442 368 404 346 360 336 C 322 328 298 316 298 290 C 298 262 330 238 368 238 C 404 238 438 252 456 250 Z"/>
-    <path d="M 470 236 C 484 222 494 206 490 188 C 482 206 468 220 452 230 Z"/>
-    <path d="M 232 410 C 206 420 176 416 150 396 C 172 430 208 444 240 432 Z"/>
+  <!-- S orange : calligraphie anglaise, grande lettre cursive avec pleins et déliés -->
+  <g filter="url(#encre)" fill="#D97757" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
+    <path d="M 470 262 C 446 246 410 240 376 250 C 332 264 312 296 330 326 C 346 352 392 360 420 388 C 444 412 436 450 396 462 C 350 476 292 462 254 432 C 276 478 336 500 394 494 C 454 488 488 450 476 410 C 464 372 420 352 388 336 C 366 324 364 304 386 292 C 410 280 446 280 470 262 Z"/>
+    <path d="M 462 258 C 486 250 500 232 494 214 C 488 196 466 192 454 206 C 462 200 476 204 478 216 C 480 230 470 244 456 250 Z"/>
+    <path d="M 262 440 C 226 432 190 410 164 380 C 186 424 226 452 272 460 Z"/>
   </g>
 </svg>
