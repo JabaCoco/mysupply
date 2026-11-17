@@ -24,6 +24,10 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 - **Données de démo** (5 jours de série + 30 XP) ajoutées une seule fois au démarrage (`seedDemoData` dans `main.jsx`), sans écraser de vraies données. Bouton « +10 XP (test) » visible seulement en dev. À retirer avant la mise en ligne.
 - Contenus provisoires restants dans `src/data/daily.js` → `placeholders` : « À réviser aujourd'hui : 8 cartes » et « Badges 4/30 » (à brancher avec Révisions).
 
+## Nom et icônes
+- L'appli s'appelle **MySupply** (manifeste, `<title>`, `apple-mobile-web-app-title`). Logo = `public/icon.svg` (M noir + S orange au pinceau, fond blanc).
+- Les PNG (`pwa-192/512`, `pwa-maskable-192/512` avec logo réduit à 60 % pour la zone sûre, `apple-touch-icon` 180, `favicon-16/32/48`, `favicon.ico`) sont générés depuis le SVG par une capture Edge (playwright, hors projet) : si le logo change, les régénérer.
+
 ## Design
 
 - Thème sombre par défaut, thème clair via le bouton lune/soleil (couleurs en variables CSS dans `src/index.css` : `bg`, `card`, `line`, `fg`, `muted`).

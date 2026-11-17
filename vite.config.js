@@ -43,14 +43,14 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      includeAssets: ['icon.svg', 'favicon.ico', 'favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png'],
       workbox: {
         // Les adresses /rss/… doivent toujours aller au relais, jamais à l'appli
         navigateFallbackDenylist: [/^\/rss\//],
       },
       manifest: {
-        name: 'Appli Supply Chain',
-        short_name: 'Supply Chain',
+        name: 'MySupply',
+        short_name: 'MySupply',
         description: 'Apprendre la supply chain : cours, actu, atelier, anglais et révisions.',
         lang: 'fr',
         start_url: '/',
@@ -58,7 +58,11 @@ export default defineConfig({
         background_color: '#0a0a10',
         theme_color: '#0a0a10',
         icons: [
-          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'pwa-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
     }),

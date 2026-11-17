@@ -1,8 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#0b0f17"/>
-  <g fill="none" stroke="#38bdf8" stroke-width="28" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M256 112 L392 184 L392 328 L256 400 L120 328 L120 184 Z"/>
-    <path d="M120 184 L256 256 L392 184"/>
-    <path d="M256 256 L256 400"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <filter id="pinceau" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="7" result="bruit"/>
+      <feDisplacementMap in="SourceGraphic" in2="bruit" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="fibres" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.06" numOctaves="2" seed="3" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="#FFFFFF"/>
+
+  <!-- M noir : quatre traits de pinceau -->
+  <g filter="url(#pinceau)">
+    <g fill="none" stroke="#111111" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 34 346 C 24 262 40 150 56 56" stroke-width="46"/>
+      <path d="M 56 56 C 110 110 150 210 176 292" stroke-width="30"/>
+      <path d="M 176 292 C 210 214 252 126 306 46" stroke-width="38"/>
+      <path d="M 306 46 C 322 140 310 250 328 360" stroke-width="26"/>
+    </g>
+  </g>
+
+  <!-- S orange : un seul trait fluide -->
+  <g filter="url(#fibres)">
+    <path d="M 452 236 C 410 170 270 190 262 272 C 254 356 442 330 440 418 C 438 500 286 504 224 426"
+          fill="none" stroke="#D97757" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>
