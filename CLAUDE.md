@@ -31,7 +31,8 @@ Appli PWA d'apprentissage de la supply chain pour un étudiant (niveau BTS / Lic
 ## Design
 
 - Thème sombre par défaut, thème clair via le bouton lune/soleil (couleurs en variables CSS dans `src/index.css` : `bg`, `card`, `line`, `fg`, `muted`).
-- Accent violet, cartes arrondies (`rounded-3xl`), bordures fines, police système, mobile d'abord (`max-w-xl` centré).
+- Accent violet, cartes arrondies (`rounded-3xl`), bordures fines, police système, mobile d'abord.
+- **Responsive** (fait, 2 passes) : téléphone vertical = barre du bas + colonne `max-w-xl` (inchangé). Dès 768 px de large ou téléphone en paysage (variantes Tailwind `rail:` / `short:` de `src/index.css`) = navigation à gauche (`BottomNav.jsx`, logo + nom MySupply dès 1024 px). Les **6 onglets** utilisent `<Page full>` : **pas de largeur maximale**, grilles à plusieurs colonnes (Accueil 2/3/4, Actu jusqu'à 8, Atelier avec défi du jour 2×2, Anglais, Révisions en 2 colonnes) ; **Cours** = liste des modules à gauche + leçons du module à droite dès 1024 px (`useMedia`, `src/lib/useMedia.js`). Les écrans de détail (jeux, leçons, exercices, formulaires) gardent `<Page>` sans `full` : colonne centrée de lecture. Lecteur vidéo (`VideoPlayer.jsx`) : dès 1024 px, infos à gauche / vidéo pleine hauteur au centre / « À suivre » à droite ; en paysage téléphone, panneau à droite. Nouvelle page principale : `Page full` + grille, pas de `max-w-*` en dur. Piège : une grille à une colonne doit avoir `grid-cols-1`, sinon une carte large élargit la colonne et déborde sur téléphone.
 - 6 onglets en bas (Accueil, Actu, Cours, Atelier, Anglais, Révisions), masqués pendant une leçon.
 - Animations Motion (apparitions, barres de progression, flamme qui vacille), confettis aux réussites.
 - Graphiques : une seule série, pas de double axe, grille discrète, alertes jamais par la couleur seule (icône + libellé).
@@ -130,7 +131,7 @@ Objectif : tenir plusieurs mois à 15-20 min par jour (aujourd'hui : tout se fai
 
 **Ordre de reprise (décidé le 2026-11-17), un point à la fois, validation avant le suivant :**
 
-1. **Version responsive** : paysage sur PC (aujourd'hui `max-w-xl` centré, pensé mobile), vertical sur téléphone. Ne pas casser le rendu mobile actuel ; tester dans Edge à plusieurs largeurs.
+1. ~~Version responsive~~ **Fait** (voir Design et A_VERIFIER.md) ; à valider par l'utilisateur sur son PC et son téléphone. Éventuel complément : élargir les écrans de détail (ex. tableur + énoncé côte à côte pour les défis Excel).
 2. **Mise en ligne gratuite + installation sur iPhone** :
    - Le nom « MySupply » est déjà réglé (manifeste, titre, titre iPhone) : vérifier qu'il s'affiche bien sous l'icône sur iPhone et sur PC une fois installé.
    - Choisir un hébergeur gratuit ; **recréer les relais RSS/YouTube** (`vite.config.js`, `server.proxy`/`preview.proxy`, qui ne marchent qu'en dev/preview) chez l'hébergeur ; retirer les données de démo (`seedDemoData` dans `main.jsx`) et le bouton « +10 XP (test) ».
