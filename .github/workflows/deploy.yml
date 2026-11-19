@@ -15,17 +15,17 @@ permissions:
   pages: write
   id-token: write
 
-# Une seule mise en ligne à la fois
+# Une seule mise en ligne à la fois. On n'annule JAMAIS une mise en ligne déjà commencée
+# (conseil officiel de GitHub pour Pages) : une annulation entre la préparation et la publication
+# peut laisser « No artifacts named github-pages ». Une exécution en attente est simplement remplacée par la plus récente.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  # 1re étape : construire l'appli et préparer le colis « github-pages »
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
@@ -59,6 +59,14 @@ jobs:
         with:
           path: dist
 
+  # 2e étape : publier le colis. Ne démarre que si la 1re étape a réussi et que le colis existe.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Publier
         id: deployment
         uses: actions/deploy-pages@v4
