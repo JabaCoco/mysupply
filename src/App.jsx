@@ -15,6 +15,11 @@ import BeerGame from './pages/atelier/simulateur/BeerGame.jsx'
 import TruckLoading from './pages/atelier/chargement/TruckLoading.jsx'
 import Negotiation from './pages/atelier/negociation/Negotiation.jsx'
 import DeliveryTour from './pages/atelier/tournee/DeliveryTour.jsx'
+import BiHome from './pages/atelier/bi/BiHome.jsx'
+import BiLesson from './pages/atelier/bi/BiLesson.jsx'
+import { PqList, PqGamePage } from './pages/atelier/bi/PqSimulator.jsx'
+import { DashList, DashPage } from './pages/atelier/bi/DashboardBuilder.jsx'
+import Interview from './pages/atelier/bi/Interview.jsx'
 import Revisions from './pages/revisions/Revisions.jsx'
 import ImportPage from './pages/revisions/ImportPage.jsx'
 import LotPage from './pages/revisions/LotPage.jsx'
@@ -55,6 +60,13 @@ export default function App() {
         <Route path="/atelier/chargement" element={<TruckLoading />} />
         <Route path="/atelier/negociation" element={<Negotiation />} />
         <Route path="/atelier/tournee" element={<DeliveryTour />} />
+        <Route path="/atelier/bi" element={<BiHome />} />
+        <Route path="/atelier/bi/cours/:id" element={<BiLesson />} />
+        <Route path="/atelier/bi/simulateur" element={<PqList />} />
+        <Route path="/atelier/bi/simulateur/:id" element={<PqGamePage />} />
+        <Route path="/atelier/bi/tableau" element={<DashList />} />
+        <Route path="/atelier/bi/tableau/:id" element={<DashPage />} />
+        <Route path="/atelier/bi/entretien" element={<Interview />} />
         <Route path="/revisions" element={<Revisions />} />
         <Route path="/revisions/importer" element={<ImportPage />} />
         <Route path="/revisions/sauvegarde" element={<Backup />} />

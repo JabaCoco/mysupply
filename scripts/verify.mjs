@@ -26,6 +26,13 @@ import { validateBackup, mergeRow, BACKUP_FORMAT } from '../src/lib/revBackup.js
 import { evaluateFormula, canonicalName } from '../src/lib/excel/evaluate.js'
 import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
+import { BI_ALL_LESSONS, PQ_SCENARIOS, DASHBOARDS, INTERVIEW, BI_DAILY_ITEMS, describeBiItem, generateBiExercises, BI_SERIES_SIZE } from '../src/data/atelier/bi/index.js'
+import { INTERVIEW_TOPICS } from '../src/data/atelier/bi/interview.js'
+import { checkBiNumber } from '../src/data/atelier/bi/helpers.js'
+import { makePqGame } from '../src/data/atelier/bi/pqScenarios.js'
+import { VISUALS, FAMILIES, series, scoreNeed, needMax, dashboardMax, makeDashboardData } from '../src/data/atelier/bi/dashboards.js'
+import * as kpi from '../src/lib/biKpi.js'
+import { ERR, isErr, PqError, applyStep, runSteps, parseNumber, stepNames, mCode, describeStep, diffTables, tablesEqual } from '../src/lib/powerQuery.js'
 
 // Modules dont chaque leçon doit avoir une banque d'au moins 8 questions (on l'élargit lot après lot)
 const ENFORCE_BANK = new Set(['bases', 'transport', 'stocks', 'entrepot', 'achats', 'prevision', 'production', 'distribution', 'kpi', 'douane', 'outils', 'lean', 'durable', 'risques', 'finance', 'strategie'])
@@ -484,6 +491,248 @@ for (let i = 0; i < 120; i++) {
   if (mergeRow('activity', { date: 'd', xp: 30 }, { date: 'd', xp: 50 }).xp !== 50 || mergeRow('activity', { date: 'd', xp: 60 }, { date: 'd', xp: 50 }).xp !== 60) fail(w, 'fusion des XP : on garde le plus haut')
   if (mergeRow('rvProgress', { last: '2026-01-02' }, { last: '2026-01-05' }).last !== '2026-01-05') fail(w, 'fusion de la progression : le plus récent gagne')
   if (mergeRow('lessons', { id: 'a', v: 1 }, { id: 'a', v: 2 }).v !== 1) fail(w, 'fusion : ce qui existe déjà est conservé pour les autres tables')
+}
+
+// ---------- Power Query et Power BI (Atelier) ----------
+{
+  const w = 'Power Query / Power BI'
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+
+  // 1) Indicateurs : valeurs refaites à la main
+  const liv = [
+    { qteCom: 100, qteLiv: 100, retard: 0, cout: 50 },
+    { qteCom: 100, qteLiv: 80, retard: 0, cout: 30 },
+    { qteCom: 50, qteLiv: 50, retard: 2, cout: 20 },
+    { qteCom: 50, qteLiv: 50, retard: 0, cout: 10 },
+  ]
+  const near = (a, b) => Math.abs(a - b) < 1e-9
+  if (!near(kpi.otif(liv), 0.5)) fail(w, 'OTIF : attendu 0,5, obtenu ' + kpi.otif(liv))
+  if (!near(kpi.tauxService(liv), 280 / 300)) fail(w, 'taux de service')
+  if (!near(kpi.retardMoyen(liv), 0.5)) fail(w, 'retard moyen')
+  if (kpi.coutTransport(liv) !== 110 || !near(kpi.coutParUnite(liv), 110 / 280)) fail(w, 'coûts de transport')
+  if (kpi.divide(1, 0) !== null || kpi.divide(1, 0, 0) !== 0 || kpi.otif([]) !== null) fail(w, 'DIVIDE : division par zéro')
+  const stk = [{ mois: 'Janv', coutVentes: 30000, stock: 60000 }, { mois: 'Janv', coutVentes: 10000, stock: 20000 }, { mois: 'Févr', coutVentes: 20000, stock: 40000 }]
+  if (!near(kpi.rotation(stk), 0.5) || !near(kpi.couverture(stk), 60) || !near(kpi.stockMoyen(stk), 60000)) fail(w, 'rotation, couverture ou stock moyen')
+
+  // 1 bis) Vérification des réponses saisies (virgule, point, %, espaces) : exacte à la décimale demandée
+  const exNum = { answer: 83.3, tolerance: 0.05 }
+  if (checkBiNumber('83,3', exNum) !== true || checkBiNumber('83.33', exNum) !== true || checkBiNumber('83,3 %', exNum) !== true || checkBiNumber('84', exNum) !== false || checkBiNumber('abc', exNum) !== null) fail(w, 'checkBiNumber')
+  if (checkBiNumber('402', { answer: 400, tolerance: 0 }) !== false || checkBiNumber('400', { answer: 400, tolerance: 0 }) !== true) fail(w, 'checkBiNumber : une réponse entière doit être exacte (pas de marge relative)')
+
+  // 2) Moteur Power Query : chaque transformation testée sur une petite table
+  const T = (names, rows) => ({ cols: names.map((name) => ({ name, type: 'any' })), rows })
+  const t0 = T(['A', 'B'], [['x', '1 250,5'], [' y ', 'N/A']])
+  if (parseNumber('1 250,50') !== 1250.5 || !isErr(parseNumber('N/A')) || !isErr(parseNumber(''))) fail(w, 'parseNumber')
+  const typed = applyStep(t0, { op: 'changeType', col: 'B', type: 'dec' })
+  if (typed.rows[0][1] !== 1250.5 || typed.rows[1][1] !== ERR || typed.cols[1].type !== 'dec') fail(w, 'changeType : conversion ou erreur')
+  if (!eq(applyStep(t0, { op: 'trim', col: 'A' }).rows.map((r) => r[0]), ['x', 'y'])) fail(w, 'trim')
+  const rep = applyStep(t0, { op: 'replace', col: 'B', from: 'N/A', to: '0' })
+  if (rep.rows[1][1] !== '0') fail(w, 'replace')
+  try {
+    applyStep(t0, { op: 'filter', col: 'B', cmp: 'gt', value: 3 })
+    fail(w, 'filtrer un texte avec « > » doit produire une erreur')
+  } catch (e) {
+    if (!(e instanceof PqError)) fail(w, 'filter : mauvaise erreur')
+  }
+  try {
+    applyStep(t0, { op: 'removeCols', cols: ['Z'] })
+    fail(w, 'supprimer une colonne inconnue doit produire une erreur')
+  } catch (e) {
+    if (!(e instanceof PqError)) fail(w, 'removeCols : mauvaise erreur')
+  }
+  const fl = applyStep(T(['K', 'V'], [['a', 1], [null, 2], ['', 3], ['b', 4]]), { op: 'fillDown', col: 'K' })
+  if (!eq(fl.rows.map((r) => r[0]), ['a', 'a', 'a', 'b'])) fail(w, 'fillDown')
+  if (applyStep(T(['A', 'B'], [['a', null], [null, null], ['', '']]), { op: 'removeBlankRows' }).rows.length !== 1) fail(w, 'removeBlankRows')
+  if (applyStep(T(['A', 'B'], [['a', 1], ['a', 1], ['a', 2]]), { op: 'removeDuplicates' }).rows.length !== 2) fail(w, 'removeDuplicates (toutes colonnes)')
+  if (applyStep(T(['A', 'B'], [['a', 1], ['a', 2]]), { op: 'removeDuplicates', cols: ['A'] }).rows.length !== 1) fail(w, 'removeDuplicates (une colonne)')
+  const sp = applyStep(T(['R', 'Q'], [['PAL-LYO', '5'], ['CAR', '6']]), { op: 'split', col: 'R', sep: '-', names: ['Art', 'Site'] })
+  if (!eq(sp.cols.map((c) => c.name), ['Art', 'Site', 'Q']) || !eq(sp.rows[0], ['PAL', 'LYO', '5']) || !eq(sp.rows[1], ['CAR', null, '6'])) fail(w, 'split')
+  const up = applyStep(T(['P', 'J', 'F'], [['a', '1', null], ['b', '2', '3']]), { op: 'unpivot', keep: ['P'], attr: 'M', value: 'V' })
+  if (!eq(up.rows, [['a', 'J', '1'], ['b', 'J', '2'], ['b', 'F', '3']])) fail(w, 'unpivot (les cellules vides ne donnent pas de ligne) : ' + JSON.stringify(up.rows))
+  const pvSrc = { cols: [{ name: 'P', type: 'any' }, { name: 'M', type: 'any' }, { name: 'V', type: 'int' }], rows: [['a', 'J', 1], ['a', 'F', 2], ['b', 'J', 3], ['a', 'J', 4]] }
+  const pv = applyStep(pvSrc, { op: 'pivot', attr: 'M', value: 'V' })
+  if (!eq(pv.cols.map((c) => c.name), ['P', 'J', 'F']) || !eq(pv.rows, [['a', 5, 2], ['b', 3, null]])) fail(w, 'pivot : ' + JSON.stringify(pv.rows))
+  const calc = applyStep({ cols: [{ name: 'Q', type: 'int' }, { name: 'P', type: 'dec' }], rows: [[3, 2.5]] }, { op: 'addCalc', name: 'T', a: 'Q', b: 'P', sym: '*' })
+  if (calc.rows[0][2] !== 7.5) fail(w, 'addCalc')
+  const left = T(['id', 'code'], [['1', 'F1'], ['2', 'F2'], ['3', 'F9']])
+  const right = T(['code', 'nom'], [['F1', 'A'], ['F2', 'B'], ['F2', 'B2']])
+  const mgL = applyStep(left, { op: 'merge', right: 'R', leftKey: 'code', rightKey: 'code', join: 'leftouter', take: ['nom'] }, { R: right })
+  const mgI = applyStep(left, { op: 'merge', right: 'R', leftKey: 'code', rightKey: 'code', join: 'inner', take: ['nom'] }, { R: right })
+  if (mgL.rows.length !== 4 || mgI.rows.length !== 3 || mgL.rows.at(-1)[2] !== null) fail(w, 'merge : externe gauche = 4 lignes (clé en double + code inconnu), interne = 3')
+  const ap = applyStep(T(['A', 'B'], [[1, 2]]), { op: 'append', with: 'O' }, { O: T(['B', 'C'], [[3, 4]]) })
+  if (!eq(ap.cols.map((c) => c.name), ['A', 'B', 'C']) || !eq(ap.rows, [[1, 2, null], [null, 3, 4]])) fail(w, 'append (colonnes par nom)')
+  const bad = runSteps(t0, [{ op: 'removeCols', cols: ['Z'] }, { op: 'trim', col: 'A' }])
+  if (bad.final !== null || bad.results[0].ok || bad.results[1].ok || !bad.results[1].skipped) fail(w, 'runSteps : une étape en erreur doit bloquer les suivantes')
+  const nm = stepNames([{ op: 'changeType', col: 'A', type: 'int' }, { op: 'changeType', col: 'B', type: 'int' }])
+  if (nm[0] !== 'Type modifié' || nm[1] !== 'Type modifié1') fail(w, 'noms d’étapes uniques')
+  const code = mCode([{ op: 'promoteHeaders' }, { op: 'filter', col: 'S', cmp: 'eq', value: 'Livré' }])
+  if (!code.includes('Table.PromoteHeaders(Source') || !code.includes('Table.SelectRows(#"En-têtes promus", each [S] = "Livré")') || !code.trim().endsWith('#"Lignes filtrées"')) fail(w, 'mCode : ' + code)
+  if (tablesEqual(t0, t0) !== true || tablesEqual(t0, typed) !== false || diffTables(t0, T(['A'], [])).length < 2) fail(w, 'comparaison de tables')
+
+  // 3) Scénarios du simulateur : 150 parties chacun
+  const ids = new Set()
+  for (const s of PQ_SCENARIOS) {
+    const sw = `Simulateur « ${s.id} »`
+    if (ids.has(s.id)) fail(sw, 'identifiant en double')
+    ids.add(s.id)
+    if (!s.title || !s.intro || !s.recall?.length) fail(sw, 'titre, histoire ou rappel manquant')
+    let orderSensitive = 0
+    for (let n = 0; n < 150; n++) {
+      let g
+      try {
+        g = makePqGame(s)
+      } catch (e) {
+        fail(sw, 'génération impossible : ' + e.message)
+        break
+      }
+      if (!g.target) { fail(sw, 'les étapes idéales échouent'); break }
+      if (g.target.rows.length !== g.expectedRows) { fail(sw, `lignes attendues ${g.expectedRows}, objectif ${g.target.rows.length}`); break }
+      if (g.target.rows.some((r) => r.some(isErr)) || hasBadText(g.target)) { fail(sw, 'cellule en erreur ou texte suspect dans l’objectif'); break }
+      if (new Set(g.candidates.map((c) => c.id)).size !== g.candidates.length) { fail(sw, 'identifiants de transformations en double'); break }
+      const texts = g.candidates.map((c) => describeStep(c.step))
+      if (new Set(texts).size !== texts.length || texts.some((t) => !t || hasBadText(t))) { fail(sw, 'libellés de transformations en double ou vides'); break }
+      const idealSteps = g.ideal.map((c) => c.step)
+      // chaque étape idéale est nécessaire
+      for (let k = 0; k < idealSteps.length; k++) {
+        const r = runSteps(g.source, idealSteps.filter((_, i) => i !== k), g.tables)
+        if (r.final && tablesEqual(r.final, g.target)) { fail(sw, `l’étape « ${describeStep(idealSteps[k])} » est inutile (le résultat est le même sans elle)`); n = 150; break }
+      }
+      // chaque piège casse le résultat au moins à un endroit (début ou fin) : il ne peut pas être utilisé « gratuitement »
+      for (const t of g.traps) {
+        const harmless = [[t.step, ...idealSteps], [...idealSteps, t.step]].map((seq) => {
+          const r = runSteps(g.source, seq, g.tables)
+          return Boolean(r.final) && tablesEqual(r.final, g.target)
+        })
+        if (harmless.every(Boolean)) { fail(sw, `le piège « ${describeStep(t.step)} » est inoffensif (il ne change jamais le résultat)`); n = 150; break }
+      }
+      // l'ordre compte : au moins un des autres ordres possibles des étapes idéales casse le résultat
+      if (n === 0) {
+        const perms = (arr) => (arr.length <= 1 ? [arr] : arr.flatMap((x, i) => perms([...arr.slice(0, i), ...arr.slice(i + 1)]).map((p) => [x, ...p])))
+        for (const p of perms(idealSteps)) {
+          const r = runSteps(g.source, p, g.tables)
+          if (!r.final || !tablesEqual(r.final, g.target)) orderSensitive++
+        }
+        if (orderSensitive === 0) warn(sw, 'tous les ordres des étapes donnent le même résultat (l’ordre n’est pas testé)')
+      }
+    }
+  }
+
+  // 4) Leçons : cours complets, exercices aléatoires sans erreur
+  const lessonIds = new Set()
+  let exTotal = 0
+  let numTotal = 0
+  for (const l of BI_ALL_LESSONS) {
+    const lw = `Leçon BI « ${l.id} »`
+    if (lessonIds.has(l.id)) fail(lw, 'identifiant en double')
+    lessonIds.add(l.id)
+    if (!l.title || !l.short || (l.track !== 'pq' && l.track !== 'bi')) fail(lw, 'titre, résumé ou parcours manquant')
+    const c = l.course
+    if (!c?.purpose || !c.sections?.length || !c.recall?.length) fail(lw, 'cours incomplet (objectif, sections, rappel)')
+    if (c.sections.some((s) => !s.title || !s.text)) fail(lw, 'section sans titre ou texte')
+    if (hasBadText(c)) fail(lw, 'texte suspect dans le cours')
+    if (l.exercises.length < BI_SERIES_SIZE + 1) fail(lw, `banque trop petite (${l.exercises.length} générateurs, il en faut au moins ${BI_SERIES_SIZE + 1})`)
+    l.exercises.forEach((make, gi) => {
+      const ew = `${lw} exercice ${gi + 1}`
+      let longest = 0
+      let tested = 0
+      for (let n = 0; n < 200; n++) {
+        let ex
+        try {
+          ex = make()
+        } catch (e) {
+          fail(ew, 'génération impossible : ' + e.message)
+          return
+        }
+        tested++
+        exTotal++
+        if (!ex.statement?.trim() || !ex.question?.trim()) return fail(ew, 'énoncé ou question vide')
+        if (!Array.isArray(ex.steps) || ex.steps.length < 1 || new Set(ex.steps).size !== ex.steps.length) return fail(ew, 'correction vide ou avec deux lignes identiques : ' + JSON.stringify(ex.steps).slice(0, 80))
+        if (!ex.conclusion?.trim()) return fail(ew, 'conclusion absente')
+        if (hasBadText(ex)) return fail(ew, 'texte suspect (NaN/undefined…) : ' + ex.question.slice(0, 60))
+        for (const t of ex.tables) {
+          if (!t.cols?.length || !t.rows?.length || t.rows.some((r) => r.length !== t.cols.length)) return fail(ew, 'tableau mal formé')
+        }
+        if (ex.kind === 'choice') {
+          const lower = ex.choices.map((x) => String(x).trim().toLowerCase())
+          if (ex.choices.length < 3 || ex.choices.length > 5 || new Set(lower).size !== lower.length || lower.some((x) => !x)) return fail(ew, 'choix invalides ou en double : ' + ex.choices.join(' | '))
+          if (!Number.isInteger(ex.answer) || ex.answer < 0 || ex.answer >= ex.choices.length) return fail(ew, 'index de bonne réponse invalide')
+          if (ex.choices.every((x, i) => i === ex.answer || x.length < ex.choices[ex.answer].length)) longest++
+        } else if (ex.kind === 'number') {
+          numTotal++
+          if (!Number.isFinite(ex.answer) || ex.answer < 0 || !ex.unit && ex.unit !== '' || !Number.isFinite(ex.tolerance)) return fail(ew, 'réponse numérique invalide : ' + ex.answer)
+          if (!Number.isInteger(ex.digits)) return fail(ew, 'décimales invalides')
+        } else return fail(ew, 'type d’exercice inconnu : ' + ex.kind)
+      }
+      if (tested && longest / tested > 0.9) warn(ew, `la bonne réponse est la plus longue dans ${Math.round((longest / tested) * 100)} % des tirages`)
+    })
+    const series4 = generateBiExercises(l.id)
+    if (series4.length !== BI_SERIES_SIZE) fail(lw, 'taille de série incorrecte')
+  }
+
+  // 5) Tableaux de bord : attentes valides, scores, aperçus calculables
+  const visualIds = new Set(VISUALS.map((v) => v.id))
+  const dashIds = new Set()
+  for (const d of DASHBOARDS) {
+    const dw = `Tableau de bord « ${d.id} »`
+    if (dashIds.has(d.id)) fail(dw, 'identifiant en double')
+    dashIds.add(d.id)
+    const fam = FAMILIES[d.family]
+    if (!fam) { fail(dw, 'famille inconnue'); continue }
+    if (!d.title || !d.context || d.needs.length < 3) fail(dw, 'titre, contexte ou besoins manquants')
+    for (const need of d.needs) {
+      const nw = `${dw} besoin ${need.id}`
+      if (!visualIds.has(need.visual) || need.ok.some((v) => !visualIds.has(v))) fail(nw, 'visuel inconnu')
+      if (need.measure && !fam.measures.some((m) => m.id === need.measure)) fail(nw, 'mesure inconnue : ' + need.measure)
+      if (need.dim && !fam.dims.some((x) => x.id === need.dim)) fail(nw, 'axe inconnu : ' + need.dim)
+      if (need.visual === 'slicer' && need.measure) fail(nw, 'un segment n’a pas de mesure')
+      if (need.visual !== 'slicer' && !need.measure) fail(nw, 'une mesure est attendue')
+      if (need.visual === 'card' && need.dim) fail(nw, 'une carte n’a pas d’axe')
+      if (!need.ask || !need.why) fail(nw, 'énoncé ou explication manquant')
+      const perfect = scoreNeed(need, { visual: need.visual, measure: need.measure, dim: need.dim })
+      if (perfect.total !== needMax(need)) fail(nw, `score parfait ${perfect.total} ≠ maximum ${needMax(need)}`)
+      const worst = scoreNeed(need, { visual: need.visual === 'card' ? 'line' : 'card', measure: need.measure === 'nb' ? 'otif' : 'nb', dim: need.dim ? null : 'mois' })
+      if (worst.total >= needMax(need)) fail(nw, 'une réponse fausse ne doit pas avoir le maximum')
+    }
+    if (dashboardMax(d) < 6) fail(dw, 'maximum de points suspect')
+    for (let n = 0; n < 100; n++) {
+      const rows = makeDashboardData(d)
+      if (!rows.length) { fail(dw, 'aucune donnée générée'); break }
+      let broken = false
+      for (const m of fam.measures) {
+        for (const dim of [null, ...fam.dims.map((x) => x.id)]) {
+          const s = series(rows, d.family, m.id, dim)
+          if (!s.length || s.some((p) => !Number.isFinite(p.value))) { fail(dw, `mesure « ${m.id} » par « ${dim} » non calculable`); broken = true; break }
+        }
+        if (broken) break
+      }
+      if (broken) break
+    }
+  }
+  for (const f of Object.values(FAMILIES)) for (const m of f.measures) if (!m.dax || !m.note || !m.label) fail(w, `mesure « ${m.id} » sans DAX ou libellé`)
+
+  // 6) Questions d'entretien
+  const qids = new Set()
+  for (const q of INTERVIEW) {
+    const qw = `Question « ${q.id} »`
+    if (qids.has(q.id)) fail(qw, 'identifiant en double')
+    qids.add(q.id)
+    if (!INTERVIEW_TOPICS.includes(q.topic)) fail(qw, 'thème inconnu : ' + q.topic)
+    if (!q.question?.trim().endsWith('?') && !q.question?.trim().endsWith('.')) fail(qw, 'question mal terminée')
+    if ((q.pitch?.length ?? 0) < 60 || q.pitch.length > 420) fail(qw, `réponse orale de ${q.pitch?.length} caractères (60 à 420 attendus)`)
+    if ((q.detail?.length ?? 0) < 150) fail(qw, 'réponse détaillée trop courte')
+    if (!Array.isArray(q.points) || q.points.length < 3) fail(qw, 'au moins 3 idées à citer')
+    if (hasBadText(q)) fail(qw, 'texte suspect')
+  }
+  for (const t of INTERVIEW_TOPICS) if (!INTERVIEW.some((q) => q.topic === t)) fail(w, `aucune question pour le thème « ${t} »`)
+
+  // 7) Défi du jour
+  const dailyIds = new Set(BI_DAILY_ITEMS.map((i) => i.id))
+  if (dailyIds.size !== BI_DAILY_ITEMS.length) fail(w, 'identifiants en double dans le défi du jour')
+  for (const i of BI_DAILY_ITEMS) {
+    const d = describeBiItem(i.id)
+    if (!d.title || !d.label || !d.to.startsWith('/atelier/bi/')) fail(w, `défi du jour « ${i.id} » mal décrit`)
+  }
+  console.log(`Power Query / Power BI : ${BI_ALL_LESSONS.length} leçons (${exTotal} exercices générés, dont ${numTotal} numériques), ${PQ_SCENARIOS.length} scénarios de simulateur (150 parties chacun), ${DASHBOARDS.length} tableaux de bord, ${INTERVIEW.length} questions d’entretien`)
 }
 
 // ---------- Compte rendu ----------

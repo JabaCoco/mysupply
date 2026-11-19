@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
-import { ArrowRight, Beer, Calculator, Check, Gamepad2, Handshake, Languages, Route, Sheet, Truck, Users } from 'lucide-react'
+import { ArrowRight, Beer, Calculator, ChartColumn, Check, Gamepad2, Handshake, Languages, Route, Sheet, Truck, Users } from 'lucide-react'
 import Page from '../../components/Page.jsx'
+import { BI_DAILY_ITEMS, biDoneCount } from '../../data/atelier/bi/index.js'
 import { EXCEL_CHALLENGES } from '../../data/atelier/excel.js'
 import { CASES } from '../../data/atelier/cases.js'
 import { FORMULA_LIST } from '../../data/atelier/formulas.js'
@@ -14,6 +15,7 @@ export const DAILY_STYLE = {
   cas: { icon: Users, gradient: 'from-orange-500 to-amber-400', solid: 'bg-orange-500' },
   simulateur: { icon: Gamepad2, gradient: 'from-pink-500 to-rose-400', solid: 'bg-pink-500' },
   anglais: { icon: Languages, gradient: 'from-indigo-500 to-violet-400', solid: 'bg-indigo-500' },
+  bi: { icon: ChartColumn, gradient: 'from-fuchsia-500 to-purple-400', solid: 'bg-fuchsia-500' },
 }
 
 export default function Atelier() {
@@ -38,6 +40,7 @@ export default function Atelier() {
     { to: '/atelier/chargement', icon: Truck, solid: 'bg-teal-500', title: 'Plan de chargement', info: truck?.bestScore !== undefined ? `Meilleur score : ${truck.bestScore} / 100` : 'Charge le camion' },
     { to: '/atelier/negociation', icon: Handshake, solid: 'bg-indigo-500', title: 'Négociation', info: nego?.bestScore !== undefined ? `Meilleur score : ${nego.bestScore} / 100` : 'Face à un fournisseur' },
     { to: '/atelier/tournee', icon: Route, solid: 'bg-cyan-500', title: 'Tournée de livraison', info: tour?.bestScore !== undefined ? `Meilleur score : ${tour.bestScore} / 100` : 'Le chemin le plus court' },
+    { to: '/atelier/bi', ...DAILY_STYLE.bi, title: 'Power Query & Power BI', info: `${biDoneCount(workshop)} / ${BI_DAILY_ITEMS.length} activités faites` },
   ]
 
   return (
@@ -45,7 +48,7 @@ export default function Atelier() {
       <div className="space-y-4">
         <header>
           <h1 className="text-3xl font-extrabold tracking-tight">Atelier</h1>
-          <p className="text-sm text-muted">Pratique : Excel, calculs, cas réels et simulation</p>
+          <p className="text-sm text-muted">Pratique : Excel, calculs, cas réels, simulation, Power Query et Power BI</p>
         </header>
 
         {/* Grille qui remplit la largeur : le défi du jour occupe 2 × 2 cases à côté des tuiles (grand écran) */}

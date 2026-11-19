@@ -46,6 +46,62 @@ export async function recordExercise(formulaId, correct) {
   })
 }
 
+// ───── Module Power Query / Power BI (clés « bi/… » dans la table workshop) ─────
+
+export const XP_BI_INTERVIEW = 2 // question d'entretien maîtrisée pour la première fois
+
+// Exercice d'une leçon Power Query / Power BI terminé (+5 XP si juste). Renvoie les XP gagnés.
+export async function recordBiExercise(lessonId, correct) {
+  if (correct) await reportDaily('bi', lessonId)
+  return db.transaction('rw', db.workshop, db.activity, async () => {
+    const key = `bi/${lessonId}`
+    const previous = await db.workshop.get(key)
+    await db.workshop.put({ id: key, solved: (previous?.solved ?? 0) + (correct ? 1 : 0), attempts: (previous?.attempts ?? 0) + 1 })
+    if (!correct) return 0
+    await addXp(XP_EXERCISE)
+    return XP_EXERCISE
+  })
+}
+
+// Scénario du simulateur Power Query réussi : 15 XP sans la solution, 5 avec (la 1re fois seulement)
+export async function completePqSim(id, usedSolution) {
+  await reportDaily('bi', id)
+  return db.transaction('rw', db.workshop, db.activity, async () => {
+    const key = `bi/${id}`
+    if (await db.workshop.get(key)) return 0
+    const xp = usedSolution ? XP_EXCEL_WITH_SOLUTION : XP_EXCEL
+    await db.workshop.put({ id: key, completedAt: Date.now() })
+    await addXp(xp)
+    return xp
+  })
+}
+
+// Tableau de bord validé : même barème que les études de cas (10 XP + bonus selon le score, la 1re fois)
+export async function completeDashboard(id, score, max) {
+  await reportDaily('bi', id)
+  return db.transaction('rw', db.workshop, db.activity, async () => {
+    const key = `bi/${id}`
+    const previous = await db.workshop.get(key)
+    await db.workshop.put({ id: key, bestScore: Math.max(score, previous?.bestScore ?? 0), max, completedAt: Date.now() })
+    if (previous) return 0
+    const xp = XP_CASE + Math.floor((score / max) * 4) * 5
+    await addXp(xp)
+    return xp
+  })
+}
+
+// Question d'entretien : « Je savais » ou « À revoir ». +2 XP la première fois qu'elle est maîtrisée.
+export async function recordInterview(questionId, known) {
+  return db.transaction('rw', db.workshop, db.activity, async () => {
+    const key = `bi/ent/${questionId}`
+    const previous = await db.workshop.get(key)
+    await db.workshop.put({ id: key, status: known ? 'known' : 'review', updatedAt: Date.now() })
+    if (!known || previous?.status === 'known') return 0
+    await addXp(XP_BI_INTERVIEW)
+    return XP_BI_INTERVIEW
+  })
+}
+
 // Étude de cas terminée. Première fois : 10 XP + 5 XP par tranche de 25 % du score.
 export async function completeCase(id, score, max) {
   await reportDaily('cas', id)

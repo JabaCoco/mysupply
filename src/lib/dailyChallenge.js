@@ -1,5 +1,5 @@
 // Défi du jour de l'Atelier.
-// - Le type tourne : Excel → calculateur → étude de cas → simulateur → Excel…
+// - Le type tourne : Excel → calculateur → étude de cas → simulateur → anglais → Power Query / Power BI → Excel…
 // - Tant que le défi n'est pas terminé, il reste le même (même plusieurs jours).
 // - Une fois terminé, il reste affiché "réussi" le jour même, et le lendemain on passe au suivant.
 import { useEffect } from 'react'
@@ -10,8 +10,9 @@ import { EXCEL_CHALLENGES } from '../data/atelier/excel.js'
 import { CASES } from '../data/atelier/cases.js'
 import { FORMULA_LIST } from '../data/atelier/formulas.js'
 import { ALL_EN_LESSONS } from '../data/anglais/units.js'
+import { BI_DAILY_ITEMS, BI_DAILY_TARGET, describeBiItem, isBiLesson } from '../data/atelier/bi/index.js'
 
-const TYPES = ['excel', 'calcul', 'cas', 'simulateur', 'anglais']
+const TYPES = ['excel', 'calcul', 'cas', 'simulateur', 'anglais', 'bi']
 export const DAILY_CALC_TARGET = 3 // exercices à réussir pour un défi "calculateur"
 
 const ITEMS = {
@@ -20,6 +21,7 @@ const ITEMS = {
   cas: CASES.map((c) => c.id),
   simulateur: ['simulateur'],
   anglais: ALL_EN_LESSONS.map((l) => l.key),
+  bi: BI_DAILY_ITEMS.map((i) => i.id),
 }
 const DONE_KEY = {
   excel: (id) => `excel/${id}`,
@@ -27,7 +29,11 @@ const DONE_KEY = {
   cas: (id) => `cas/${id}`,
   simulateur: () => 'simulateur',
   anglais: (id) => `lesson/${id}`,
+  bi: (id) => `bi/${id}`,
 }
+
+// Nombre de réussites demandées pour valider le défi (exercices de calcul ou de leçon Power BI : plusieurs ; le reste : une)
+const targetOf = (type, id) => (type === 'calcul' ? DAILY_CALC_TARGET : type === 'bi' && isBiLesson(id) ? BI_DAILY_TARGET : 1)
 
 // Choisit l'élément : le premier jamais fait, sinon on tourne dans la liste
 function pickItem(type, n, done) {
@@ -57,7 +63,7 @@ export async function reportDaily(type, id) {
     const current = (await db.meta.get('daily'))?.value
     if (!current || current.completedDay || current.type !== type || current.id !== id) return
     const progress = current.progress + 1
-    const finished = type !== 'calcul' || progress >= DAILY_CALC_TARGET
+    const finished = progress >= targetOf(type, id)
     await db.meta.put({ key: 'daily', value: { ...current, progress, completedDay: finished ? dayKey(new Date()) : null } })
   })
 }
@@ -88,6 +94,18 @@ export function describeDaily(daily) {
     case 'anglais': {
       const l = ALL_EN_LESSONS.find((x) => x.key === daily.id)
       return { label: 'Anglais', title: l.title, subtitle: `Termine la leçon · ${l.unit.title}`, to: `/anglais/${l.key}`, done, icon: 'anglais' }
+    }
+    case 'bi': {
+      const b = describeBiItem(daily.id)
+      const target = targetOf('bi', daily.id)
+      return {
+        label: b.label,
+        title: b.title,
+        subtitle: b.kind === 'lesson' ? (done ? `${target} exercices réussis` : `Réussis ${target} exercices (${daily.progress}/${target})`) : b.kind === 'sim' ? 'Transforme le tableau dans le bon ordre' : 'Réponds à la question métier',
+        to: b.to,
+        done,
+        icon: 'bi',
+      }
     }
     default:
       return { label: 'Simulateur', title: 'Gère ton stock 12 semaines', subtitle: 'Termine une partie', to: '/atelier/simulateur', done, icon: 'simulateur' }
