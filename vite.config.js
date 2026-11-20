@@ -39,7 +39,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg', 'favicon.ico', 'favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png'],
+      includeAssets: ['icon.svg', 'icon-small.svg', 'favicon.ico', 'favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png'],
       workbox: {
         // Les adresses …/rss/… sont des flux, jamais des pages de l'appli
         navigateFallbackDenylist: [/\/rss\//],
