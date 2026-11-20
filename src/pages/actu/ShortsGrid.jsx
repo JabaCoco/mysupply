@@ -1,7 +1,10 @@
-import { Check, Play } from 'lucide-react'
+import { Check, Eye, Play } from 'lucide-react'
 import { timeAgo } from '../../lib/dates.js'
 import { THEMES } from '../../lib/themes.js'
+import { markSeenManual } from '../../lib/news.js'
+import { videoFav } from '../../lib/favorites.js'
 import LangBadge from '../../components/LangBadge.jsx'
+import FavButton from '../../components/FavButton.jsx'
 
 // Thèmes mis en avant par un badge sur les vignettes : IA, Géopolitique, Tech / Panne
 const HIGHLIGHTED = THEMES.filter((t) => t.highlight)
@@ -22,7 +25,7 @@ export default function ShortsGrid({ shorts, seen, onOpen }) {
         const isSeen = seen.has(video.id)
         const badges = HIGHLIGHTED.filter((t) => video.themes.includes(t.id))
         return (
-          <li key={video.id}>
+          <li key={video.id} className="relative">
             <button
               type="button"
               onClick={() => onOpen(index)}
@@ -64,6 +67,19 @@ export default function ShortsGrid({ shorts, seen, onOpen }) {
                 </span>
               </span>
             </button>
+            {/* Actions par-dessus la vignette (hors du bouton qui ouvre la vidéo) : favori, et « marquer comme vue » sans l'ouvrir (sans XP) */}
+            <FavButton item={videoFav(video)} variant="overlay" className="absolute top-11 right-2" />
+            {!isSeen && (
+              <button
+                type="button"
+                onClick={() => markSeenManual(video.id)}
+                aria-label="Marquer comme vue"
+                title="Marquer comme vue (sans XP)"
+                className="absolute top-20 right-2 grid size-7 place-items-center rounded-full bg-black/50 text-white transition-transform active:scale-90"
+              >
+                <Eye size={14} />
+              </button>
+            )}
           </li>
         )
       })}

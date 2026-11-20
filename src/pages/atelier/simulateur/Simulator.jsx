@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { CalendarClock, CalendarRange, ClipboardList, Minus, PackageCheck, Plus, Shuffle, Truck, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { PROFILES, forecast, generateScenario, newGame, playReference, playWeek, referenceFor, summarize } from '../../../lib/simulation.js'
 import { recordSimulation, useWorkshop } from '../../../lib/atelier.js'
 import { celebrate } from '../../../lib/confetti.js'
@@ -241,7 +242,7 @@ export default function Simulator() {
 function Intro({ params, onStart, onShuffle, best, profile, onChoose }) {
   return (
     <Page>
-      <SubHeader back="/atelier" title="Simulateur de stock" subtitle="12 semaines pour gérer ton stock au meilleur coût" />
+      <SubHeader back="/atelier" title="Simulateur de stock" subtitle="12 semaines pour gérer ton stock au meilleur coût" fav={atelierFav({ key: 'simulateur', title: 'Simulateur de stock', sub: 'Atelier · 12 semaines', to: '/atelier/simulateur' })} />
       <div className="space-y-4">
         <p className="text-[15px] leading-relaxed">
           Tu gères le stock d'un produit. Chaque semaine, tu décides combien commander. <span className="font-semibold">Objectif : le coût total le plus bas.</span> Les données

@@ -2,6 +2,8 @@
 // Les fonctions « pures » (validateBackup, mergeRow) sont testées par `npm run verify`.
 // Le cache des flux d'actualité (feeds) n'est pas sauvegardé : il se reconstruit tout seul.
 
+import { mergeBadge } from './badgeRules.js'
+
 export const BACKUP_FORMAT = 'appli-supply-chain-backup'
 export const BACKUP_VERSION = 1
 export const SKIP_TABLES = ['feeds']
@@ -46,6 +48,8 @@ export function validateBackup(text, schema) {
     rows.forEach((row, i) => {
       if (!row || typeof row !== 'object' || row[key] === undefined || row[key] === null) fail(1, `table « ${name} », ligne ${i + 1} : champ « ${key} » manquant`)
     })
+    if (name === 'badges') rows.forEach((b, i) => { if (typeof b?.id !== 'string' || !Number.isFinite(b.at)) fail(1, `table « badges », ligne ${i + 1} : identifiant ou date d'obtention invalide`) })
+    if (name === 'favorites') rows.forEach((f, i) => { if (typeof f?.type !== 'string' || typeof f?.title !== 'string') fail(1, `table « favorites », ligne ${i + 1} : type ou titre manquant`) })
     if (name === 'rvLots')
       rows.forEach((lot, i) => {
         if (!Array.isArray(lot.items) || !lot.title || !lot.matiere) fail(1, `table « rvLots », lot ${i + 1} : titre, matière ou contenus manquants`)
@@ -58,7 +62,11 @@ export function validateBackup(text, schema) {
 // Fusion d'une ligne de la sauvegarde avec la ligne locale : renvoie la ligne à garder.
 export function mergeRow(table, local, incoming) {
   if (!local) return incoming
-  if (table === 'activity') return { ...local, xp: Math.max(local.xp ?? 0, incoming.xp ?? 0), celebrated: Boolean(local.celebrated || incoming.celebrated) }
+  if (table === 'activity') return { ...local, ...(local.daily || incoming.daily ? { daily: true } : {}), xp: Math.max(local.xp ?? 0, incoming.xp ?? 0), celebrated: Boolean(local.celebrated || incoming.celebrated) }
+  // Badges : on garde la date d'obtention la plus ancienne (jamais de badge perdu)
+  if (table === 'badges') return mergeBadge(local, incoming)
+  // Favoris : la modification la plus récente gagne (ajout ou retrait) ; un favori n'est jamais perdu sans retrait volontaire
+  if (table === 'favorites') return (incoming.updatedAt ?? 0) > (local.updatedAt ?? 0) ? incoming : local
   if (table === 'rvProgress') return (incoming.last ?? '') > (local.last ?? '') ? incoming : local
   if (table === 'rvLots') return (incoming.updatedAt ?? 0) > (local.updatedAt ?? 0) ? incoming : local
   if (table === 'workshop') return (incoming.bestScore ?? 0) > (local.bestScore ?? 0) || (incoming.games ?? 0) > (local.games ?? 0) ? { ...local, ...incoming } : local

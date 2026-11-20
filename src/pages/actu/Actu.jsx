@@ -101,7 +101,7 @@ export default function Actu() {
         ) : view === 'videos' ? (
           <ShortsGrid shorts={shorts} seen={seen} onOpen={(index) => setPlayer({ videos: shorts, index })} />
         ) : (
-          <NewsList items={articles} />
+          <NewsList items={articles} seen={seen} />
         )}
       </div>
 

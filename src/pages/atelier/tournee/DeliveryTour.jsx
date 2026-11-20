@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Check, Shuffle, Undo2, X, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { Table } from '../simulateur/SituationModal.jsx'
 import { KM_PER_UNIT, LEVELS, crossings, generateTour, nearestNeighbor, optimalTour, routeLength, scoreTour, toKm } from '../../../lib/tour.js'
 import { recordScoreGame, useWorkshop } from '../../../lib/atelier.js'
@@ -42,7 +43,7 @@ export default function DeliveryTour() {
   if (!tour)
     return (
       <Page>
-        <SubHeader back="/atelier" title="Tournée de livraison" subtitle="Trouve le chemin le plus court" />
+        <SubHeader back="/atelier" title="Tournée de livraison" subtitle="Trouve le chemin le plus court" fav={atelierFav({ key: 'tournee', title: 'Tournée de livraison', sub: 'Atelier · chemin le plus court', to: '/atelier/tournee' })} />
         <div className="space-y-4">
           <p className="text-[15px] leading-relaxed">
             Ton camion part du dépôt, livre <span className="font-semibold">tous les clients une seule fois</span> puis revient au dépôt. <span className="font-semibold">Objectif : le moins de kilomètres possible</span>, car

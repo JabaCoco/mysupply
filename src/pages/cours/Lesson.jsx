@@ -5,6 +5,8 @@ import { ChevronLeft, X } from 'lucide-react'
 import { ALL_LESSONS, findLesson } from '../../data/courses/index.js'
 import { completeLesson, setLastLesson } from '../../lib/courses.js'
 import { celebrate } from '../../lib/confetti.js'
+import { lessonFav } from '../../lib/favorites.js'
+import FavButton from '../../components/FavButton.jsx'
 import { drawQuiz } from '../../lib/quiz.js'
 import { moduleStyle } from './moduleStyle.js'
 import LessonCard from './LessonCard.jsx'
@@ -95,6 +97,7 @@ function LessonPlayer({ lesson }) {
             transition={{ duration: 0.3 }}
           />
         </div>
+        <FavButton item={lessonFav(lesson)} className="size-9!" />
       </header>
       <p className={`mt-3 text-xs font-bold tracking-wider uppercase ${color.text}`}>
         {lesson.module.short} · {lesson.title}

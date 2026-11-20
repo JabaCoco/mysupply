@@ -7,7 +7,7 @@ import { validateBackup } from '../../lib/revBackup.js'
 import { copyText, isIOS, readClipboard, readFile, saveTextFile } from '../../lib/device.js'
 import { dayKey } from '../../lib/dates.js'
 
-const TABLE_LABELS = { rvLots: 'lots de révision', rvProgress: 'cartes suivies', activity: 'jours d\'activité (XP et série)', lessons: 'leçons de cours', workshop: 'résultats de l\'Atelier', english: 'anglais', seen: 'vidéos vues', meta: 'réglages' }
+const TABLE_LABELS = { rvLots: 'lots de révision', rvProgress: 'cartes suivies', activity: 'jours d\'activité (XP et série)', lessons: 'leçons de cours', workshop: 'résultats de l\'Atelier', english: 'anglais', seen: 'vidéos et articles vus', meta: 'réglages', badges: 'badges gagnés', favorites: 'favoris' }
 
 // Sauvegarde et restauration de tout : contenus importés, progression, XP, série…
 export default function Backup() {
@@ -80,7 +80,7 @@ export default function Backup() {
       <div className="space-y-5">
         <section className="space-y-3 rounded-3xl border border-line bg-card p-4">
           <h2 className="font-extrabold">1. Exporter</h2>
-          <p className="text-sm text-muted">Un seul fichier contient tes lots importés, ta progression, tes XP et ta série. Les actualités (qui se rechargent seules) n'en font pas partie.</p>
+          <p className="text-sm text-muted">Un seul fichier contient tes lots importés, ta progression, tes XP et ta série, tes badges et tes favoris. Les actualités (qui se rechargent seules) n'en font pas partie.</p>
           <button type="button" onClick={exportFile} disabled={busy} className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-violet-500 font-bold text-white disabled:opacity-50">
             <Download size={18} /> Enregistrer le fichier
           </button>
@@ -151,7 +151,7 @@ export default function Backup() {
                   <input type="radio" name="bmode" checked={mode === 'fusionner'} onChange={() => setMode('fusionner')} className="mt-1" />
                   <span>
                     <span className="font-semibold">Fusionner (conseillé)</span>
-                    <span className="block text-xs text-muted">Ajoute ce qui manque ici et garde le plus avancé (XP du jour les plus hauts, cartes révisées en dernier…).</span>
+                    <span className="block text-xs text-muted">Ajoute ce qui manque ici et garde le plus avancé (XP du jour les plus hauts, cartes révisées en dernier, badges : la date d'obtention la plus ancienne, favoris : rien n'est perdu).</span>
                   </span>
                 </label>
                 <label className="flex items-start gap-2 rounded-xl border border-line p-2.5">

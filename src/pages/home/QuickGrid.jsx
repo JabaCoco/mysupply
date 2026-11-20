@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { Award, CheckCircle2, Layers, Languages } from 'lucide-react'
-import { placeholders } from '../../data/daily.js'
+import { useBadges } from '../../lib/badges.js'
 import { cardFace, useEnglish } from '../../lib/english.js'
 import { useDueCount } from '../../lib/revStore.js'
 import { useDailyChallenge } from '../../lib/dailyChallenge.js'
@@ -28,7 +28,7 @@ function Tile({ to, icon: Icon, color, label, value }) {
 }
 
 export default function QuickGrid() {
-  const { badges } = placeholders
+  const badges = useBadges() // vrais badges gagnés (null pendant le chargement)
   const due = useDueCount()
   const daily = useDailyChallenge()
   const word = useEnglish()?.dailyWords[0]
@@ -45,7 +45,7 @@ export default function QuickGrid() {
       />
       <Tile to="/anglais" icon={Languages} color="bg-pink-500" label="Word of the day" value={word ? (cardFace(word.en) === 'en' ? word.en : word.fr) : '…'} />
       <Tile to="/revisions" icon={Layers} color="bg-orange-500" label="À réviser aujourd'hui" value={due === null ? '…' : due === 0 ? 'Tout est à jour ✓' : `${due} carte${due > 1 ? 's' : ''}`} />
-      <Tile icon={Award} color="bg-amber-400" label="Badges gagnés" value={`${badges.won} / ${badges.total}`} />
+      <Tile to="/badges" icon={Award} color="bg-amber-400" label="Badges gagnés" value={badges ? `${badges.count} / ${badges.total}` : '…'} />
     </div>
   )
 }

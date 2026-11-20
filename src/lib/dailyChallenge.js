@@ -59,12 +59,18 @@ export async function ensureDaily() {
 
 // À appeler quand une activité est terminée : valide le défi du jour s'il correspond
 export async function reportDaily(type, id) {
-  await db.transaction('rw', db.meta, async () => {
+  await db.transaction('rw', db.meta, db.activity, async () => {
     const current = (await db.meta.get('daily'))?.value
     if (!current || current.completedDay || current.type !== type || current.id !== id) return
     const progress = current.progress + 1
     const finished = progress >= targetOf(type, id)
-    await db.meta.put({ key: 'daily', value: { ...current, progress, completedDay: finished ? dayKey(new Date()) : null } })
+    const today = dayKey(new Date())
+    await db.meta.put({ key: 'daily', value: { ...current, progress, completedDay: finished ? today : null } })
+    // On note ce jour-là dans l'activité : sert au badge « défi du jour réussi plusieurs jours de suite »
+    if (finished) {
+      const row = await db.activity.get(today)
+      await db.activity.put({ xp: 0, celebrated: false, ...row, date: today, daily: true })
+    }
   })
 }
 

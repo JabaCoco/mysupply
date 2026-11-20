@@ -43,6 +43,22 @@ export async function readClipboard() {
   return null
 }
 
+// Partage un lien : feuille de partage du téléphone / de Windows si elle existe, sinon copie du lien.
+// Renvoie 'partage', 'copie', 'annule' ou 'echec'.
+export async function shareLink(title, url) {
+  if (!url) return 'echec'
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url })
+      return 'partage'
+    } catch (e) {
+      if (e?.name === 'AbortError') return 'annule'
+      // sinon on copie le lien
+    }
+  }
+  return (await copyText(url)) ? 'copie' : 'echec'
+}
+
 // Lit un fichier choisi par l'utilisateur
 export function readFile(file) {
   if (file.text) return file.text()

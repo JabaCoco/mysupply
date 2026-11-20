@@ -4,6 +4,7 @@ import { motion } from 'motion/react'
 import { BookOpen, Check, CheckCircle2, ChevronRight, CircleDot, Trophy, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { CASES } from '../../../data/atelier/cases.js'
 import { findLesson } from '../../../data/courses/index.js'
 import { completeCase, useWorkshop } from '../../../lib/atelier.js'
@@ -102,7 +103,7 @@ function CasePlayer({ base }) {
 
   return (
     <Page>
-      <SubHeader back="/atelier/cas" title={study.title} subtitle={study.role} />
+      <SubHeader back="/atelier/cas" title={study.title} subtitle={study.role} fav={atelierFav({ key: `cas/${base.id}`, title: study.title, sub: 'Étude de cas', to: `/atelier/cas/${base.id}` })} />
 
       {!finished && (
         <div className="space-y-4">

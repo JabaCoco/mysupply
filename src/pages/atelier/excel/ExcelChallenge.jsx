@@ -10,6 +10,7 @@ import { evaluateFormula, formatValue, sameResult, canonicalName } from '../../.
 import { functionsUsed, parseFormula } from '../../../lib/excel/parser.js'
 import { completeExcel, useWorkshop } from '../../../lib/atelier.js'
 import { celebrate } from '../../../lib/confetti.js'
+import { atelierFav } from '../../../lib/favorites.js'
 import Sheet from './Sheet.jsx'
 
 // Touches rapides pour taper une formule sur mobile
@@ -89,6 +90,7 @@ function ChallengePlayer({ challenge }) {
         back="/atelier/excel"
         title={challenge.title}
         subtitle={`Défi ${index + 1} / ${EXCEL_CHALLENGES.length} · ${challenge.fn}${alreadyDone ? ' · déjà réussi ✓' : ''}`}
+        fav={atelierFav({ key: `excel/${challenge.id}`, title: challenge.title, sub: `Défi Excel · ${challenge.fn}`, to: `/atelier/excel/${challenge.id}` })}
       />
 
       <div className="space-y-4">

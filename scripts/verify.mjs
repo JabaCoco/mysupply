@@ -23,6 +23,9 @@ import { parseRevisions, cardsOf, hashId, checkNumericAnswer } from '../src/lib/
 import { RV_EXAMPLE, RV_PROMPT } from '../src/lib/revTemplate.js'
 import { schedule, pickSession, dueToday, levelOf, INTERVALS, DAILY_LIMIT, NEW_LIMIT } from '../src/lib/revSrs.js'
 import { validateBackup, mergeRow, BACKUP_FORMAT } from '../src/lib/revBackup.js'
+import { BADGES, BADGE_CATEGORIES, DAILY_GOAL, XP_PER_LEVEL, computeStats, earnedBadges, mergeBadge } from '../src/lib/badgeRules.js'
+import { FAV_TYPES, videoFav, articleFav, lessonFav, cardFav, wordFav, atelierFav, clip } from '../src/lib/favoriteItems.js'
+import { dayKey } from '../src/lib/dates.js'
 import { evaluateFormula, canonicalName } from '../src/lib/excel/evaluate.js'
 import { functionsUsed, parseFormula } from '../src/lib/excel/parser.js'
 import { unitStyle } from '../src/pages/anglais/unitStyle.js'
@@ -733,6 +736,137 @@ for (let i = 0; i < 120; i++) {
     if (!d.title || !d.label || !d.to.startsWith('/atelier/bi/')) fail(w, `défi du jour « ${i.id} » mal décrit`)
   }
   console.log(`Power Query / Power BI : ${BI_ALL_LESSONS.length} leçons (${exTotal} exercices générés, dont ${numTotal} numériques), ${PQ_SCENARIOS.length} scénarios de simulateur (150 parties chacun), ${DASHBOARDS.length} tableaux de bord, ${INTERVIEW.length} questions d’entretien`)
+}
+
+// ---------- Badges et favoris ----------
+{
+  const w = 'Badges et favoris'
+  const NOW = new Date(2026, 10, 20, 15).getTime()
+  const day = (n) => dayKey(new Date(2026, 9, 1 + n)) // n-ième jour à partir du 1er octobre 2026
+  const earned = (data) => earnedBadges(computeStats(data, MODULES, NOW))
+  const ids = (data) => new Set(earned(data).map((b) => b.id))
+
+  // 1) Liste : identifiants uniques, catégories et icônes connues, conditions rédigées
+  const bid = new Set(BADGES.map((b) => b.id))
+  if (bid.size !== BADGES.length) fail(w, 'identifiants de badges en double')
+  if (BADGES.length < 28 || BADGES.length > 40) fail(w, `nombre de badges inattendu : ${BADGES.length}`)
+  const cats = new Set(BADGE_CATEGORIES.map((c) => c.id))
+  const styleSrc = fs.readFileSync(new URL('../src/pages/badges/badgeStyle.jsx', import.meta.url), 'utf8')
+  const iconBlock = styleSrc.slice(styleSrc.indexOf('const ICONS'), styleSrc.indexOf('}', styleSrc.indexOf('const ICONS')))
+  for (const b of BADGES) {
+    if (!cats.has(b.cat)) fail(w, `badge ${b.id} : catégorie inconnue « ${b.cat} »`)
+    if (!new RegExp(`\\b${b.icon}:`).test(iconBlock)) fail(w, `badge ${b.id} : icône « ${b.icon} » absente de badgeStyle.jsx`)
+    if (!b.title || !b.cond || !(b.target > 0)) fail(w, `badge ${b.id} : titre, condition ou objectif manquant`)
+  }
+  for (const c of BADGE_CATEGORIES) if (!BADGES.some((b) => b.cat === c.id)) fail(w, `catégorie sans badge : ${c.id}`)
+  // constantes identiques à celles de progress.js
+  const progressSrc = fs.readFileSync(new URL('../src/lib/progress.js', import.meta.url), 'utf8')
+  if (Number(/DAILY_GOAL = (\d+)/.exec(progressSrc)?.[1]) !== DAILY_GOAL || Number(/XP_PER_LEVEL = (\d+)/.exec(progressSrc)?.[1]) !== XP_PER_LEVEL) fail(w, 'DAILY_GOAL / XP_PER_LEVEL de badgeRules.js différents de progress.js')
+  const dbSrc = fs.readFileSync(new URL('../src/db.js', import.meta.url), 'utf8')
+  if (!/badges: 'id'/.test(dbSrc) || !/favorites: 'id, type'/.test(dbSrc)) fail(w, 'tables badges / favorites absentes de db.js')
+
+  // 2) Rien de gagné sans données
+  if (earned({}).length) fail(w, 'des badges sont gagnés sans aucune donnée')
+
+  // 3) Séries : 3 jours d'affilée = serie-3 ; un trou casse la série ; 49 XP ne comptent pas
+  const act = (days, xp = 60) => days.map((n) => ({ date: day(n), xp }))
+  let s = ids({ activity: act([0, 1, 2]) })
+  if (!s.has('serie-3') || s.has('serie-7') || !s.has('objectif-1')) fail(w, 'série de 3 jours mal détectée')
+  if (ids({ activity: act([0, 1, 3, 4]) }).has('serie-3')) fail(w, 'un jour manquant doit casser la série')
+  if (ids({ activity: act([0, 1, 2], 49) }).has('serie-3')) fail(w, '49 XP ne doivent pas valider un jour de série')
+  const e3 = earned({ activity: act([0, 1, 2]) }).find((b) => b.id === 'serie-3')
+  if (e3.at !== new Date(`${day(2)}T12:00:00`).getTime()) fail(w, 'la date du badge de série doit être celle du 3e jour')
+  if (!ids({ activity: act(Array.from({ length: 30 }, (_, i) => i)) }).has('serie-30')) fail(w, 'série de 30 jours non détectée')
+
+  // 4) XP et niveaux : seuils exacts (niveau n = (n − 1) × 100 XP)
+  const xpData = (total) => ({ activity: [{ date: day(0), xp: total }] })
+  if (ids(xpData(99)).has('xp-100') || !ids(xpData(100)).has('xp-100')) fail(w, 'seuil de 100 XP')
+  if (ids(xpData(399)).has('niveau-5') || !ids(xpData(400)).has('niveau-5')) fail(w, 'niveau 5 = 400 XP')
+  if (ids(xpData(999)).has('xp-1000') || !ids(xpData(1000)).has('xp-1000')) fail(w, 'seuil de 1 000 XP')
+  if (!ids(xpData(1900)).has('niveau-20') || ids(xpData(1899)).has('niveau-20')) fail(w, 'niveau 20 = 1 900 XP')
+
+  // 5) Cours : une leçon, 10 leçons, un module entier
+  const lessonRows = (mods) => mods.flatMap((m) => m.lessons.map((l) => ({ id: `${m.id}/${l.id}`, completedAt: NOW - 1000 })))
+  if (!ids({ lessons: [{ id: 'x/y', completedAt: 5 }] }).has('cours-1')) fail(w, 'première leçon')
+  const m0 = MODULES[0]
+  const partial = lessonRows([m0]).slice(0, m0.lessons.length - 1)
+  if (ids({ lessons: partial }).has('module-1')) fail(w, 'un module incomplet ne doit pas donner le badge')
+  if (!ids({ lessons: lessonRows([m0]) }).has('module-1')) fail(w, 'module terminé non détecté')
+  if (ids({ lessons: lessonRows(MODULES.slice(0, 4)) }).has('module-5') || !ids({ lessons: lessonRows(MODULES.slice(0, 5)) }).has('module-5')) fail(w, 'cinq modules')
+
+  // 6) Jeu de données complet : tous les badges doivent pouvoir être gagnés, avec une date plausible
+  const flash = Array.from({ length: 12 }, (_, i) => ({ id: `f${i}`, type: 'flashcard' }))
+  const qa = Array.from({ length: 40 }, (_, i) => ({ id: `q${i}`, type: 'qa' }))
+  const lot = { id: 'L1', createdAt: NOW - 5000, items: [...flash, ...qa] }
+  const rvProgress = [
+    ...flash.flatMap((it) => ['f', 'r'].map((dir) => ({ id: `L1|${it.id}|${dir}`, lotId: 'L1', itemId: it.id, dir, reps: 1, last: day(3) }))),
+    ...qa.map((it) => ({ id: `L1|${it.id}|f`, lotId: 'L1', itemId: it.id, dir: 'f', reps: 2, last: day(4) })),
+    { id: 'L1|ex|x:1', lotId: 'L1', itemId: 'x:ex:1', dir: 'x', reps: 3, last: day(5) }, // les exercices ne comptent pas comme cartes
+  ]
+  const full = {
+    activity: Array.from({ length: 31 }, (_, i) => ({ date: day(i), xp: 200, daily: true })),
+    lessons: lessonRows(MODULES),
+    english: [
+      ...Array.from({ length: 10 }, (_, i) => ({ id: `lesson/u/${i}`, completedAt: NOW - 2000 })),
+      ...Array.from({ length: 20 }, (_, i) => ({ id: `word/w${i}`, status: 'known', updatedAt: NOW - 3000 })),
+    ],
+    rvLots: [lot],
+    rvProgress,
+    workshop: [
+      { id: 'excel/a', completedAt: NOW - 100 }, { id: 'calc/a', solved: 2, attempts: 3 }, { id: 'cas/a', completedAt: NOW - 100, bestScore: 3, max: 3 },
+      { id: 'simulateur', games: 1, lastXpDay: day(6) }, { id: 'biere', games: 1, lastXpDay: day(7) }, { id: 'chargement', games: 2, bestScore: 80, lastXpDay: day(8) },
+      { id: 'negociation', games: 1, bestScore: 70, lastXpDay: day(9) }, { id: 'tournee', games: 1, bestScore: 90, lastXpDay: day(10) },
+      { id: 'bi/pq-intro', solved: 1, attempts: 1 },
+      ...Array.from({ length: 10 }, (_, i) => ({ id: `bi/ent/q${i}`, status: 'known', updatedAt: NOW - 400 })),
+    ],
+    seen: [{ id: 'yt:abc', at: NOW - 50 }, { id: 'scm:https://x', at: NOW - 40, manual: true }],
+    favorites: [{ id: 'video:yt:abc', type: 'video', title: 'T', on: true, at: NOW - 30, updatedAt: NOW - 30 }],
+  }
+  const all = earned(full)
+  const missing = BADGES.filter((b) => !all.some((e) => e.id === b.id))
+  if (missing.length) fail(w, `badges impossibles à gagner avec un jeu de données complet : ${missing.map((b) => b.id).join(', ')}`)
+  for (const e of all) if (!Number.isFinite(e.at) || e.at > NOW) fail(w, `badge ${e.id} : date d'obtention invalide (${e.at})`)
+  // précision : les exercices de révision, les articles « lus » et les favoris retirés ne comptent pas
+  const noisy = { rvLots: [lot], rvProgress: [rvProgress.at(-1)], seen: [{ id: 'scm:https://x', at: 1 }], favorites: [{ id: 'a', type: 'card', title: 't', on: false, at: 1, updatedAt: 2 }] }
+  const n = ids(noisy)
+  if (n.has('rv-flash') || n.has('rv-50') || n.has('video-1') || n.has('favori-1')) fail(w, 'des activités qui ne comptent pas déclenchent des badges')
+  if (!n.has('rv-import')) fail(w, 'un lot importé doit donner « Premier lot »')
+  if (ids({ workshop: [{ id: 'bi/ent/q1', status: 'review', updatedAt: 1 }] }).has('entretien-1')) fail(w, 'une question « À revoir » ne doit pas compter comme maîtrisée')
+  // défi du jour : 3 jours d'affilée
+  if (!ids({ activity: [0, 1, 2].map((i) => ({ date: day(i), xp: 0, daily: true })) }).has('defi-3') || ids({ activity: [0, 1, 3].map((i) => ({ date: day(i), xp: 0, daily: true })) }).has('defi-3')) fail(w, 'défi du jour 3 jours de suite')
+
+  // 7) Fusion : badges (plus ancien gagne), favoris (plus récent gagne, retrait pris en compte), activité (`daily` conservé)
+  if (mergeBadge({ id: 'a', at: 100 }, { id: 'a', at: 50 }).at !== 50 || mergeBadge({ id: 'a', at: 50 }, { id: 'a', at: 100 }).at !== 50 || mergeBadge(undefined, { id: 'a', at: 7 }).at !== 7) fail(w, 'fusion des badges : on garde le plus ancien')
+  if (mergeRow('badges', { id: 'a', at: 100 }, { id: 'a', at: 10 }).at !== 10) fail(w, 'mergeRow badges')
+  const fOld = { id: 'f', type: 'word', title: 'x', on: true, at: 1, updatedAt: 10 }
+  const fOff = { ...fOld, on: false, updatedAt: 20 }
+  if (mergeRow('favorites', fOld, fOff).on !== false || mergeRow('favorites', fOff, fOld).on !== false) fail(w, 'fusion des favoris : un retrait plus récent doit être conservé')
+  if (mergeRow('favorites', fOff, { ...fOld, updatedAt: 30 }).on !== true) fail(w, 'fusion des favoris : un nouvel ajout plus récent doit gagner')
+  if (!mergeRow('favorites', undefined, fOld).on) fail(w, 'fusion des favoris : un favori absent ici doit être ajouté')
+  if (mergeRow('activity', { date: 'd', xp: 10 }, { date: 'd', xp: 5, daily: true }).daily !== true) fail(w, 'fusion de l\'activité : `daily` doit être conservé')
+  // sauvegarde : tables badges et favorites acceptées, lignes invalides refusées
+  const sch = { badges: 'id', favorites: 'id' }
+  const bk = (t) => JSON.stringify({ format: BACKUP_FORMAT, version: 1, exportedAt: new Date().toISOString(), tables: t })
+  if (!validateBackup(bk({ badges: [{ id: 'a', at: 5 }], favorites: [fOld] }), sch).ok) fail(w, 'une sauvegarde avec badges et favoris est refusée')
+  if (validateBackup(bk({ badges: [{ id: 'a' }] }), sch).ok) fail(w, 'un badge sans date doit être refusé')
+  if (validateBackup(bk({ favorites: [{ id: 'f' }] }), sch).ok) fail(w, 'un favori sans type ni titre doit être refusé')
+  if (!validateBackup(bk({}), sch).ok) fail(w, 'une ancienne sauvegarde sans badges ni favoris doit rester acceptée')
+
+  // 8) Favoris : identifiants stables, contenu minimal conservé pour l'Actu
+  const video = { id: 'yt:abc', kind: 'video', videoId: 'abc', isShort: true, title: 'Titre', link: 'https://youtu.be/abc', thumbnail: 'https://i.ytimg.com/vi/abc/hqdefault.jpg', date: '2026-11-19T10:00:00Z', source: 'Chaîne', lang: 'fr', themes: ['supply'] }
+  const vf = videoFav(video)
+  if (vf.id !== 'video:yt:abc' || !vf.title || !vf.url || !vf.thumb || vf.data?.videoId !== 'abc' || vf.data?.title !== 'Titre') fail(w, 'un favori vidéo doit garder titre, lien, miniature et de quoi relancer le lecteur')
+  const af = articleFav({ id: 'scm:https://x/1', title: 'Art', link: 'https://x/1', source: 'SCM', date: '2026-11-19', themes: ['supply'] })
+  if (af.id !== 'article:scm:https://x/1' || !af.url || !af.title) fail(w, 'favori article')
+  const cf = cardFav({ id: 'L1', title: 'Lot' }, { id: 'c1', type: 'flashcard', recto: 'Q', verso: 'R' })
+  if (cf.id !== 'card:L1|c1' || cf.title !== 'Q' || cf.text !== 'R' || cf.to !== '/revisions/lot/L1') fail(w, 'favori carte de révision')
+  if (cardFav({ id: 'L1', title: 'Lot' }, { id: 'c2', type: 'qcm', question: 'Q ?', choices: ['a', 'b'], answer: 1 }).text !== 'b') fail(w, 'favori QCM : la bonne réponse doit être conservée')
+  if (clip('x'.repeat(500)).length > 280) fail(w, 'clip')
+  if (wordFav({ en: 'supplier', fr: 'fournisseur', def: 'd' }).id !== 'word:supplier' || lessonFav({ key: 'a/b', title: 'T', module: { title: 'M' } }).to !== '/cours/a/b') fail(w, 'favori mot / leçon')
+  const types = new Set(FAV_TYPES.map((t) => t.id))
+  for (const f of [vf, af, cf, wordFav({ en: 'a', fr: 'b', def: 'c' }), lessonFav({ key: 'a/b', title: 'T' }), atelierFav({ key: 'k', title: 'T', to: '/atelier/x' })]) if (!types.has(f.type)) fail(w, `type de favori inconnu : ${f.type}`)
+
+  console.log(`Badges : ${BADGES.length} badges dans ${BADGE_CATEGORIES.length} catégories (tous gagnables, dates et fusion vérifiées) · Favoris : fabriques, fusion et sauvegarde vérifiées`)
 }
 
 // ---------- Compte rendu ----------

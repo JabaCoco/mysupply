@@ -11,6 +11,7 @@ export async function addXp(amount) {
   await db.transaction('rw', db.activity, async () => {
     const row = await db.activity.get(date)
     await db.activity.put({
+      ...row, // garde les autres champs du jour (ex. `daily` : défi du jour réussi)
       date,
       xp: (row?.xp ?? 0) + amount,
       celebrated: row?.celebrated ?? false,

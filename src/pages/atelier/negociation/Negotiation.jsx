@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Handshake, Shuffle, User, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { Table } from '../simulateur/SituationModal.jsx'
 import { LEVERS, MAX_ROUNDS, applyLever, bestSequence, generateNegotiation, initialState, playSequence, scoreNegotiation, totalCost } from '../../../lib/negotiation.js'
 import { recordScoreGame, useWorkshop } from '../../../lib/atelier.js'
@@ -50,7 +51,7 @@ export default function Negotiation() {
 
   return (
     <Page>
-      <SubHeader back="/atelier" title="Négociation avec un fournisseur" subtitle={done ? 'Accord conclu' : `Levier ${Math.min(state.used.length + 1, MAX_ROUNDS)} / ${MAX_ROUNDS}`} />
+      <SubHeader back="/atelier" title="Négociation avec un fournisseur" subtitle={done ? 'Accord conclu' : `Levier ${Math.min(state.used.length + 1, MAX_ROUNDS)} / ${MAX_ROUNDS}`} fav={atelierFav({ key: 'negociation', title: 'Négociation avec un fournisseur', sub: 'Atelier · leviers de négociation', to: '/atelier/negociation' })} />
       <div className="space-y-4">
         {!done && state.used.length === 0 && (
           <>

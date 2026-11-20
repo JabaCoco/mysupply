@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { BookOpen, Calculator, ChevronRight, PenLine } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { FORMULAS, FORMULA_LIST } from '../../../data/atelier/formulas.js'
 import { useWorkshop } from '../../../lib/atelier.js'
 import { CALCULATOR_COMPONENTS } from './definitions.jsx'
@@ -63,7 +64,7 @@ export function CalculatorPage() {
 
   return (
     <Page>
-      <SubHeader back="/atelier/calculs" title={info.title} subtitle={info.short} />
+      <SubHeader back="/atelier/calculs" title={info.title} subtitle={info.short} fav={atelierFav({ key: `calcul/${id}`, title: info.title, sub: 'Formules et calculs', to: `/atelier/calculs/${id}` })} />
 
       <div className="mb-5 grid grid-cols-3 gap-1 rounded-2xl border border-line bg-card p-1" role="tablist">
         {TABS.map(({ id: t, label, icon: Icon }) => (

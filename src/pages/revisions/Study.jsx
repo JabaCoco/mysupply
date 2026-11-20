@@ -10,6 +10,8 @@ import { cardKey, reviewCard, useRevisions } from '../../lib/revStore.js'
 import { cardsOf } from '../../lib/revFormat.js'
 import { pickSession } from '../../lib/revSrs.js'
 import { celebrate } from '../../lib/confetti.js'
+import { cardFav } from '../../lib/favorites.js'
+import FavButton from '../../components/FavButton.jsx'
 import RichBlock from './RichBlock.jsx'
 
 const TYPE_OF_MODE = { flash: 'flashcard', qcm: 'qcm', qa: 'qa' }
@@ -131,7 +133,10 @@ export default function Study() {
       {total > 0 && done && <Summary session={session} back={back} onRetry={() => begin(shuffle(session.missed))} />}
       {current && (
         <div key={`${session.index}-${current.key}`}>
-          <p className="mb-2 text-xs font-bold tracking-wider text-orange-400 uppercase">{current.lot.title}</p>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="min-w-0 text-xs font-bold tracking-wider text-orange-400 uppercase">{current.lot.title}</p>
+            <FavButton item={cardFav(current.lot, current.item)} className="-my-1.5 -mr-2" />
+          </div>
           {current.item.type === 'flashcard' && <Flash item={current.item} dir={current.dir} onAnswer={answer} />}
           {current.item.type === 'qa' && <QaCard item={current.item} onAnswer={answer} />}
           {current.item.type === 'qcm' && <QcmCard item={current.item} onAnswer={answer} />}

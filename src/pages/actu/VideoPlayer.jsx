@@ -6,6 +6,9 @@ import { markSeen } from '../../lib/news.js'
 import { timeAgo } from '../../lib/dates.js'
 import YouTubeEmbed from './YouTubeEmbed.jsx'
 import LangBadge from '../../components/LangBadge.jsx'
+import FavButton from '../../components/FavButton.jsx'
+import ShareButton from '../../components/ShareButton.jsx'
+import { videoFav } from '../../lib/favorites.js'
 import { THEMES } from '../../lib/themes.js'
 
 // Lecteur plein écran : lit les vidéos YouTube dans l'appli, avec Précédent / Suivant
@@ -118,6 +121,11 @@ export default function VideoPlayer({ videos, index, onIndexChange, onClose }) {
           >
             <ChevronRight size={22} />
           </button>
+        </div>
+        {/* Favori et partage (le favori garde le titre, le lien et la miniature : il reste accessible après la sortie du flux) */}
+        <div className="mt-2 flex items-center gap-2">
+          <FavButton item={videoFav(video)} variant="dark" size={20} />
+          <ShareButton title={video.title} url={video.link} label className="h-11 flex-1 rounded-full bg-white/10 text-sm font-semibold" />
         </div>
       </div>
 

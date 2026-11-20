@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { Check, RotateCcw } from 'lucide-react'
 import { cardFace, setWordStatus, XP_DAILY_WORD } from '../../lib/english.js'
+import { wordFav } from '../../lib/favorites.js'
+import FavButton from '../../components/FavButton.jsx'
 import SpeakButton from './SpeakButton.jsx'
 
 // Les mots du jour : 3 flashcards. Le recto ne montre qu'un mot (anglais ou français, au hasard) :
@@ -90,9 +92,12 @@ function FlashCard({ word, index, total, status }) {
           aria-hidden={!flipped}
           inert={!flipped}
         >
-          <p className="text-xs font-bold tracking-wider text-white/75 uppercase">
-            Mot {index + 1} / {total} · réponse
-          </p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-bold tracking-wider text-white/75 uppercase">
+              Mot {index + 1} / {total} · réponse
+            </p>
+            <FavButton item={wordFav(word)} variant="dark" size={16} className="relative z-10 -my-1 size-8!" />
+          </div>
           <div className="mt-2 rounded-2xl bg-white/20 p-3">
             <div className="flex items-center gap-3">
               {face === 'fr' && (

@@ -38,8 +38,3 @@ export const figures = [
     source: 'Norme ISO',
   },
 ]
-
-// Contenus provisoires : les badges seront branchés plus tard (la tuile « À réviser » est maintenant réelle).
-export const placeholders = {
-  badges: { won: 4, total: 30 },
-}

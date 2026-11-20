@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { Check, CheckCircle2, ChevronDown, ChevronRight, Eraser, Eye, Lightbulb, Plus, RotateCcw, Trophy, Undo2, X, XCircle, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { PQ_SCENARIOS } from '../../../data/atelier/bi/index.js'
 import { makePqGame } from '../../../data/atelier/bi/pqScenarios.js'
 import { STEP_INFO, describeStep, diffTables, mCode, runSteps, stepNames } from '../../../lib/powerQuery.js'
@@ -112,7 +113,7 @@ function PqGame({ scenario }) {
 
   return (
     <Page>
-      <SubHeader back="/atelier/bi/simulateur" title={scenario.title} subtitle="Simulateur Power Query" />
+      <SubHeader back="/atelier/bi/simulateur" title={scenario.title} subtitle="Simulateur Power Query" fav={atelierFav({ key: `bi/${scenario.id}`, title: scenario.title, sub: 'Simulateur Power Query', to: `/atelier/bi/simulateur/${scenario.id}` })} />
       <div className="space-y-4">
         <p className="rounded-2xl border border-line bg-card p-4 text-[15px] leading-relaxed">{scenario.intro}</p>
 

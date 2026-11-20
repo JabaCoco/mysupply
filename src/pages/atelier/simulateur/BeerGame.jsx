@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Minus, PackageCheck, PackageX, Plus, Shuffle, Truck, Inbox, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { BEER_PROFILES, HOLDING, BACKLOG, LEAD, PLAYER, STAGES, WEEKS, newBeerGame, playBeerWeek, playerView, simulateAuto, summarizeBeer } from '../../../lib/beerGame.js'
 import { recordBeerGame, useWorkshop } from '../../../lib/atelier.js'
 import { celebrate } from '../../../lib/confetti.js'
@@ -147,7 +148,7 @@ function Box({ icon: Icon, label, value, detail, align, level }) {
 function Intro({ profile, onProfile, onStart, best }) {
   return (
     <Page>
-      <SubHeader back="/atelier" title="Le jeu de la bière" subtitle="Découvre l'effet coup de fouet" />
+      <SubHeader back="/atelier" title="Le jeu de la bière" subtitle="Découvre l'effet coup de fouet" fav={atelierFav({ key: 'biere', title: 'Le jeu de la bière', sub: 'Atelier · effet coup de fouet', to: '/atelier/biere' })} />
       <div className="space-y-4">
         <p className="text-[15px] leading-relaxed">
           Une chaîne de 4 maillons livre de la bière : <span className="font-semibold">détaillant → grossiste → distributeur → usine</span>. <span className="font-semibold">Tu es le grossiste.</span> Chaque semaine, tu

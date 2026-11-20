@@ -4,6 +4,8 @@ import Page from '../../components/Page.jsx'
 import SubHeader from '../../components/SubHeader.jsx'
 import { ALL_WORDS } from '../../data/anglais/units.js'
 import { setWordStatus, useEnglish } from '../../lib/english.js'
+import { wordFav } from '../../lib/favorites.js'
+import FavButton from '../../components/FavButton.jsx'
 import SpeakButton from './SpeakButton.jsx'
 
 const FILTERS = [
@@ -62,6 +64,7 @@ export default function Lexique() {
                   </p>
                   <p className="truncate text-sm text-muted">{w.fr}</p>
                 </div>
+                <FavButton item={wordFav(w)} size={17} className="size-8!" />
                 <button
                   type="button"
                   onClick={() => setWordStatus(w.en, s === 'review' ? 'known' : 'review')}

@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Check, Shuffle, Snowflake, Undo2, X, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { Table } from '../simulateur/SituationModal.jsx'
 import { COLS, ROWS, canStack, clonePlan, emptyPlan, evaluate, generateLoad, suggestPlan } from '../../../lib/truckLoading.js'
 import { recordScoreGame, useWorkshop } from '../../../lib/atelier.js'
@@ -69,7 +70,7 @@ export default function TruckLoading() {
 
   return (
     <Page>
-      <SubHeader back="/atelier" title="Plan de chargement" subtitle="Charge le camion sans rien casser ni perdre de temps" />
+      <SubHeader back="/atelier" title="Plan de chargement" subtitle="Charge le camion sans rien casser ni perdre de temps" fav={atelierFav({ key: 'chargement', title: 'Plan de chargement', sub: 'Atelier · camion et palettes', to: '/atelier/chargement' })} />
       <div className="space-y-4">
         {!result && (
           <p className="text-[15px] leading-relaxed">

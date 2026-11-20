@@ -42,3 +42,12 @@ db.version(6).stores({
   // Progression d'une carte : { id: 'lot|contenu|f', lotId, itemId, dir, box, due, reps, lapses, last, xpDay }
   rvProgress: 'id, lotId, due',
 })
+
+// Version 7 : badges et favoris (données simples, faciles à sauvegarder, fusionner et synchroniser)
+db.version(7).stores({
+  // Un badge gagné : { id: 'serie-7', at: 1731700000000 } (at = date d'obtention ; à la fusion on garde la plus ancienne)
+  badges: 'id',
+  // Un favori : { id: 'video:yt:abc', type, title, sub, to | url, thumb, text, data, at, updatedAt, on }
+  // `on: false` = favori retiré (on garde la ligne pour que le retrait se propage aussi à la fusion / synchronisation)
+  favorites: 'id, type',
+})

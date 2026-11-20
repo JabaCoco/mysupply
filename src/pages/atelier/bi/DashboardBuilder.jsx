@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { Check, CheckCircle2, ChartColumn, ChartLine, ChartPie, ChevronDown, ChevronRight, Hash, Lightbulb, RotateCcw, SlidersHorizontal, Table2, Trophy, XCircle, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import { DASHBOARDS } from '../../../data/atelier/bi/index.js'
 import { FAMILIES, FORMATS, VISUALS, dashboardMax, dimValues, findDashboard, makeDashboardData, needMax, scoreNeed, series } from '../../../data/atelier/bi/dashboards.js'
 import { completeDashboard, useWorkshop } from '../../../lib/atelier.js'
@@ -89,7 +90,7 @@ function Builder({ dash }) {
 
   return (
     <Page>
-      <SubHeader back="/atelier/bi/tableau" title={dash.title} subtitle="Constructeur de tableau de bord" />
+      <SubHeader back="/atelier/bi/tableau" title={dash.title} subtitle="Constructeur de tableau de bord" fav={atelierFav({ key: `bi/${dash.id}`, title: dash.title, sub: 'Tableau de bord Power BI', to: `/atelier/bi/tableau/${dash.id}` })} />
       <div className="space-y-4">
         <p className="rounded-2xl border border-line bg-card p-4 text-[15px] leading-relaxed">{dash.context}</p>
         <p className="text-sm text-muted">

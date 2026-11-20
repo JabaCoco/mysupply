@@ -168,6 +168,21 @@ export function useSeen() {
   return new Set(keys ?? [])
 }
 
+// Marque à la main un contenu comme vu, SANS donner d'XP (les XP viennent seulement du lecteur intégré).
+export async function markSeenManual(id) {
+  await db.transaction('rw', db.seen, async () => {
+    if (!(await db.seen.get(id))) await db.seen.put({ id, at: Date.now(), manual: true })
+  })
+}
+
+// Article lu / non lu (aucun XP, donc on peut l'annuler)
+export async function toggleRead(id) {
+  await db.transaction('rw', db.seen, async () => {
+    if (await db.seen.get(id)) await db.seen.delete(id)
+    else await db.seen.put({ id, at: Date.now(), manual: true })
+  })
+}
+
 // Marque une vidéo comme vue ; la première fois, elle rapporte des XP
 export async function markSeen(video) {
   await db.transaction('rw', db.seen, db.activity, async () => {

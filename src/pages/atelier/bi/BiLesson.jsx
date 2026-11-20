@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { BookOpen, CheckCircle2, ChevronDown, Lightbulb, PenLine, RotateCcw, Sigma, Trophy, XCircle, Zap } from 'lucide-react'
 import Page from '../../../components/Page.jsx'
 import SubHeader from '../../../components/SubHeader.jsx'
+import { atelierFav } from '../../../lib/favorites.js'
 import RichText from '../../../components/RichText.jsx'
 import { findBiLesson, generateBiExercises } from '../../../data/atelier/bi/index.js'
 import { checkBiNumber, formatBiAnswer } from '../../../data/atelier/bi/helpers.js'
@@ -29,7 +30,7 @@ export default function BiLesson() {
   }
   return (
     <Page>
-      <SubHeader back="/atelier/bi" title={lesson.title} subtitle={lesson.track === 'pq' ? 'Power Query' : 'Power BI'} />
+      <SubHeader back="/atelier/bi" title={lesson.title} subtitle={lesson.track === 'pq' ? 'Power Query' : 'Power BI'} fav={atelierFav({ key: `bi/${lesson.id}`, title: lesson.title, sub: lesson.track === 'pq' ? 'Power Query' : 'Power BI', to: `/atelier/bi/cours/${lesson.id}` })} />
       <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl border border-line bg-card p-1" role="tablist">
         {TABS.map(({ id: t, label, icon: Icon }) => (
           <button

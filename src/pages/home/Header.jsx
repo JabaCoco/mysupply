@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useAnimate } from 'motion/react'
-import { Moon, Sun } from 'lucide-react'
+import { Link } from 'react-router'
+import { Heart, Moon, Sun } from 'lucide-react'
 import { longDate } from '../../lib/dates.js'
 import { useTheme } from '../../lib/theme.js'
 import Flame from './Flame.jsx'
@@ -36,6 +37,13 @@ export default function Header({ streak }) {
           <Flame size={16} />
           {streak}
         </div>
+        <Link
+          to="/favoris"
+          className="grid size-9 place-items-center rounded-full border border-line bg-card text-rose-400 transition-transform active:scale-90"
+          aria-label="Mes favoris"
+        >
+          <Heart size={16} />
+        </Link>
         <button
           type="button"
           onClick={toggle}

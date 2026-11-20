@@ -30,6 +30,9 @@ import Backup from './pages/revisions/Backup.jsx'
 import Anglais from './pages/anglais/Anglais.jsx'
 import EnglishLesson from './pages/anglais/EnglishLesson.jsx'
 import Lexique from './pages/anglais/Lexique.jsx'
+import BadgesPage from './pages/badges/BadgesPage.jsx'
+import Favoris from './pages/favoris/Favoris.jsx'
+import BadgeWatcher from './components/BadgeWatcher.jsx'
 import { tabs } from './tabs.js'
 
 // Onglets déjà construits ; les autres affichent une page provisoire
@@ -75,6 +78,8 @@ export default function App() {
         <Route path="/revisions/lot/:id/exercices" element={<ExerciseList />} />
         <Route path="/revisions/etude/:scope/:mode" element={<Study />} />
         <Route path="/revisions/exercice/:lotId/:itemId" element={<Exercise />} />
+        <Route path="/badges" element={<BadgesPage />} />
+        <Route path="/favoris" element={<Favoris />} />
         <Route path="/anglais" element={<Anglais />} />
         <Route path="/anglais/lexique" element={<Lexique />} />
         <Route path="/anglais/:unitId/:lessonId" element={<EnglishLesson />} />
@@ -93,6 +98,8 @@ export default function App() {
           ))}
       </Routes>
       {!inLesson && <BottomNav />}
+      {/* Détecte les badges gagnés et affiche la notification (invisible le reste du temps) */}
+      <BadgeWatcher />
     </div>
   )
 }
